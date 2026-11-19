@@ -12,6 +12,7 @@
 <p align="center">
   <a href="README.md"><img alt="English" src="https://img.shields.io/badge/English-current-4d6bfe?style=flat-square" /></a>
   <a href="README.zh.md"><img alt="简体中文" src="https://img.shields.io/badge/%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-switch-6b7280?style=flat-square" /></a>
+  <a href="https://www.npmjs.com/package/dsh-sim"><img alt="npm" src="https://img.shields.io/npm/v/dsh-sim?style=flat-square" /></a>
   <a href="https://github.com/supperzl/dsh-sim/releases"><img alt="release" src="https://img.shields.io/github/v/release/supperzl/dsh-sim?style=flat-square" /></a>
   <img alt="license" src="https://img.shields.io/badge/license-MIT-4d6bfe?style=flat-square" />
   <img alt="dsh" src="https://img.shields.io/badge/DSH-%E2%89%A5%200.2.2-4d6bfe?style=flat-square" />
@@ -69,7 +70,16 @@ One GitHub request, offline afterwards.
 
 ## Install
 
-### From a release (recommended)
+### From npm (recommended)
+
+```sh
+dsh plugin --profile web add dsh-sim
+```
+
+In the desktop app, open **Plugins → Add plugin**, paste the npm package name `dsh-sim`, and
+install. It is the same bundle published here; updates follow the npm version.
+
+### From a release
 
 Download `dsh-sim-<version>.tgz` from [Releases](https://github.com/supperzl/dsh-sim/releases)
 and install that artifact into your profile — no clone or build needed:
