@@ -1,0 +1,4 @@
+# dsh-sim bundle patch: mounts the plugin into a profile layer stack.
+- insert:
+    - id: dsh-sim
+      name: dsh-sim

@@ -1,0 +1,65 @@
+{
+  "name": "dsh-sim",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A native simulator panel for DeepSeek Harness: a per-conversation sidebar tab streaming iOS Simulator and Android devices with H.264 + WebCodecs and a device picker.",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "icon.svg",
+    "cordis.patch.yml",
+    "README.md",
+    "README.zh.md",
+    "LICENSE",
+    "docs"
+  ],
+  "dependencies": {
+    "serve-sim": "^0.1.49",
+    "ws": "^8.23.0"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-renderer",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-tool",
+        "@deepseek-ai/dsh-client-ui-theme"
+      ],
+      "platform": "web"
+    }
+  },
+  "license": "MIT",
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "dsh-plugin",
+    "ios-simulator",
+    "android",
+    "emulator",
+    "scrcpy",
+    "serve-sim",
+    "webcodecs",
+    "h264"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/supperzl/dsh-sim.git"
+  },
+  "homepage": "https://github.com/supperzl/dsh-sim",
+  "scripts": {
+    "check": "node scripts/check.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
