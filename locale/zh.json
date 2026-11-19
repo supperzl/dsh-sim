@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "模拟器（dsh-sim）",
+    "description": "在右侧栏新增「模拟器」tab：用 H.264 实时串流 iOS 模拟器或 Android 设备，可直接点按拖动，也能由 agent 工具操作；每个会话独立一台设备。"
+  }
+}

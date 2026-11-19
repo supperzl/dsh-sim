@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Simulator (dsh-sim)",
+    "description": "Adds a Simulator tab to the right sidebar: stream an iOS Simulator or Android device over H.264, tap and drag the picture directly, and drive it from agent tools. Every conversation gets its own device."
+  }
+}

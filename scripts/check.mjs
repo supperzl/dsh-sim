@@ -32,8 +32,18 @@ const required = ['name', 'version', 'main', 'exports', 'dsh']
 for (const key of required) {
   if (pkg[key] === undefined) throw new Error(`package.json is missing "${key}"`)
 }
-for (const path of ['lib/index.js', 'lib/client.js', 'cordis.patch.yml', 'icon.svg']) {
-  statSync(join(root, path))
+for (const path of ['lib/index.js', 'lib/client.js', 'cordis.patch.yml', 'icon.svg',
+  'locale/en.json', 'locale/zh.json']) {
+  const full = join(root, path)
+  statSync(full)
+  if (path.endsWith('.json')) JSON.parse(readFileSync(full, 'utf8'))
+}
+const locale = JSON.parse(readFileSync(join(root, 'locale', 'zh.json'), 'utf8'))
+if (!locale.meta?.title || !locale.meta?.description) {
+  throw new Error('locale/zh.json is missing meta.title or meta.description')
+}
+if (statSync(join(root, 'icon.svg')).size > 256 * 1024) {
+  throw new Error('icon.svg exceeds the 256 KiB plugin icon limit')
 }
 
 console.log(`checked ${files.length} modules; manifest ok (${pkg.name}@${pkg.version})`)
