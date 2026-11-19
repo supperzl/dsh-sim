@@ -100,8 +100,9 @@ caches the client bundle for one load.
 
 ## Quick start
 
-1. Right sidebar → **+** → **Start** page → click the **Simulator** card.
-2. Click the device button, search or pick a device. Selecting it starts the stream:
+1. Right sidebar → **+** → **Start** page → click the **Simulator** card. A new tab reconnects
+   the **last device you used** and starts it automatically (booting a simulator if needed).
+2. Click the device button to switch, search or pick another device. Selecting it starts the stream:
    booted iOS simulators attach instantly, shutdown ones are booted first, Android AVDs are
    launched on demand.
 3. Use the toolbar: play/stop, rotate, home, lock (iOS) / power (Android), frame style.
