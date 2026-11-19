@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/images/hero.png" width="340" alt="模拟器 tab：手机外框、实时画面、右下角连接状态" />
+  <img src="docs/images/hero.png" width="780" alt="完整的 DSH 界面：右侧栏打开模拟器 tab" />
 </p>
 
 ## 为什么做 dsh-sim
@@ -38,10 +38,14 @@ agent 用工具点按输入，你在侧边栏里看着并随时接管——同�
 
 ## 截图
 
-| 面板 | 设备选择器 |
-| --- | --- |
-| <img src="docs/images/hero.png" width="260" /> | <img src="docs/images/device-picker.png" width="260" /> |
-| 手机框里的实时画面、右下角悬浮状态、工具栏传输控制。 | 搜索、使用过的设备、折叠的其他设备、运行状态和选中标记。 |
+**完整的 DSH 界面** —— 左侧是对话，右侧栏停靠「模拟器」tab：手机框里的实时画面、工具栏的
+传输控制、右下角的连接状态胶囊。
+
+![完整的 DSH 界面与模拟器 tab](docs/images/hero.png)
+
+**设备选择器** —— 搜索、使用过的设备、折叠的其他设备，每台设备的状态与选中标记。
+
+![设备选择器](docs/images/device-picker.png)
 
 ## 环境要求
 

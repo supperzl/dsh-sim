@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/images/hero.png" width="340" alt="Simulator tab: phone frame, live picture, floating connection badge" />
+  <img src="docs/images/hero.png" width="780" alt="The complete DSH window with the simulator tab open in the right sidebar" />
 </p>
 
 ## Why dsh-sim
@@ -41,10 +41,16 @@ sidebar — on the same stream, scoped to that conversation.
 
 ## Screenshots
 
-| Panel | Device picker |
-| --- | --- |
-| <img src="docs/images/hero.png" width="260" /> | <img src="docs/images/device-picker.png" width="260" /> |
-| Live picture inside the phone frame, floating status badge, transport controls in the toolbar. | Search, recently used devices, collapsible "other devices", live status and a check mark. |
+**The complete DSH window** — conversation on the left, the **Simulator** tab docked in the
+right sidebar: live picture inside a phone frame, transport controls in the toolbar, floating
+connection badge in the corner.
+
+![Full DSH window with the simulator tab](docs/images/hero.png)
+
+**Device picker** — search, recently used devices, collapsible "other devices", per-device
+status and a check mark for the selected device.
+
+![Device picker](docs/images/device-picker.png)
 
 ## Requirements
 
