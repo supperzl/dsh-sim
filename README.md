@@ -12,6 +12,7 @@
 <p align="center">
   <a href="README.md"><img alt="English" src="https://img.shields.io/badge/English-current-4d6bfe?style=flat-square" /></a>
   <a href="README.zh.md"><img alt="简体中文" src="https://img.shields.io/badge/%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-switch-6b7280?style=flat-square" /></a>
+  <a href="https://github.com/supperzl/dsh-sim/releases"><img alt="release" src="https://img.shields.io/github/v/release/supperzl/dsh-sim?style=flat-square" /></a>
   <img alt="license" src="https://img.shields.io/badge/license-MIT-4d6bfe?style=flat-square" />
   <img alt="dsh" src="https://img.shields.io/badge/DSH-%E2%89%A5%200.2.2-4d6bfe?style=flat-square" />
   <img alt="better-sidebar" src="https://img.shields.io/badge/dsh--better--sidebar-%E2%89%A5%200.32-4d6bfe?style=flat-square" />
@@ -66,6 +67,21 @@ The first Android stream downloads **scrcpy-server 4.0** (~1 MB) into `~/.dsh/ca
 One GitHub request, offline afterwards.
 
 ## Install
+
+### From a release (recommended)
+
+Download `dsh-sim-<version>.tgz` from [Releases](https://github.com/supperzl/dsh-sim/releases)
+and install that artifact into your profile — no clone or build needed:
+
+```text
+plugin_manager install_bundle /absolute/path/dsh-sim-0.1.5.tgz
+```
+
+The plugin manager registers the bundle, activates it, and its ten `sim_*` tools are available
+immediately. The same artifact can be installed from the desktop Plugins page (*Add plugin* →
+pick the `.tgz`) or with `dsh plugin --profile <name> add ./dsh-sim-0.1.5.tgz`.
+
+### From source
 
 ```bash
 git clone git@github.com:supperzl/dsh-sim.git ~/dsh-sim

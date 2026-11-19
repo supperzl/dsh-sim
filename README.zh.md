@@ -12,6 +12,7 @@
 <p align="center">
   <a href="README.md"><img alt="English" src="https://img.shields.io/badge/English-switch-6b7280?style=flat-square" /></a>
   <a href="README.zh.md"><img alt="简体中文" src="https://img.shields.io/badge/%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-current-4d6bfe?style=flat-square" /></a>
+  <a href="https://github.com/supperzl/dsh-sim/releases"><img alt="release" src="https://img.shields.io/github/v/release/supperzl/dsh-sim?style=flat-square" /></a>
   <img alt="license" src="https://img.shields.io/badge/license-MIT-4d6bfe?style=flat-square" />
   <img alt="dsh" src="https://img.shields.io/badge/DSH-%E2%89%A5%200.2.2-4d6bfe?style=flat-square" />
   <img alt="better-sidebar" src="https://img.shields.io/badge/dsh--better--sidebar-%E2%89%A5%200.32-4d6bfe?style=flat-square" />
@@ -61,6 +62,20 @@ agent 用工具点按输入，你在侧边栏里看着并随时接管——同�
 只需要一次 GitHub 访问，之后离线可用。
 
 ## 安装
+
+### 用 Release 产物（推荐）
+
+从 [Releases](https://github.com/supperzl/dsh-sim/releases) 下载 `dsh-sim-<version>.tgz`，
+直接把这个产物装进 profile，不用克隆、不用构建：
+
+```text
+plugin_manager install_bundle /绝对路径/dsh-sim-0.1.5.tgz
+```
+
+插件管理器会注册 bundle、启用插件，十个 `sim_*` 工具立即可用。同一个产物也可以在桌面端
+插件页「添加插件」里选 `.tgz`，或用 `dsh plugin --profile <name> add ./dsh-sim-0.1.5.tgz`。
+
+### 从源码安装
 
 ```bash
 git clone git@github.com:supperzl/dsh-sim.git ~/dsh-sim
