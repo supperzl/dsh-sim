@@ -95,6 +95,25 @@ interface SimSession {
    - `3` 滚动：x、y、w、h、hscroll、vscroll、buttons；
    - `11` 旋转设备。
 
+## 应用与系统操作
+
+除了推流和输入，工具还直接调用设备的包管理和系统命令（`lib/host/{android,ios}.js`）：
+
+| 能力 | Android | iOS |
+| --- | --- | --- |
+| 安装 | `adb install -r -t <apk>` | `simctl install <udid> <app>` |
+| 卸载 | `adb uninstall <pkg>` | `simctl uninstall <udid> <bundle>` |
+| 启动 | `am start -n <component>` 或 `monkey -p <pkg> -c LAUNCHER 1` | `simctl launch <udid> <bundle>` |
+| 打开链接 | `am start -a VIEW -d <url>` | `simctl openurl <udid> <url>` |
+| 权限 | `pm grant/revoke <pkg> <permission>` | `simctl privacy <udid> <op> <service> <bundle>` |
+| UI 树 | `uiautomator dump` + `exec-out cat` | 不支持（需要 WebDriverAgent） |
+| 日志 | `logcat -d -t N [-s tag]` | 不支持（没有等价 logcat） |
+| Shell | `adb shell <cmd>` | 不支持（iOS 模拟器没有 shell） |
+| 关机 | 模拟器 `adb emu kill`；真机只断开 | `simctl shutdown <udid>` |
+
+Android 的安装/卸载走 120–180 秒超时并校验 `Success` 输出；失败时原样返回 adb 的
+`Failure [...]` 文本，方便 agent 判断是签名、版本还是路径问题。
+
 ## HTTP 路由
 
 全部挂在 DSH webserver 的 `/_dsh/dsh-sim` 下，**不用 WebSocket**（桌面 GUI 可能来自

@@ -38,7 +38,8 @@ sidebar — on the same stream, scoped to that conversation.
   (serve-sim HID / scrcpy control socket), so there is no `adb input` process per tap.
 - **Fits the sidebar** — phone frame / bezel / frameless shells, contain scaling, a compact
   toolbar that shrinks and drops controls on narrow widths.
-- **Agent-ready** — ten `sim_*` tools bound to the active conversation.
+- **Agent-ready** — nineteen `sim_*` tools bound to the active conversation, from tap/type to
+  installing an APK, launching an app, reading logcat and dumping the UI tree.
 
 ## Screenshots
 
@@ -140,6 +141,15 @@ origin at the top-left of the picture, matching what the panel displays.
 | [`sim_text`](#sim_text) | Type ASCII text | `text` |
 | [`sim_key`](#sim_key) | Press a navigation/hardware key | `name` |
 | [`sim_rotate`](#sim_rotate) | Rotate the device | optional `orientation` |
+| [`sim_install`](#sim_install) | Install an app (.apk / .app) | `path`, optional `reinstall` |
+| [`sim_uninstall`](#sim_uninstall) | Uninstall an app | `id` |
+| [`sim_launch`](#sim_launch) | Launch an app | `id`, optional `activity` |
+| [`sim_open_url`](#sim_open_url) | Open a URL or deep link | `url` |
+| [`sim_permission`](#sim_permission) | Grant/revoke a permission | `op`, `id`, `permission` |
+| [`sim_ui`](#sim_ui) | Dump the accessibility tree (Android) | — |
+| [`sim_logcat`](#sim_logcat) | Recent Android logcat | optional `lines`, `filter` |
+| [`sim_shell`](#sim_shell) | Run a shell command (Android) | `command` |
+| [`sim_shutdown`](#sim_shutdown) | Stop the stream and power off | — |
 
 ### `sim_devices`
 
@@ -221,6 +231,56 @@ Types ASCII text. Android uses scrcpy's text injection; iOS maps characters to H
 
 `portrait` | `landscape_left` | `landscape_right`. iOS switches to that orientation; Android
 toggles the current rotation.
+
+### `sim_install`
+
+Installs an app on the streamed device: an `.apk` on Android (`adb install -r -t`) or a built
+`.app` bundle on iOS (`simctl install`).
+
+```jsonc
+{ "path": "/Users/you/build/app-release.apk" }
+{ "path": "/Users/you/Library/Developer/Xcode/DerivedData/App/Build/Products/Debug-iphonesimulator/App.app" }
+```
+
+`reinstall: false` keeps an existing Android install when the package manager would reject it.
+
+### `sim_uninstall`
+
+Removes the app by package name (Android) or bundle id (iOS).
+
+### `sim_launch`
+
+Launches an installed app: the package name on Android (or an explicit `activity` such as
+`com.example/.MainActivity`), the bundle id on iOS. Returns the pid on iOS.
+
+### `sim_open_url`
+
+Opens an `http(s)` URL or an app deep link (`myapp://path`).
+
+### `sim_permission`
+
+`grant` / `revoke` for Android runtime permissions (e.g. `android.permission.CAMERA`) or iOS
+`simctl privacy` services (`camera`, `microphone`, `photos`, `location`, `contacts`, …).
+
+### `sim_ui`
+
+Dumps the accessibility hierarchy as a flat list of nodes (class, text, content-desc, resource-id,
+bounds, clickable). Android uses `uiautomator dump`; iOS returns `supported: false` because it
+needs WebDriverAgent — use screenshots and taps there.
+
+### `sim_logcat`
+
+The last N Android logcat lines, optionally filtered by tag. iOS returns `supported: false`.
+
+### `sim_shell`
+
+Runs a command with `adb shell` and returns its output. Android only; iOS simulators have no
+shell and return `supported: false`.
+
+### `sim_shutdown`
+
+Stops the conversation's stream and powers the device down (`simctl shutdown` on iOS, `adb emu
+kill` for Android emulators). Physical Android devices are only disconnected.
 
 ## Architecture
 

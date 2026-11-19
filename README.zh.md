@@ -35,7 +35,8 @@ agent 用工具点按输入，你在侧边栏里看着并随时接管——同�
 - **真输入，不是截图回放** —— 点按、拖动、输入、按键都走设备控制通道
   （serve-sim HID / scrcpy control socket），不会每点一次起一个 `adb input` 进程。
 - **适配侧边栏** —— 手机框 / 细边框 / 无框三种外壳、整体 contain 缩放、窄宽度下工具栏自动收缩。
-- **为 agent 准备** —— 十个 `sim_*` 工具，绑定当前会话。
+- **为 agent 准备** —— 十九个 `sim_*` 工具，绑定当前会话：从点按输入，到安装 APK、启动应用、
+  读 logcat、导出 UI 树。
 
 ## 截图
 
@@ -128,6 +129,15 @@ npm install
 | [`sim_text`](#sim_text) | 输入 ASCII 文本 | `text` |
 | [`sim_key`](#sim_key) | 按导航/硬件键 | `name` |
 | [`sim_rotate`](#sim_rotate) | 旋转设备 | 可选 `orientation` |
+| [`sim_install`](#sim_install) | 安装应用（.apk / .app） | `path`，可选 `reinstall` |
+| [`sim_uninstall`](#sim_uninstall) | 卸载应用 | `id` |
+| [`sim_launch`](#sim_launch) | 启动应用 | `id`，可选 `activity` |
+| [`sim_open_url`](#sim_open_url) | 打开 URL / deeplink | `url` |
+| [`sim_permission`](#sim_permission) | 授予/撤销权限 | `op`、`id`、`permission` |
+| [`sim_ui`](#sim_ui) | 导出无障碍树（Android） | — |
+| [`sim_logcat`](#sim_logcat) | 最近 Android logcat | 可选 `lines`、`filter` |
+| [`sim_shell`](#sim_shell) | 执行 shell 命令（Android） | `command` |
+| [`sim_shutdown`](#sim_shutdown) | 停流并关机 | — |
 
 ### `sim_devices`
 
@@ -206,6 +216,51 @@ begin → 12 次 move → end；`durationMs` 默认 300。
 ### `sim_rotate`
 
 `portrait` | `landscape_left` | `landscape_right`。iOS 切到指定方向，Android 切换一次。
+
+### `sim_install`
+
+在当前推流的设备上安装应用：Android 装 `.apk`（`adb install -r -t`），iOS 装已构建的 `.app`
+（`simctl install`）。
+
+```jsonc
+{ "path": "/Users/you/build/app-release.apk" }
+```
+
+### `sim_uninstall`
+
+按包名（Android）或 bundle id（iOS）卸载。
+
+### `sim_launch`
+
+启动已安装应用：Android 用包名（或显式 `activity`，如 `com.example/.MainActivity`），
+iOS 用 bundle id；iOS 会返回 pid。
+
+### `sim_open_url`
+
+打开 `http(s)` 链接或应用 deeplink（`myapp://path`）。
+
+### `sim_permission`
+
+`grant` / `revoke`：Android 运行时权限（如 `android.permission.CAMERA`）或 iOS
+`simctl privacy` 服务（`camera`、`microphone`、`photos`、`location`、`contacts` 等）。
+
+### `sim_ui`
+
+导出无障碍层级（class、text、content-desc、resource-id、bounds、clickable）。Android 用
+`uiautomator dump`；iOS 返回 `supported: false`（需要 WebDriverAgent，请改用截图 + 点按）。
+
+### `sim_logcat`
+
+最近 N 行 Android logcat，可按 tag 过滤。iOS 返回 `supported: false`。
+
+### `sim_shell`
+
+用 `adb shell` 执行命令并返回输出。仅 Android；iOS 模拟器没有 shell，返回 `supported: false`。
+
+### `sim_shutdown`
+
+停掉当前会话的流并把设备关机（iOS `simctl shutdown`，Android 模拟器 `adb emu kill`）；
+Android 真机只断开连接。
 
 ## 架构
 
