@@ -3,8 +3,8 @@
 
     python3 scripts/frame-macbook.py <screenshot.png> <out.png>
 
-Draws a black-bezel lid with a camera notch and an aluminium base, with a soft
-shadow, on a transparent background. The window becomes the screen 1:1.
+Draws a black-bezel lid and an aluminium base, with a soft shadow, on a
+transparent background. The window becomes the screen 1:1.
 """
 import sys
 from pathlib import Path
