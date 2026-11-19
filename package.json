@@ -1,6 +1,6 @@
 {
   "name": "dsh-sim",
-  "version": "0.1.0",
+  "version": "0.1.5",
   "private": true,
   "description": "A native simulator panel for DeepSeek Harness: a per-conversation sidebar tab streaming iOS Simulator and Android devices with H.264 + WebCodecs and a device picker.",
   "type": "module",
