@@ -259,7 +259,7 @@ lib/
 
 ```bash
 npm run check                            # 语法检查所有模块 + 校验 bundle
-python3 scripts/render-docs-images.py    # 重新生成 README 插图
+python3 scripts/render-docs-images.py    # 重新生成 docs/images/icon.png（截图为真实截图）
 ```
 
 用 `plugin_manager set_plugin` 禁用再启用即可热重载宿主；前端包改动需要硬刷新 GUI。

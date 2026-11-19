@@ -275,7 +275,7 @@ framing, scrcpy packet layout, socket timing, security fences).
 
 ```bash
 npm run check                     # syntax-check every module + validate the bundle
-python3 scripts/render-docs-images.py   # regenerate the README illustrations
+python3 scripts/render-docs-images.py   # regenerate docs/images/icon.png (screenshots are real captures)
 ```
 
 Toggle the plugin (`plugin_manager set_plugin`) to reload the host; hard-refresh the GUI for the
