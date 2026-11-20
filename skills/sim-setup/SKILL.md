@@ -1,5 +1,5 @@
 ---
-name: dsh-sim-setup
+name: sim-setup
 description: 安装、构建与排障 dsh-sim 插件：内置设备引擎、Node/Xcode 依赖、面板打不开、真机输入报错等问题。
 ---
 
