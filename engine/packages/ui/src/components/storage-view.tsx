@@ -54,7 +54,7 @@ export const StorageView = memo(function StorageView({ panel }: { panel: Storage
 
   let body: ReactNode;
   if (state.unsupported || !state.available) body = <StorageEmpty title="App storage unavailable" description={state.available ? state.unsupported : "This host cannot call the plugin's tools."} />;
-  else if (!state.bundleId) body = <StorageEmpty title="选择应用" description={state.busy === "apps" ? "Loading installed apps…" : "Pick an installed app to see what it has saved."} />;
+  else if (!state.bundleId) body = <StorageEmpty title="选择应用" description={state.busy === "apps" ? "Loading installed apps…" : "选择已安装的应用查看它保存的数据。"} />;
   else if (!snapshot) body = state.error ? null : <StorageEmpty title="Reading app data…" description="MMKV, AsyncStorage, UserDefaults, SharedPreferences, databases, and files." />;
   else if (state.tab === "changes") body = <ChangesView panel={panel} query={search} />;
   else body = <BrowseView key={`${snapshot.platform}:${snapshot.bundleId}`} panel={panel} snapshot={snapshot} query={search} copy={copy} />;

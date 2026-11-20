@@ -57,8 +57,8 @@ function TraceSiftUpload({ controller, available }: { controller: TraceSiftContr
     <div className="results-header">
       <div className="intro">
         <span className="eyebrow">TraceSift</span>
-        <h1 className="results-title">Analyze a profile</h1>
-        <p>Profiles are read by the local TraceSift service. Nothing leaves this machine.</p>
+        <h1 className="results-title">分析性能分析文件</h1>
+        <p>分析文件由本地 TraceSift 服务读取，不会离开这台机器。</p>
       </div>
     </div>
 

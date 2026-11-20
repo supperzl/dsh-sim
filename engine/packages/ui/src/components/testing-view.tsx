@@ -260,7 +260,7 @@ export function TestingView({ panel, deviceApps }: { panel: TestingPanel; device
   const deviceId = device?.udid ?? "";
   const platform = device ? recordablePlatform(device) : "ios";
   // Why the recorder cannot start yet, in the order the user has to fix them.
-  const blocker = !state.projectPath ? "Choose a project to record against."
+  const blocker = !state.projectPath ? "选择一个项目进行录制。"
     : state.loadingProject ? ""
       : state.targets.length === 0 ? "No targets found in this project's e2e config."
         : !target?.bundleId ? `Target "${target?.name}" declares no bundleId, so there is no app to launch.`
@@ -1027,7 +1027,7 @@ function StepList({ steps, onHoverStep, onUnhoverStep, onFocusStep }: {
       <StepMenu step={step} index={index} />
       <Button type="button" variant="ghost" size="icon-xs" aria-label={`Remove step ${index + 1}`} onClick={() => testRecorder.removeStep(step.id)}><XIcon /></Button>
     </li>)}
-    {steps.length === 0 && <li className="rounded-lg border border-dashed px-3 py-5 text-center text-muted-foreground">No steps yet. Right-click an element in the mirror to add one.</li>}
+    {steps.length === 0 && <li className="rounded-lg border border-dashed px-3 py-5 text-center text-muted-foreground">还没有步骤。在镜像画面中右键元素即可添加。</li>}
   </ol>;
 }
 

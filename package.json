@@ -19,7 +19,6 @@
     "README.md",
     "README.zh.md",
     "LICENSE",
-    "docs",
     "vendor"
   ],
   "dependencies": {
@@ -61,8 +60,6 @@
   "homepage": "https://github.com/supperzl/dsh-sim",
   "scripts": {
     "check": "node scripts/check.mjs",
-    "test:runtime": "node scripts/test-localize-runtime.mjs",
-    "build:release": "node scripts/build-release.mjs",
     "prepack": "node scripts/localize-runtime.mjs",
     "build:panel": "node scripts/build-panel.mjs",
     "build": "node scripts/build-panel.mjs"

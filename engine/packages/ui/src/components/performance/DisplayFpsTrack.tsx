@@ -28,7 +28,7 @@ export function DisplayFpsTrack({ samples, phase, error, supported, platform, zo
     { label: "Min", value: minimum },
   ];
   let message = "Start monitoring to measure display updates.";
-  if (supported === false) message = "Display FPS requires a physical iOS paired device.";
+  if (supported === false) message = "显示帧率需要已配对的 iOS 真机。";
   else if (phase === "connecting") message = "Connecting to the display counters…";
   else if (phase === "recording") message = "Waiting for a complete FPS interval…";
   if (error) message = error;

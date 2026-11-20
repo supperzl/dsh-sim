@@ -62,7 +62,7 @@ export const CpuTrack: React.FC<CpuTrackProps> = ({
     { label: 'Avg / Max', value: `${average} / ${maximum}` },
     { label: 'Threads', value: String(series.threadCount) },
   ];
-  let message = 'Open an app on the selected device to measure CPU. 100% = one core.';
+  let message = '在所选设备上打开应用以测量 CPU。100% = 单核。';
   if (phase === 'connecting') message = 'Connecting to the app’s CPU counters…';
   else if (phase === 'recording' && series.current === null) message = 'Measuring CPU usage…';
   if (error) message = error;

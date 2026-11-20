@@ -287,8 +287,8 @@ export function AppFlowView({ panel }: { panel: AppFlowPanel }) {
       {state.prompt.kind === "review" && <Button variant="secondary" size="sm" onClick={() => void panel.resolvePrompt("override")}>仍然继续</Button>}
       <Button size="sm" onClick={() => void panel.resolvePrompt("continue")}>Continue</Button></div>}
     {state.error && <div role="alert" className="border-b border-destructive/30 bg-destructive/10 px-4 py-2 text-sm text-destructive">{state.error}</div>}
-    <div className="min-h-0 flex-1 overflow-hidden">{!state.projectPath ? <Empty title="选择项目" detail="Pick the React Native project folder to build or view its flow."
-      action={<Button onClick={() => void panel.pickProject()} disabled={state.pickingProject}>{state.pickingProject ? <Loader2 className="animate-spin" /> : null}{state.pickingProject ? "Waiting for the folder…" : "Choose project folder"}</Button>} />
+    <div className="min-h-0 flex-1 overflow-hidden">{!state.projectPath ? <Empty title="选择项目" detail="选择 React Native 项目目录以构建或查看流程。"
+      action={<Button onClick={() => void panel.pickProject()} disabled={state.pickingProject}>{state.pickingProject ? <Loader2 className="animate-spin" /> : null}{state.pickingProject ? "Waiting for the folder…" : "选择项目目录"}</Button>} />
       : empty ? <Empty title="暂无 App Flow" detail="为此应用中的每个屏幕和导航边构建可视化图谱。" action={<Button onClick={start}
           disabled={!state.available || state.agentStartPending}>Start Building App Flow</Button>} />
       : state.result && view === "ui-states" ? <AppFlowUiStatesGraph panel={panel} projectId={state.projectId} nodes={state.result.nodes} projectPath={isRunning ? undefined : state.projectPath}

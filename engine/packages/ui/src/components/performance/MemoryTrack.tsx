@@ -32,7 +32,7 @@ export function MemoryTrack({ samples, platform, phase, error, zoomState, onZoom
   const title = platform === "android"
     ? "Main process memory: RSS (resident set size). Shared resident pages are counted in full. 1 MiB = 1,048,576 bytes."
     : "Main process memory: physical footprint, including compressed memory. 1 MiB = 1,048,576 bytes.";
-  let message = "Open an app on the selected device to measure memory.";
+  let message = "在所选设备上打开应用以测量内存。";
   if (phase === "connecting") message = "Connecting to the app’s memory counters…";
   else if (phase === "recording") message = "Measuring memory usage…";
   if (error) message = error;
