@@ -22,13 +22,14 @@ const contentSizeOptions = contentSizes.map((value, index) => ({ value, label: t
 const fontScaleOptions = (current: number) => [...new Set([0.7, 0.85, 1, 1.15, 1.3, 1.5, 1.75, 2, current])].sort((a, b) => a - b)
   .map(value => ({ value: String(value), label: `${Math.round(value * 100)}%${value === 1 ? " (Default)" : ""}`, short: `${Math.round(value * 100)}%` }));
 const locationPresets = [
-  { value: "cupertino", city: "Cupertino", label: "Cupertino, CA", latitude: 37.3349, longitude: -122.009 },
-  { value: "san-francisco", city: "San Francisco", label: "San Francisco, CA", latitude: 37.7749, longitude: -122.4194 },
-  { value: "new-york", city: "New York", label: "New York, NY", latitude: 40.7128, longitude: -74.006 },
-  { value: "london", city: "London", label: "London, UK", latitude: 51.5074, longitude: -0.1278 },
-  { value: "berlin", city: "Berlin", label: "Berlin, Germany", latitude: 52.52, longitude: 13.405 },
-  { value: "tokyo", city: "Tokyo", label: "Tokyo, Japan", latitude: 35.6762, longitude: 139.6503 },
-  { value: "sydney", city: "Sydney", label: "Sydney, Australia", latitude: -33.8688, longitude: 151.2093 },
+{ value: "beijing", city: "北京", label: "北京", latitude: 39.9042, longitude: 116.4074 },
+  { value: "shanghai", city: "上海", label: "上海", latitude: 31.2304, longitude: 121.4737 },
+  { value: "guangzhou", city: "广州", label: "广州", latitude: 23.1291, longitude: 113.2644 },
+  { value: "shenzhen", city: "深圳", label: "深圳", latitude: 22.5431, longitude: 114.0579 },
+  { value: "hangzhou", city: "杭州", label: "杭州", latitude: 30.2741, longitude: 120.1551 },
+  { value: "chengdu", city: "成都", label: "成都", latitude: 30.5728, longitude: 104.0668 },
+  { value: "wuhan", city: "武汉", label: "武汉", latitude: 30.5928, longitude: 114.3055 },
+  { value: "xian", city: "西安", label: "西安", latitude: 34.3416, longitude: 108.9398 },
 ];
 type Location = { latitude: number; longitude: number };
 const presetFor = (location: Location) => locationPresets.find(entry => entry.latitude === location.latitude && entry.longitude === location.longitude);

@@ -13,6 +13,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'))
 const dist = join(root, 'dist')
 
+execFileSync(process.execPath, [join(root, 'scripts', 'localize-runtime.mjs')], { stdio: 'inherit' })
 execFileSync(process.execPath, [join(root, 'scripts', 'check.mjs')], { stdio: 'inherit' })
 rmSync(dist, { recursive: true, force: true })
 mkdirSync(dist, { recursive: true })

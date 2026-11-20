@@ -1,6 +1,6 @@
 {
   "name": "dsh-sim",
-  "version": "0.1.35",
+  "version": "0.1.36",
   "description": "A native simulator panel for DeepSeek Harness: a per-conversation sidebar tab streaming iOS Simulator and Android devices with H.264 + WebCodecs and a device picker.",
   "type": "module",
   "main": "lib/index.js",
@@ -60,7 +60,12 @@
   },
   "homepage": "https://github.com/supperzl/dsh-sim",
   "scripts": {
-    "check": "node scripts/check.mjs"
+    "check": "node scripts/check.mjs",
+    "test:runtime": "node scripts/test-localize-runtime.mjs",
+    "build:release": "node scripts/build-release.mjs",
+    "prepack": "node scripts/localize-runtime.mjs",
+    "build:panel": "node scripts/build-panel.mjs",
+    "build": "node scripts/build-panel.mjs"
   },
   "engines": {
     "node": ">=22"
