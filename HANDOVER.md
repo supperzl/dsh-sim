@@ -92,11 +92,30 @@ pgrep -fl 'core-device display serve-web'
 - 服务器端日志（`[mobile-dev:ios-mirror] …`）走引擎 stderr，被插件的
   `device_runtime.js` 转发到 DSH 日志。
 
-## 五、还没做的事
+## 五、分发（0.2.0 起）
+
+- `sim_setup` 工具（`lib/host/setup.js`）：检查系统/Node/内置引擎补丁/原生组件签名/python3/pymobiledevice3/Xcode/真机，
+  `action:"install"` 会自动把 pymobiledevice3 装进 `~/.dsh/cache/dsh-sim/venv` 并重签失效的 Mach-O；
+  `sim_devices` 首次遇到"系统能看到 iPhone 但 pymobiledevice3 没装"时也会自动装一次。
+- 签名：插件本体不需要签名/公证；内置 17 个 Mach-O 是 ad-hoc 签名并在启动时校验/重签；真机镜像与点击**不需要**
+  Apple 开发者账号（走 CoreDevice，不是 XCTest）。
+- `scripts/fix-runner-signing.mjs`：打包前把内置 XCTest runner 恢复成上游签名（bundle id 走环境变量、team 上游默认），
+  避免把本机 team 发给别人；`npm run fix:runner` 可写回本机身份（只有 agent-device 的 `device_*` 需要）。
+- package.json：0.2.0、`engines.node >=22.19` + `engines.dsh >=0.2.2-rc.3`、`os/cpu` 限 darwin/arm64、files 不含旧版备份。
+- 打好的包：`npm pack` → `dsh-sim-0.2.0.tgz`（33 MB，956 files，无 dist.0.1.183、无本机 team id）。
+- 发布（需要用户的 npm 账号/2FA，代理没有凭据）：
+  ```bash
+  cd ~/dsh-sim && npm version patch && npm publish        # npm 包名 dsh-sim 属于 supperzl
+  ```
+  用户安装：DSH 插件页装 `dsh-sim@0.2.0`，或 profile `dependencies` + `dsh.profile.bundles` 加 `dsh-sim`。
+  详见 `docs/INSTALL.md`。
+
+## 六、还没做的事
 
 - 中文面板：当前 `vendor/runtime/dist` 仍是 0.1.189 **英文原版**面板；中文化脚本
   （`scripts/localize-runtime.mjs` 只覆盖补丁）和 `engine/packages` 里的中文源码还没有
   重新构建进 dist。需要时 `node scripts/build-panel.mjs` 从 `engine/` 重建并重新打补丁。
+- npm 发布与 GitHub Release 附件：需要用户自己的 npm 凭据（2FA），本次只做到打包验证。
 - 真机文本输入：镜像只有触摸 HID，`pymobiledevice3 universal-hid-service type` 会抢显示流，
   目前 `sim_text` 在真机上明确报“不支持”。
 - 物理 iPhone 旋转：CoreDevice 没有对应能力，`sim_rotate` 明确报不支持。
