@@ -129,17 +129,37 @@ export function createSimulatorPanel(
     return physicalIos ? selected?.state === "connected" : selected?.state === "Booted";
   }
 
+  /** A physical iPhone reaches 主页 through CoreDevice's HID button, not the stream. */
+  const physicalIosSelected = () => selected?.kind === "physical" && selected.platform === "ios";
+
   function deviceButtons() {
     const state = annotations.getSnapshot();
-    const unsupported = selected?.kind === "physical" && selected.platform === "ios";
-    const active = ready && stream != null && !unsupported && !stream.physicalIos && !inputBlocked && !busy && toolsAvailable && !state.selecting && !state.draft;
+    const physicalIos = physicalIosSelected();
+    const active = ready && stream != null && !inputBlocked && !busy && toolsAvailable && !state.selecting && !state.draft;
     const buttons = root.querySelectorAll<HTMLButtonElement>("[data-button]");
     buttons.forEach(button => {
-      const label = button.dataset.button === "home" ? "主页" : "应用切换";
-      button.disabled = !active;
+      const home = button.dataset.button === "home";
+      const label = home ? "主页" : "应用切换";
+      // 主页 works on a physical iPhone (CoreDevice HID button); 应用切换 needs a
+      // gesture menu the panel cannot drive there yet.
+      const unsupported = physicalIos && !home;
+      button.disabled = !active || unsupported || (physicalIos === false && stream?.physicalIos === true);
       button.dataset.unsupported = unsupported ? "true" : "false";
       button.title = unsupported ? `${label} 在 iPhone 真机上不可用` : label;
     });
+  }
+
+  /** Asks the DSH plugin to press a hardware button on the physical iPhone. */
+  async function pressPhysicalKey(name: string) {
+    if (!selected) return;
+    const host = new URLSearchParams(window.parent.location.search).get("host");
+    if (host === null) return;
+    try {
+      await fetch(`${host}/_dsh/dsh-sim/key`, {
+        method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ name, udid: selected.udid }),
+      });
+    } catch { /* the panel reports nothing else for a missed button */ }
   }
 
   function send(message: StreamMessage) {
@@ -1073,7 +1093,11 @@ export function createSimulatorPanel(
   });
   element("start-device").addEventListener("click", () => { void action(start); });
   root.querySelectorAll<HTMLButtonElement>("[data-button]").forEach(button => {
-    button.addEventListener("click", () => { send({ type: "button", button: button.dataset.button === "home" ? "home" : "app-switcher" }); });
+    button.addEventListener("click", () => {
+      const action = button.dataset.button === "home" ? "home" : "app-switcher";
+      if (physicalIosSelected() && action === "home") { void pressPhysicalKey("home"); return; }
+      send({ type: "button", button: action });
+    });
   });
   screenshotButton.addEventListener("click", () => { void action(async () => {
     if (!selected || !selectedDeviceConnected() || !panelContext.canAttachScreenshots) return;
