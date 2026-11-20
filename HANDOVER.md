@@ -1,121 +1,111 @@
-# dsh-sim 交接文档（2026-11-20 16:30）
+# dsh-sim 交接文档（2026-11-20 17:20 更新：真机镜像问题已修复）
 
 仓库：`/Users/leon.zhao/dsh-sim`（GitHub supperzl/dsh-sim，分支 main）
 DSH 以源码 link 安装本目录；插件名 dsh-sim，侧栏 tab「模拟器」。
-用户当前诉求：**面板画面必须和 iPhone 真机实时同步**（用户说手机一直解锁亮屏，不是手机问题）。
 
-## 一、项目结构现状
+## 一、问题与结论
+
+**现象**：iPhone 真机在引擎面板里不更新，面板显示
+`Screen unavailable — The iPhone has not produced a screen frame. Unlock it and retry.`，
+但手机解锁亮屏、`pymobiledevice3` 截图正常；更早时面板曾显示帧但停在 Agent Device
+Runner（XCTest runner 界面）。
+
+**根因（已实测确认）**：真机屏幕的 CoreDevice 显示流只能有一个消费者。
+
+1. `pymobiledevice3 … developer core-device display serve-web`（旧代码里真机
+   `sim_start` 会起它）一旦启动，就会把显示流从引擎镜像手里抢走：镜像当场掉到 0 帧，
+   而且**永不再恢复**（实测：抢走后 addon 的 `read()` 只返回空批次，`video_packets`
+   冻结，重发 FIR 关键帧请求也没用）。
+2. 引擎的镜像服务（`ios-mirror-service.mjs`，detached 单例）对一台 iPhone 只持有一个
+   capture；capture 被抢走后 watchdog 之前没有任何超时，pump 一直空转，所有后续订阅者
+   （面板）都拿不到帧 → 面板 15s 后报上面那句提示。这个僵尸 capture 会活到服务进程被
+   杀为止，所以换引擎、重开面板都救不回来。
+3. 旧代码里真机点按走 agent-device 的 XCTest runner：每次点按都要 `device_open` →
+   前台拉起 runner → `device_click` → `device_close`。runner 一起一落既抢前台（面板看到
+   的就是 runner），又要重新 build/install（实测可卡 1~2 分钟）。
+
+**修复（已落地并实测）**：
+
+| 位置 | 改动 |
+| --- | --- |
+| `lib/host/ios_device.js` | 删除 serve-web 串流类；只保留设备枚举、截图和 `hid button` 按键 |
+| `lib/host/device_runtime.js` | 启动引擎时清理残留 serve-web；新增 `readResource`、每次写入的 generation、按 dist 精确清理旧引擎、`DSH_SIM_RUNTIME_DIST` 覆盖、面板活跃标记 |
+| `lib/host/ios_mirror.js`（新） | 真机输入的唯一边界：每个手势开一个镜像会话并等关键帧；`preparePhysicalMirror` 探活 + 修复 + epoch；`repairMirror` 重启镜像服务 |
+| `lib/host/manager.js` | 真机 start 只登记 + 创建 mirror；touch/scroll 走镜像 HID；home/lock/volume 走 `hid button`；文本/旋转明确报不支持；面板活跃时用镜像输入，否则用 pymobiledevice3 universal-hid |
+| `lib/host/routes.js` | `/mobile-panel` 先探活镜像，返回 `&mirror=<epoch>`；epoch 变化会让侧栏重新加载 iframe |
+| `scripts/localize-runtime.mjs` | 运行期补丁：CSP 放行、输入等待新帧、**镜像 watchdog**（空批次 + 已请求关键帧 ≥6 次即报错，让服务能自愈而不是僵死） |
+| `HANDOVER.md` | 本文 |
+
+> 注意：`vendor/runtime` 是生成目录。重建方式 `node scripts/localize-runtime.mjs`
+> （`npm run build` / `prepack` 也会跑）；`dist.0.1.183` 只是旧版备份。
+
+## 二、真机现在的输入/画面通路
 
 ```
-lib/                     DSH 插件宿主
-  index.js               注册工具 + 挂路由
-  tools.js               29 个 sim_* 工具
-  tool_locale.js         工具/参数中文描述
-  host/manager.js        会话流管理（iOS 模拟器 / Android / 真机 iPhone）
-  host/engine_device.js  sim_* → 内置引擎 device_* 的桥接（真机输入走这里）
-  host/device_runtime.js 启动内置引擎（MCP server），返回面板 URL；killStaleEngines
-  host/ios_device.js     真机 iOS：pymobiledevice3 截图 + (旧) serve-web 流
-  host/routes.js         /_dsh/dsh-sim/* 路由
-  client.js              侧栏 tab（当前是 MobileDevTab：iframe 引擎面板 URL）
-engine/                  上游 monorepo 源码（面板 UI + 服务端），已删上游 CI/agent 等
-vendor/runtime/dist/     实际运行的引擎（当前是 Codex 缓存里的 0.1.189 原版 dist）
-vendor/runtime/dist.0.1.183/  上一版备份（0.1.183，曾被我们构建/改过）
-skills/                  我们自己的技能：simulator / sim-testing / sim-setup / sim-e2e
-locale/                  插件 locale（en/zh 元数据）
-scripts/                 build-panel.mjs、localize-runtime.mjs、check.mjs
-~/.dsh/dsh-sim/runtime.env  引擎环境变量（签名用，见下）
+面板画面：引擎 HEVC 镜像（唯一显示流消费者）
+点按/滑动：engine mobile_ios_mirror_session → 读一帧关键帧 → mobile_ios_mirror_input
+           （每个手势一个短会话，约 0.5~1.5s；会话在请求结束后约 1s 失效，
+             所以一个手势的所有输入都在同一个会话里发完）
+主页/锁屏/音量：pymobiledevice3 developer core-device hid button <name>
+截图：pymobiledevice3 developer core-device screen-capture screenshot（不干扰镜像）
+无面板时：pymobiledevice3 developer core-device universal-hid-service tap/drag
+          （它会占用显示流，所以只在 panelServedRecently() 为 false 时使用）
 ```
 
-运行中的引擎：`vendor/runtime/dist/server.mjs`（0.1.189，单个实例；有 Baguette、ios-mirror-service 子进程）。
-面板 URL 获取：`POST http://127.0.0.1:<DSH_GUI_PORT>/_dsh/dsh-sim/mobile-panel`，返回 `{"ok":true,"url":"http://127.0.0.1:<port>/<token>/?tool=mobile_open_simulator"}`。
+坐标：工具层是 0..1 归一化（左上原点），镜像输入按逻辑点 `402×874`（= 1206×2622 / 3）；
+`hid button` 只认名字。
 
-## 二、最近做过的操作（按时间）
+## 三、已验证（2026-11-20 17:00–17:20）
 
-1. **真机签名打通**
-   - 修改 runner 工程（`vendor/runtime/dist/agent-device/.../AgentDeviceRunner.xcodeproj/project.pbxproj`）：
-     - `DEVELOPMENT_TEAM` 从上游 `2S799L9W4M` → 用户团队 `4588W2ZBP4`；
-     - bundle id 从 `com.callstack.agentdevice.runner` → `com.leon.dshsim.agentdevice.runner`（UITest target 同步 `.uitests.xctrunner`）；
-   - `~/.dsh/dsh-sim/runtime.env`（插件启动引擎时注入）：
-     ```
-     AGENT_DEVICE_IOS_TEAM_ID=4588W2ZBP4
-     AGENT_DEVICE_IOS_SIGNING_IDENTITY="Apple Development: 15808505050@qq.com (7NBF43J4GY)"
-     AGENT_DEVICE_IOS_RUNNER_APP_BUNDLE_ID=com.leon.dshsim.agentdevice.runner
-     AGENT_DEVICE_IOS_RUNNER_TEST_BUNDLE_ID=com.leon.dshsim.agentdevice.runner.uitests.xctrunner
-     ```
-   - 结果：`xcodebuild build-for-testing` 成功，runner 装到真机；`device_home` 返回 `Home`，`device_click` 返回 `Tapped (201, 437)`。
+- 面板在 DSH 桌面端（Electron 44 / Chrome 152）实时出帧：面板时钟与手机一致；
+- `sim_tap(0.58, 0.709)` 让手机打开「设置」，面板同步显示设置页；
+- `sim_swipe` 上下滑动设置列表，手机与面板同步（滑动分 4 组、间隔 25ms 发送，否则 iOS
+  会当成零位移 fling 丢掉）；
+- `sim_key home` 1.2s 回到桌面（HID 按键，不拉 runner）；
+- 无面板时 `sim_tap` 走 universal-hid，约 1.7~2.1s；
+- 镜像被抢/僵死时：`/mobile-panel` 探活失败 → 重启镜像服务 → epoch+1 → 侧栏重载面板；
+- 面板自带的重连（约 10s）也能在服务重启后自己恢复。
 
-2. **真机输入路径反复调整**
-   - 先走 serve-web HID（真机动，面板不动）；
-   - 再改走引擎 `device_home/device_gesture/device_swipe`（错误的 tap API，已改 `device_click {target:{kind:'point'}}`；点坐标 = 归一化 × (402,874)）；
-   - 每个工具动作：`device_open` → 动作 → `device_close`（finally），避免占用设备；遇 DEVICE_IN_USE 会 `pkill agent-device daemon` 后重试；
-   - 当前 `manager.start`（真机）**不再启动 serve-web 流**，只登记 entry；`sim_screenshot`（真机）用 `pymobiledevice3 developer core-device screen-capture screenshot --udid`。
-
-3. **引擎切换**
-   - 最初用 0.1.183 dist（我们改过 CSP、签名）；
-   - 后来整包换成 **0.1.189 原版 dist**（用户 Codex 同版本），重新打了 CSP 补丁和 runner 签名补丁；
-   - 面板由源码重建过（中文化），后因启动失败/版本不一致回退到原版。
-
-4. **中文化**
-   - 面板文案在 `engine/packages/mcp-app` 源码里改过（约 480 处 + 281 条句子），源码构建出过中文面板；
-   - 但当前运行的 0.1.189 原版面板是**英文**；
-   - `vendor/runtime/dist/server.mjs` 有中文注入脚本（部分词条），但不完整/未验证。
-
-## 三、当前问题（核心）
-
-**真机画面在面板里不更新**。具体现象：
-
-- 手机是解锁、亮屏的（用户确认）；
-- 我们的 `sim_screenshot`（pymobiledevice3 CoreDevice 截图）立刻能拿到 1206×2622、时间 16:23/16:25 的主屏截图；
-- 但引擎面板显示：**“Screen unavailable — The iPhone has not produced a screen frame. Unlock it and retry.”**；
-- 更早（16:20 左右）面板曾显示帧，但画面停在 **Agent Device Runner**（XCTest runner 应用界面），时间定格，之后不再更新；
-- 现象与输入方式无关：面板自己滑动时手机在动、面板画面不动；工具操作时也一样。
-
-已排查/排除：
-- 手机锁屏（用户确认一直解锁亮屏）；
-- 面板缓存（多次重开面板 URL、加 `&v=` 参数刷新）；
-- 重复引擎（已加 `killStaleEngines`，当前只剩 1 个 server）；
-- 设备被会话独占（动作后 `agent-device device status` 显示 “No local device claims found”）；
-- native addon 加载（`ios-mirror/darwin-arm64.node` 在 Codex node 和系统 node 下都能 require）。
-
-**怀疑方向**（交给新会话验证）：
-1. **两个 CoreDevice display 消费者冲突**：之前 `sim_start` 会起 pymobiledevice3 serve-web（CoreDevice display 服务），与引擎的 ios-mirror 抢同一路显示流；现已移除 serve-web，但面板仍显示 no frame —— 可能引擎的 mirror 会话本身没起来（需要看 `ios-mirror-service` 日志/引擎 stderr）。
-2. **XCTest runner 抢占前台**：`device_open`（agent-device）会把 AgentDeviceRunner 拉起到前台，引擎镜像可能跟丢；0.1.183 时面板显示的就是 runner 界面。Codex 里同样的 runner 却能正常镜像，需要对比 Codex 的启动参数/流程。
-3. **0.1.189 版本差异**：换 0.1.189 后从“帧停在 runner”变成“完全 no frame”，可能是 0.1.189 的 mirror 启动方式不同（例如需要 devicectl tunnel/DTX、或 Screen Recording 权限）。
-4. 需要看引擎日志：`vendor/runtime/dist/server.mjs` 的 stderr（插件里通过 `device_runtime.js` 的 logger 输出）、`ios-mirror-service.mjs` 的日志、以及 `~/.agent-device/apple-runner/...` 的 runner 日志。
-
-## 四、当前可用的东西
-
-- `sim_devices`：会列出 `physical`（朴圣佑's iPhone / 00008150-000111563A20401C / iOS 27.2.1）；
-- `sim_start`（真机）：只登记 entry（无 serve-web），返回 running/physical；
-- `sim_screenshot`（真机）：pymobiledevice3 screen-capture，能出图（1206×2622）；
-- `sim_key home` / `sim_tap` / `sim_swipe`（真机）：走引擎 runner，能执行（返回 Home / Tapped / fling 回执）；
-- Android：scrcpy 流、元素级工具、日志全部正常（用户确认 Android 没问题）；
-- iOS 模拟器：serve-sim 流正常，元素级工具返回 supported:false。
-
-## 五、关键命令
+## 四、排障速查
 
 ```bash
-# 面板 URL（DSH_GUI_PORT 见运行上下文）
+# 面板 URL（第二个字段 mirror 是 epoch）
 curl -s -X POST -H 'Origin: http://127.0.0.1:<PORT>' -H 'Content-Type: application/json' \
   -d '{}' http://127.0.0.1:<PORT>/_dsh/dsh-sim/mobile-panel
 
-# 面板健康
-curl -s -o /dev/null -w '%{http_code}\n' '<panel-url>'
+# 引擎 / 镜像服务进程
+pgrep -fl 'vendor/runtime/dist/server.mjs'
+pgrep -fl 'ios-mirror-service'
 
-# 引擎进程
-pgrep -fl '[v]endor/runtime/dist'
+# 显示流是否被别的进程抢走（有输出就是有残留，必须杀掉）
+pgrep -fl 'core-device display serve-web'
 
-# 设备占用
-cd ~/dsh-sim/vendor/runtime/dist/agent-device/node_modules/agent-device
-node bin/agent-device.mjs device status --platform ios --udid 00008150-000111563A20401C
+# 真机截图（不干扰镜像）
+~/.dsh/cache/dsh-sim/venv/bin/pymobiledevice3 developer core-device screen-capture \
+  screenshot /tmp/p.png --udid <UDID>
 
-# 上次引擎工具结果
-cat /tmp/dsh-sim-engine-last.json
+# 插件热重载（改 lib/*.js 后不用重启 DSH）
+#   用 plugin_manager: set_plugin include:dsh-sim enabled=false，再 enabled=true
 ```
 
-## 六、用户明确要求
+- 镜像服务僵死时可以直接 `pkill -9 -f ios-mirror-service.mjs`，下次打开面板会自动重建。
+- 服务器端日志（`[mobile-dev:ios-mirror] …`）走引擎 stderr，被插件的
+  `device_runtime.js` 转发到 DSH 日志。
 
-- 不要让用户测试/点页面，代理自己截图核对（手机截图 vs 面板截图 OCR 对比）；
-- 面板必须和真机画面实时同步；
-- 不出现 Mobile Dev 品牌，中文界面；
-- 交付可安装的插件（npm 包/目录），源码在仓库、构建命令可复现。
+## 五、还没做的事
+
+- 中文面板：当前 `vendor/runtime/dist` 仍是 0.1.189 **英文原版**面板；中文化脚本
+  （`scripts/localize-runtime.mjs` 只覆盖补丁）和 `engine/packages` 里的中文源码还没有
+  重新构建进 dist。需要时 `node scripts/build-panel.mjs` 从 `engine/` 重建并重新打补丁。
+- 真机文本输入：镜像只有触摸 HID，`pymobiledevice3 universal-hid-service type` 会抢显示流，
+  目前 `sim_text` 在真机上明确报“不支持”。
+- 物理 iPhone 旋转：CoreDevice 没有对应能力，`sim_rotate` 明确报不支持。
+- `lib/client.js` 里还留着早期自绘 HEVC 播放器（`/codec`、`/stream` 路由）的死代码，
+  当前 UI 只用 `MobileDevTab` 的 iframe；清理时注意别动 `/mobile-panel`。
+
+## 六、交付
+
+- 源码即交付：本目录作为 DSH profile 的 `link:` 依赖；
+- 静态检查：`node scripts/check.mjs`（13 个模块 + manifest）；
+- 打包：`node scripts/build-panel.mjs`（构建面板并修改 `vendor/runtime/dist`，产出
+  `dist/dsh-sim-<version>.tgz`）。

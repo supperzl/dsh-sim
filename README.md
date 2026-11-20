@@ -34,6 +34,27 @@ directory as a source link.
 - Chinese UI by default; the panel, tool descriptions and parameter schemas are
   localized in `engine/packages/*` and `lib/tool_locale.js`.
 
+## Physical iPhone
+
+The phone's screen has exactly one owner: the engine's HEVC mirror
+(`ios-mirror-service.mjs`). A second consumer of the CoreDevice display stream
+takes it away for good, which is why `pymobiledevice3 … display serve-web` was
+removed and why the plugin reaps leftovers of it.
+
+- video: the engine's panel, fed by the engine's mirror;
+- taps, drags and scrolling: the mirror's own HID service
+  (`mobile_ios_mirror_*`), one short-lived session per gesture, so the phone
+  stays on the app the user is looking at — no XCTest runner window;
+- home, lock and volume: `pymobiledevice3 developer core-device hid button`
+  (the separate HID button service);
+- before the sidebar gets a panel URL the plugin probes the mirror
+  (`preparePhysicalMirror`), replaces a mirror that cannot produce a frame and
+  bumps the `mirror` epoch in the URL, which reloads a tab that was left on the
+  broken stream.
+- no panel open: input uses `pymobiledevice3 … universal-hid-service`, which is
+  fast and leaves nothing half-open (it does take the display stream, so it is
+  only used when nothing is watching).
+
 ## Tools
 
 29 `sim_*` tools: devices, start/stop/status, screenshot, tap/swipe/text/key,
