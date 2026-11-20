@@ -64,11 +64,12 @@
   "homepage": "https://github.com/supperzl/dsh-sim",
   "scripts": {
     "check": "node scripts/check.mjs",
-    "prepack": "node scripts/localize-runtime.mjs && node scripts/fix-runner-signing.mjs",
+    "prepack": "node scripts/localize-runtime.mjs && node scripts/fix-runner-signing.mjs && node scripts/localize-panel.mjs",
     "build:panel": "node scripts/build-panel.mjs",
     "build": "node scripts/build-panel.mjs",
     "fix:runner": "node scripts/fix-runner-signing.mjs --apply",
-    "pack": "npm pack"
+    "pack": "npm pack",
+    "localize:panel": "node scripts/localize-panel.mjs"
   },
   "engines": {
     "node": ">=22.19",

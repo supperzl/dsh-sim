@@ -29,5 +29,6 @@ for (const file of ['app.html', 'browser-panel.html']) {
   cpSync(join(out, file), join(target, file))
   console.log(`installed ${file}`)
 }
+execFileSync(process.execPath, [join(root, 'scripts', 'localize-panel.mjs')], { stdio: 'inherit' })
 // Produce the installable plugin tarball (npm pack honours package.json files).
 execFileSync('npm', ['pack', '--pack-destination', join(root, 'dist')], { cwd: root, stdio: 'inherit' })
