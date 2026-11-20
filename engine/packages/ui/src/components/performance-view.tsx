@@ -38,7 +38,7 @@ export function PerformanceView({ panel }: { panel: PerformancePanel }) {
       </div>
       <span id="performance-status" role="status" className="shrink-0 text-[11px] text-muted-foreground capitalize">{phase === "recording" ? "Live" : phase}</span>
       {monitoring ? <Button variant="ghost" size="icon-sm" title="停止性能监控" aria-label="停止性能监控" onClick={() => void panel.disconnect()}><SquareIcon /></Button>
-        : <Button variant="ghost" size="icon-sm" title="Start performance monitoring" aria-label="Start performance monitoring" disabled={state.available === false || (state.fpsSupported === false && selectedRunning === false)} onClick={() => panel.show()}><ActivityIcon /></Button>}
+        : <Button variant="ghost" size="icon-sm" title="开始性能监控" aria-label="开始性能监控" disabled={state.available === false || (state.fpsSupported === false && selectedRunning === false)} onClick={() => panel.show()}><ActivityIcon /></Button>}
       <Popover>
         <PopoverTrigger asChild><Button variant="ghost" size="icon-sm" aria-label="性能设置" title="性能设置"><SlidersHorizontalIcon /></Button></PopoverTrigger>
         <PopoverContent align="end" className="w-[min(340px,calc(100vw-24px))] p-3">

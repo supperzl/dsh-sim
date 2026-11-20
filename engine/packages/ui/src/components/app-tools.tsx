@@ -105,7 +105,7 @@ function OpenUrl({ store, state, blocked }: SectionProps) {
 
 function permissionSummary(permissions: AppToolsState["permissions"]) {
   if (permissions === null) return "Loading…";
-  if (permissions.length === 0) return "None requested";
+  if (permissions.length === 0) return "未请求任何权限";
   const allowed = permissions.filter(entry => entry.state === "allow").length;
   const denied = permissions.filter(entry => entry.state === "deny").length;
   if (!allowed && !denied) return `${permissions.length} available`;
@@ -120,8 +120,8 @@ function Permissions({ store, state, blocked }: SectionProps) {
   const id = useId();
   const permissions = state.permissions;
   return <Disclosure section="permissions" state={state} store={store} icon={ShieldIcon} title="Permissions" summary={permissionSummary(permissions)}>
-    {permissions === null ? <p className="text-xs text-muted-foreground">Loading permissions…</p>
-      : permissions.length === 0 ? <p className="text-xs text-muted-foreground">This app does not request supported runtime permissions.</p>
+    {permissions === null ? <p className="text-xs text-muted-foreground">正在加载权限…</p>
+      : permissions.length === 0 ? <p className="text-xs text-muted-foreground">此应用未请求受支持的运行时权限。</p>
       : <div className="space-y-1">
         {permissions.map(entry => {
           const { label, icon: Icon } = permissionRows[entry.permission];
@@ -135,7 +135,7 @@ function Permissions({ store, state, blocked }: SectionProps) {
           </div>;
         })}
         <Button variant="ghost" size="xs" className="-ml-2 mt-1 text-muted-foreground" disabled={blocked} onClick={() => void store.setPermission("all", "ask")}><RotateCcwIcon />全部重置</Button>
-        {state.platform === "ios" && <p className="flex gap-1.5 text-xs text-muted-foreground"><InfoIcon aria-hidden className="mt-0.5 size-3 shrink-0" />The simulator doesn't report current choices. Highlights show what you set here.</p>}
+        {state.platform === "ios" && <p className="flex gap-1.5 text-xs text-muted-foreground"><InfoIcon aria-hidden className="mt-0.5 size-3 shrink-0" />模拟器不会报告当前选项。高亮项显示你在此处的设置。</p>}
       </div>}
   </Disclosure>;
 }
@@ -143,11 +143,11 @@ function Permissions({ store, state, blocked }: SectionProps) {
 function Language({ store, state, blocked }: SectionProps) {
   const current = state.language;
   const tags = current && !languageTags.some(tag => tag.toLowerCase() === current.toLowerCase()) ? [current, ...languageTags] : languageTags;
-  const items = [{ value: deviceLanguage, label: "Device language" }, ...tags.map(tag => ({ value: tag, label: languageLabel(tag) }))];
+  const items = [{ value: deviceLanguage, label: "设备语言" }, ...tags.map(tag => ({ value: tag, label: languageLabel(tag) }))];
   const selected = items.find(item => item.value.toLowerCase() === (current ?? deviceLanguage).toLowerCase())?.value ?? deviceLanguage;
-  return <Disclosure section="language" state={state} store={store} icon={LanguagesIcon} title="Language" summary={current === undefined ? "Loading…" : current ? languageLabel(current) : "Device language"}>
+  return <Disclosure section="language" state={state} store={store} icon={LanguagesIcon} title="Language" summary={current === undefined ? "Loading…" : current ? languageLabel(current) : "设备语言"}>
     <Select items={items} value={selected} disabled={blocked || current === undefined} onValueChange={value => { if (value !== null && value !== selected) void store.setLanguage(value === deviceLanguage ? null : value); }}>
-      <SelectTrigger aria-label="App language" className="w-full min-w-0"><SelectValue /></SelectTrigger>
+      <SelectTrigger aria-label="应用语言" className="w-full min-w-0"><SelectValue /></SelectTrigger>
       <SelectContent align="start" alignItemWithTrigger={false} className="w-(--anchor-width)"><SelectGroup>
         {items.map(item => <SelectItem key={item.value} value={item.value}>
           <span className="flex-1 truncate">{item.label}</span>
@@ -155,7 +155,7 @@ function Language({ store, state, blocked }: SectionProps) {
         </SelectItem>)}
       </SelectGroup></SelectContent>
     </Select>
-    <p className="mt-2 flex gap-1.5 text-xs text-muted-foreground"><InfoIcon aria-hidden className="mt-0.5 size-3 shrink-0" />Changing it relaunches the app. The device keeps its language.</p>
+    <p className="mt-2 flex gap-1.5 text-xs text-muted-foreground"><InfoIcon aria-hidden className="mt-0.5 size-3 shrink-0" />更改后会重新启动应用。设备会保持原有语言。</p>
   </Disclosure>;
 }
 
@@ -170,12 +170,12 @@ function PushNotification({ store, state, app, blocked }: SectionProps) {
     if (json === undefined) { void store.push(formPayload()); return; }
     try {
       const payload = payloadSchema.safeParse(JSON.parse(json));
-      if (!payload.success) throw new Error("Payload must be a JSON object.");
+      if (!payload.success) throw new Error("Payload 必须是 JSON 对象。");
       setJsonError("");
       void store.push(payload.data);
     } catch (error) { setJsonError(error instanceof Error ? error.message : String(error)); }
   };
-  return <Disclosure section="push" state={state} store={store} icon={BellIcon} title="Test notification">
+  return <Disclosure section="push" state={state} store={store} icon={BellIcon} title="测试通知">
     <form className="space-y-2" onSubmit={event => { event.preventDefault(); send(); }}>
       {json === undefined ? <>
         <Input aria-label="通知标题" placeholder="Title" value={title} onChange={event => setTitle(event.target.value)} />
@@ -184,7 +184,7 @@ function PushNotification({ store, state, app, blocked }: SectionProps) {
       {jsonError && <p className="text-xs text-destructive" role="alert">{jsonError}</p>}
       <div className="flex items-center justify-between gap-2">
         <Button type="button" variant="ghost" size="xs" className="-ml-2 text-muted-foreground" onClick={() => { setJsonError(""); setJson(json === undefined ? JSON.stringify(formPayload(), null, 2) : undefined); }}>
-          <BracesIcon />{json === undefined ? "Edit JSON" : "使用标题和正文"}
+          <BracesIcon />{json === undefined ? "编辑 JSON" : "使用标题和正文"}
         </Button>
         <Button type="submit" size="sm" disabled={blocked}><SendIcon />Send</Button>
       </div>
@@ -196,10 +196,10 @@ export function AppTools({ store }: { store: AppToolsStore }) {
   const state = useSyncExternalStore(store.subscribe, store.getSnapshot);
   const app = state.apps.find(entry => entry.bundleId === state.bundleId);
   const error = state.error && <p className="whitespace-pre-wrap text-xs text-destructive" role="alert">{state.error}</p>;
-  if (state.disabled) return <p className="py-2 text-muted-foreground">App tools work on running iOS simulators and Android devices.</p>;
+  if (state.disabled) return <p className="py-2 text-muted-foreground">应用工具可在运行中的 iOS 模拟器和 Android 设备上使用。</p>;
   if (!app) {
     return <div className="space-y-2 py-2" role="status">
-      {!state.error && <p className="text-muted-foreground">{state.loading ? "Loading apps…" : "此设备上未安装任何用户应用。"}</p>}
+      {!state.error && <p className="text-muted-foreground">{state.loading ? "正在加载应用…" : "此设备上未安装任何用户应用。"}</p>}
       {error}
     </div>;
   }

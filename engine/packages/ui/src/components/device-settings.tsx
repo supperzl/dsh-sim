@@ -17,7 +17,7 @@ import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 
 type Option = { value: string; label: string; short?: string };
 
-const textSizeLabels = ["特小", "Small", "Medium", "Large", "特大", "2× large", "3× large", "辅助功能中", "辅助功能大", "辅助功能特大", "Accessibility 2× large", "Accessibility 3× large"];
+const textSizeLabels = ["特小", "Small", "Medium", "Large", "特大", "2× large", "3× large", "辅助功能中", "辅助功能大", "辅助功能特大", "辅助功能 2 倍大", "辅助功能 3 倍大"];
 const contentSizeOptions = contentSizes.map((value, index) => ({ value, label: textSizeLabels[index], short: textSizeLabels[index].replace("Accessibility", "AX") }));
 const fontScaleOptions = (current: number) => [...new Set([0.7, 0.85, 1, 1.15, 1.3, 1.5, 1.75, 2, current])].sort((a, b) => a - b)
   .map(value => ({ value: String(value), label: `${Math.round(value * 100)}%${value === 1 ? " (Default)" : ""}`, short: `${Math.round(value * 100)}%` }));
@@ -93,11 +93,11 @@ function Pills({ label, value, options, onSelect }: { label: string; value: stri
 const speed = (kbps: number) => kbps >= 1000 ? `${kbps / 1000} Mbps` : `${kbps} kbps`;
 
 function describeNetwork(network: NetworkCondition | "custom", platform: "ios" | "android") {
-  if (network === "custom") return platform === "ios" ? { name: "Custom throttle", detail: "Pick a condition to replace it." } : { name: "Your own proxy", detail: "Remove it to simulate a slower network." };
+  if (network === "custom") return platform === "ios" ? { name: "自定义限速", detail: "选择一个条件来替换它。" } : { name: "使用自己的代理", detail: "移除它可模拟较慢的网络。" };
   const name = network === "normal" ? "全速" : network === "offline" ? "未连接" : `${speed(networkPresets[network].bandwidthKbps)} · ${networkPresets[network].latencyMs} ms`;
   // Baguette injects conditioning into apps as they launch; Android applies it right away.
-  if (platform === "ios") return { name, detail: "Applies to new app launches." };
-  return { name, detail: network === "normal" ? "Applies right away." : network === "offline" ? "Wi-Fi 和移动数据均已关闭。" : "本地开发服务器保持全速。" };
+  if (platform === "ios") return { name, detail: "在应用下次启动时生效。" };
+  return { name, detail: network === "normal" ? "立即生效。" : network === "offline" ? "Wi-Fi 和移动数据均已关闭。" : "本地开发服务器保持全速。" };
 }
 
 const networkOptions = networkConditions.map(condition => ({ value: condition, label: networkLabels[condition] }));
@@ -120,7 +120,7 @@ function NetworkGroup({ platform, network, store, appTools }: { platform: "ios" 
 }
 
 function describeLocation(location: Location | null | undefined, platform: "ios" | "android") {
-  if (location === undefined) return { name: "未从此面板设置", detail: platform === "ios" ? "The simulator doesn't report its location." : "选择一个要模拟的地点。" };
+  if (location === undefined) return { name: "未从此面板设置", detail: platform === "ios" ? "模拟器不会报告其位置。" : "选择一个要模拟的地点。" };
   if (location === null) return { name: "未模拟位置", detail: "选择一个要模拟的地点。" };
   return { name: presetFor(location)?.label ?? "自定义位置", detail: `${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}` };
 }
@@ -145,7 +145,7 @@ function LocationGroup({ platform, location, store }: { platform: "ios" | "andro
       {platform === "ios" && location !== null && <Button type="button" variant="ghost" size="xs" className="text-muted-foreground" onClick={() => { setCustomOpen(false); void store.change({ setting: "location", value: null }); }}>清除</Button>}
     </StatusCard>
     <div className="pt-1">
-      <Pills label="Simulated place" value={preset} options={placeOptions} onSelect={value => {
+      <Pills label="模拟地点" value={preset} options={placeOptions} onSelect={value => {
         if (value === "custom" || value === "") { setCustomOpen(value === "custom"); return; }
         const entry = locationPresets.find(item => item.value === value);
         setCustomOpen(false);

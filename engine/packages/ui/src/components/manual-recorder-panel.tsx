@@ -70,10 +70,10 @@ export function ManualRecorderPanel({ projectPath, title, store }: { projectPath
         onClick={() => void (finished ? store.dismiss() : store.cancel(projectPath))}>×</Button>
     </div>
     {recording.error && <div className="flex shrink-0 items-start gap-2 border-b border-border bg-amber-500/10 px-3 py-2 text-[10px] leading-snug text-amber-700 dark:text-amber-300">
-      <span aria-hidden>!</span><span className="min-w-0 flex-1">{recording.error}<div className="mt-0.5 opacity-80">The recording is still live — try another element, or scroll and try again.</div></span>
+      <span aria-hidden>!</span><span className="min-w-0 flex-1">{recording.error}<div className="mt-0.5 opacity-80">录制仍在进行 — 请尝试其他元素，或滚动后重试。</div></span>
       <Button variant="ghost" size="icon-xs" aria-label="忽略此错误" onClick={() => store.clearError()}>×</Button></div>}
     {finished ? <div className="flex min-h-0 flex-col gap-2 overflow-auto px-3 py-3">
-      <div className="text-xs font-medium">{recording.outcome?.replayVerified ? "Saved as a verified replay" : "已保存为命令列表"}</div>
+      <div className="text-xs font-medium">{recording.outcome?.replayVerified ? "已保存为经验证的重放" : "已保存为命令列表"}</div>
       {recording.outcome?.fallbackReason && <div className="text-[10px] leading-snug text-muted-foreground">{recording.outcome.fallbackReason}</div>}
       <pre className="max-h-40 overflow-auto rounded-md bg-muted p-2 text-[10px] leading-relaxed">{recording.outcome?.pathToReach.join("\n")}</pre>
       <div className="text-[10px] text-muted-foreground">应用会保持运行，因此录制通往下一屏幕的路径会立即开始。</div>
@@ -110,7 +110,7 @@ export function ManualRecorderPanel({ projectPath, title, store }: { projectPath
               title={`${describe(box.node)}\nThis element wraps others — the outline is its edge.`} onClick={() => choose(box.node)}
               className="absolute truncate rounded-[3px] border border-border/70 bg-background/85 px-1 text-[8px] leading-[12px] text-muted-foreground hover:border-primary hover:bg-primary/25 hover:text-foreground"
               style={{ left: box.left + 1, top: box.top + 1, maxWidth: Math.max(0, Math.min(box.width - 2, 110)), zIndex: box.z + boxes.length }}>{box.caption}</button> : null)}
-            {boxes.length === 0 && <div className="p-4 text-center text-[10px] text-muted-foreground">{starting ? "Waiting for the app…" : "此屏幕未上报任何元素。"}</div>}
+            {boxes.length === 0 && <div className="p-4 text-center text-[10px] text-muted-foreground">{starting ? "正在等待应用…" : "此屏幕未上报任何元素。"}</div>}
           </div>
           // The preview draws elements where the device puts them, which on a dense screen means
           // captions that overlap and small controls buried under big ones. The list is the same
@@ -119,13 +119,13 @@ export function ManualRecorderPanel({ projectPath, title, store }: { projectPath
             {boxes.map((box, index) => <button key={`${box.node.ref}:${index}`} type="button" disabled={locked} title={describe(box.node)}
               onClick={() => choose(box.node)}
               className={`flex items-center gap-2 px-2 py-1.5 text-left text-[10px] hover:bg-primary/15 disabled:opacity-50 ${selectedKey !== null && elementKey(box.node) === selectedKey ? "bg-primary/20" : ""}`}>
-              <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${box.addressable ? "bg-emerald-400" : "bg-amber-400"}`} title={box.addressable ? "Has an id or label — replays reliably" : "Position only — this step will not survive a layout change"} />
+              <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${box.addressable ? "bg-emerald-400" : "bg-amber-400"}`} title={box.addressable ? "有 ID 或标签 — 可稳定重放" : "仅位置 — 布局变化后此步骤将失效"} />
               <span className="min-w-0 flex-1 truncate">{box.caption || box.node.ref}</span>
               <span className="shrink-0 text-[9px] text-muted-foreground">{isTextInput(box.node) ? "field" : box.container ? "group" : "tap"}</span></button>)}
-            {boxes.length === 0 && <div className="p-4 text-center text-[10px] text-muted-foreground">{starting ? "Waiting for the app…" : "此屏幕未上报任何元素。"}</div>}
+            {boxes.length === 0 && <div className="p-4 text-center text-[10px] text-muted-foreground">{starting ? "正在等待应用…" : "此屏幕未上报任何元素。"}</div>}
           </div>}
         {locked && <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background/60 text-[10px] font-medium text-muted-foreground">
-          {saving ? "Saving…" : starting ? "Starting the app…" : "Waiting for the device…"}</div>}
+          {saving ? "Saving…" : starting ? "正在启动应用…" : "正在等待设备…"}</div>}
       </div>
       {selected && <div className="flex shrink-0 items-center gap-2 px-3 pb-2">
         <Input className="min-w-0 flex-1" autoFocus placeholder={`Type into ${selected.label ?? selected.identifier ?? "field"}`}
@@ -144,7 +144,7 @@ export function ManualRecorderPanel({ projectPath, title, store }: { projectPath
         <span aria-hidden>{showSteps ? "▾" : "▸"}</span>Steps
         <span className="ml-auto rounded-full bg-muted px-1.5 tabular-nums">{recording.steps.length}</span></button>
       {showSteps && <div className="max-h-28 shrink-0 overflow-auto px-3 pb-2 text-[10px] text-muted-foreground">
-        {recording.steps.length === 0 ? <span>The app launch is already recorded. Pick an element above to add the first step.</span>
+        {recording.steps.length === 0 ? <span>应用启动已录制。请在上方选择元素以添加第一步。</span>
           : recording.steps.map((step, index) => <div key={index} className="flex items-start gap-1.5 py-0.5" title={step.portable ? step.command : `${step.command} — recorded by position, so it will not survive a layout or device-size change`}>
             <span className="w-4 shrink-0 text-right tabular-nums opacity-60">{index + 1}</span>
             <span className={`shrink-0 ${step.portable ? "opacity-60" : "text-amber-600 dark:text-amber-400"}`} aria-hidden>{step.portable ? "·" : "!"}</span>
@@ -197,6 +197,6 @@ function describe(node: ManualSnapshotNode): string {
 
 function elementKey(node: ManualSnapshotNode): string { return node.identifier?.trim() || node.label?.trim() || node.value?.trim() || node.ref; }
 function statusCopy(status: string | null): string {
-  switch (status) { case "starting": return "Starting the app…"; case "acting": return "Sending the command…"; case "saving": return "Saving and verifying the replay…";
-    case "error": return "Recording failed"; default: return "Pick an element to record a step"; }
+  switch (status) { case "starting": return "正在启动应用…"; case "acting": return "正在发送命令…"; case "saving": return "正在保存并验证重放…";
+    case "error": return "录制失败"; default: return "选择元素以录制步骤"; }
 }

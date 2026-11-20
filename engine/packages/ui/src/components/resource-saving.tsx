@@ -15,8 +15,8 @@ export function ResourceSaving({ store }: { store: ResourceSavingStore }) {
     <PopoverTrigger asChild><Button variant="ghost" size="icon" disabled={state.disabled || state.busy} aria-label="资源节省" title={enabled ? "资源节省开启" : "资源节省关闭"} className={enabled ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"}><LeafIcon /></Button></PopoverTrigger>
     <PopoverContent side="top" align="end" className="w-72 space-y-3 p-4 text-sm" aria-label="资源节省">
       <div className="flex items-center justify-between gap-3"><label htmlFor={id} className="font-medium">保存资源</label><Switch id={id} checked={enabled} disabled={disabled} onCheckedChange={value => void store.change(value)} /></div>
-      <p className="text-xs text-muted-foreground">Reduce background services and memory use. Saved for this device and enabled by default.</p>
-      <p className="text-xs text-muted-foreground">{state.value?.restartRequired ? "Restart this device to apply the saved setting. Running apps will close." : state.value?.running ? "The saved setting was applied when this device started." : "Applies the next time this device starts."}</p>
+      <p className="text-xs text-muted-foreground">减少后台服务和内存占用。按设备保存，默认启用。</p>
+      <p className="text-xs text-muted-foreground">{state.value?.restartRequired ? "重启此设备以应用已保存的设置。运行中的应用将关闭。" : state.value?.running ? "已保存的设置已在此设备启动时生效。" : "此设备下次启动时生效。"}</p>
       {state.value?.restartRequired && <Button variant="outline" size="sm" disabled={disabled} onClick={() => void store.restartDevice()}><RotateCwIcon />重启后生效</Button>}
       {state.busy && <p className="text-xs text-muted-foreground" role="status">Applying…</p>}
       {state.error && <p className="text-xs text-destructive" role="alert">{state.error}</p>}

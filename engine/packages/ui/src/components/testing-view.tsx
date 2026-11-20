@@ -50,13 +50,13 @@ function TestingProjectPicker({ panel }: { panel: TestingPanel }) {
             </span>
           </span>
         </Button>)}
-        {state.projects.length === 0 && <p className="px-1.5 py-1 text-xs text-muted-foreground">No projects yet. Choose a folder holding an e2e.config.ts.</p>}
+        {state.projects.length === 0 && <p className="px-1.5 py-1 text-xs text-muted-foreground">尚无项目。请选择包含 e2e.config.ts 的文件夹。</p>}
         <Button type="button" variant="ghost" data-testing-project-browse disabled={state.pickingProject} className="h-auto min-h-7 justify-start rounded-md px-1.5 py-1 text-left font-normal" onClick={() => { setOpen(false); void panel.pickProject(); }}>
           <FolderOpenIcon />Choose another folder…
         </Button>
       </PopoverContent>
     </Popover>
-    {state.pickingProject && <span className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground" role="status"><LoaderCircleIcon className="animate-spin" />Choose a folder…</span>}
+    {state.pickingProject && <span className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground" role="status"><LoaderCircleIcon className="animate-spin" />选择文件夹…</span>}
   </div>;
 }
 
@@ -165,7 +165,7 @@ function TestingDraftPicker({ panel }: { panel: TestingPanel }) {
   }}>
     <PopoverTrigger asChild>
       <Button type="button" variant="outline" size="sm" data-testing-drafts className="min-w-0 max-w-64 shrink-0 justify-between gap-1.5 font-normal"
-        aria-label="Recordings and tests" title="尚未存储的内容，以及此项目包含的测试">
+        aria-label="录制与测试" title="尚未存储的内容，以及此项目包含的测试">
         <span className="flex min-w-0 items-center gap-1.5">
           {state.loadingDraft ? <LoaderCircleIcon className="shrink-0 animate-spin" /> : <HistoryIcon className="shrink-0" />}
           <span className="min-w-0 truncate">{label}</span>
@@ -173,7 +173,7 @@ function TestingDraftPicker({ panel }: { panel: TestingPanel }) {
         <ChevronDownIcon className="shrink-0 transition-transform" style={{ transform: open ? "rotate(180deg)" : undefined }} />
       </Button>
     </PopoverTrigger>
-    <PopoverContent align="start" className="flex max-h-(--radix-popover-content-available-height) w-max min-w-[min(var(--radix-popover-trigger-width),var(--radix-popover-content-available-width))] max-w-(--radix-popover-content-available-width) flex-col gap-1 overflow-y-auto p-1 [&_button:not(:disabled)]:cursor-pointer" aria-label="Recordings and tests">
+    <PopoverContent align="start" className="flex max-h-(--radix-popover-content-available-height) w-max min-w-[min(var(--radix-popover-trigger-width),var(--radix-popover-content-available-width))] max-w-(--radix-popover-content-available-width) flex-col gap-1 overflow-y-auto p-1 [&_button:not(:disabled)]:cursor-pointer" aria-label="录制与测试">
       <ListGroup label="未存储" count={state.drafts.length} open={unstoredOpen}
         attributes={{ "data-testing-group": "unstored" }} onToggle={() => setUnstoredOpen(value => !value)}>
         {state.drafts.map(draft => {
@@ -187,7 +187,7 @@ function TestingDraftPicker({ panel }: { panel: TestingPanel }) {
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate">{draftLabel(draft)}</span>
                   <span className="flex items-center gap-1 truncate text-xs text-muted-foreground">
-                    {draft.origin === "agent" ? <BotIcon className="size-3 shrink-0" aria-label="Recorded by an agent" /> : <UserIcon className="size-3 shrink-0" aria-label="Recorded by you" />}
+                    {draft.origin === "agent" ? <BotIcon className="size-3 shrink-0" aria-label="由智能体录制" /> : <UserIcon className="size-3 shrink-0" aria-label="由你录制" />}
                     {draft.stepCount} step{draft.stepCount === 1 ? "" : "s"}
                     {sinceLabel(draft.updatedAt) ? ` · ${sinceLabel(draft.updatedAt)}` : ""}
                   </span>
@@ -195,7 +195,7 @@ function TestingDraftPicker({ panel }: { panel: TestingPanel }) {
               </span>
             </Button>
             <ConfirmDelete attributes={{ "data-testing-draft-delete": draft.id }} disabled={agentRecording && selected}
-              title={selected ? "Delete this recording and clear the panel" : "删除此录制"}
+              title={selected ? "删除此录制并清空面板" : "删除此录制"}
               label={`Delete ${draftLabel(draft)}`}
               question={selected
                 ? `Delete “${draftLabel(draft)}” and clear the panel? Its ${draft.stepCount} step${draft.stepCount === 1 ? "" : "s"} cannot be brought back.`
@@ -203,7 +203,7 @@ function TestingDraftPicker({ panel }: { panel: TestingPanel }) {
               onConfirm={() => void panel.deleteDraft(draft.id)} />
           </span>;
         })}
-        {state.drafts.length === 0 && <p className="px-1.5 py-1 text-xs text-muted-foreground">Everything recorded here has been saved into the project.</p>}
+        {state.drafts.length === 0 && <p className="px-1.5 py-1 text-xs text-muted-foreground">此处录制的内容都已保存到项目中。</p>}
         <Button type="button" variant="ghost" data-testing-draft-new disabled={agentRecording}
           className="h-auto min-h-7 justify-start rounded-md px-1.5 py-1 text-left font-normal"
           title="保留屏幕上内容并开始一个空白流程。"
@@ -231,7 +231,7 @@ function TestingDraftPicker({ panel }: { panel: TestingPanel }) {
             </Button>
             <ConfirmDelete attributes={{ "data-testing-test-delete": stored.relativePath }}
               busy={state.deletingTest === stored.relativePath}
-              title="Delete this test from the project" label={`Delete ${stored.name}`}
+              title="从项目中删除此测试" label={`Delete ${stored.name}`}
               question={`Delete ${stored.relativePath} from the project? The file is removed and cannot be brought back from here.`}
               onConfirm={() => void panel.deleteTest(stored.relativePath)} />
           </span>;
@@ -262,10 +262,10 @@ export function TestingView({ panel, deviceApps }: { panel: TestingPanel; device
   // Why the recorder cannot start yet, in the order the user has to fix them.
   const blocker = !state.projectPath ? "选择一个项目进行录制。"
     : state.loadingProject ? ""
-      : state.targets.length === 0 ? "No targets found in this project's e2e config."
+      : state.targets.length === 0 ? "此项目的 e2e 配置中未找到目标。"
         : !target?.bundleId ? `Target "${target?.name}" declares no bundleId, so there is no app to launch.`
           : !booted ? "启动 iOS 模拟器或 Android 模拟器以对其进行录制。"
-            : !isRecordableDevice(device) ? "Recording works on an iOS simulator or an Android emulator, not a physical device."
+            : !isRecordableDevice(device) ? "录制适用于 iOS 模拟器或 Android 模拟器，不适用于真机。"
               : mismatch;
   return <section className="flex h-full min-h-0 flex-col gap-4 overflow-y-auto p-4 [&_button:not(:disabled)]:cursor-pointer" aria-label="测试">
     <header className="flex flex-wrap items-center gap-2 border-b pb-3">
@@ -279,7 +279,7 @@ export function TestingView({ panel, deviceApps }: { panel: TestingPanel; device
       <TestingDraftPicker panel={panel} />
       {/* Before the controls, so the `ml-auto` below has one thing to push away from and the
           status does not end up marooned past the right edge of the group. */}
-      {state.loadingProject && <span className="flex items-center gap-1 text-xs text-muted-foreground" role="status"><LoaderCircleIcon className="animate-spin" />Reading config…</span>}
+      {state.loadingProject && <span className="flex items-center gap-1 text-xs text-muted-foreground" role="status"><LoaderCircleIcon className="animate-spin" />正在读取配置…</span>}
       <TestingControls panel={panel} recordable={recordable} deviceId={deviceId} platform={platform} />
     </header>
 
@@ -372,11 +372,11 @@ function TestingControls({ panel, recordable, deviceId, platform }: { panel: Tes
           : <Button type="button" size="sm" variant="outline" data-testing-record disabled={!recordable}
             onClick={() => testRecorder.start(deviceId, platform)}><CircleIcon />录制</Button>}
     <Button type="button" size="sm" variant="outline" data-testing-run disabled={panelState.selectedTestPath ? !panel.canRunStored : !panel.canRun}
-      title="Save the test, then run it against this device. Recording stops: the runner needs the device to itself."
+      title="保存测试，然后在此设备上运行。录制将停止：运行器需要独占该设备。"
       onClick={() => void (panelState.selectedTestPath ? panel.runStoredTest() : panel.runTest())}>
       {panelState.running ? <LoaderCircleIcon className="animate-spin" /> : <FlaskConicalIcon />}Run test
     </Button>
-    {state.resolving && <span className="flex items-center gap-1 text-xs text-muted-foreground" role="status"><LoaderCircleIcon className="animate-spin" />Reading the screen…</span>}
+    {state.resolving && <span className="flex items-center gap-1 text-xs text-muted-foreground" role="status"><LoaderCircleIcon className="animate-spin" />正在读取屏幕…</span>}
   </div>;
 }
 
@@ -623,7 +623,7 @@ function SourceStepList({ source, mode, onEdit, onHoverLine }: {
           <SourceStepMenu source={source} step={step} index={index} mode={mode} onEdit={onEdit} editable={editable} />
           <Button type="button" variant="ghost" size="icon-xs" aria-label={`Remove step ${index + 1}`}
             {...{ [`${prefix}-remove`]: String(step.line) }} disabled={!editable}
-            title={editable ? "移除此步骤" : "Edit this multi-line call in Preview"}
+            title={editable ? "移除此步骤" : "在预览中编辑此多行调用"}
             onClick={() => onEdit(removeStoredStep(source, step.line))}><XIcon /></Button>
         </div>
       </li>;
@@ -659,7 +659,7 @@ function SourceStepMenu({ source, step, index, mode, onEdit, editable }: {
       onMouseEnter={() => setOpen(true)}><MoreHorizontalIcon /></Button></PopoverTrigger>
     <PopoverContent align="end" className="flex w-60 max-h-(--radix-popover-content-available-height) flex-col gap-1 overflow-y-auto p-1.5 [&_button:not(:disabled)]:cursor-pointer"
       role="menu" aria-label={`Step ${index + 1}`} onMouseEnter={hold} onMouseLeave={release}>
-      <MenuRow icon={<CopyIcon className="size-4 shrink-0 text-muted-foreground" />} title={editable ? "复制此步骤" : "Edit this multi-line call in Preview"}
+      <MenuRow icon={<CopyIcon className="size-4 shrink-0 text-muted-foreground" />} title={editable ? "复制此步骤" : "在预览中编辑此多行调用"}
         attributes={{ [`${prefix}-duplicate`]: String(step.line) }} disabled={!editable}
         onClick={() => { close(); onEdit(duplicateStoredStep(source, step.line)); }}>Duplicate</MenuRow>
       <Branch label={`Change command for step ${index + 1}`} width={STEP_COMMANDS_WIDTH} align="top" side="left"
@@ -670,7 +670,7 @@ function SourceStepMenu({ source, step, index, mode, onEdit, editable }: {
         {commands.length ? commands.map(command => <MenuRow key={command.id} title={`Change to ${command.label}`}
           attributes={{ [`${prefix}-command`]: command.id }}
           onClick={() => { close(); onEdit(changeStoredStepCommand(source, step.line, command.id)); }}>{command.label}</MenuRow>)
-          : <p className="px-2 py-1 text-xs text-muted-foreground">No compatible commands for this call. Edit it in Preview.</p>}
+          : <p className="px-2 py-1 text-xs text-muted-foreground">此调用没有兼容的命令。请在预览中编辑。</p>}
       </Branch>
     </PopoverContent>
   </Popover>;
@@ -700,7 +700,7 @@ function StoredTestPreview({ panel, source, path, loading }: { panel: TestingPan
           onClick={() => void panel.saveStoredTest()}><SaveIcon />Save</Button>
       </>}
     </div>
-    {loading ? <p className="flex items-center gap-1 text-xs text-muted-foreground" role="status"><LoaderCircleIcon className="size-3 animate-spin" />Reading test…</p>
+    {loading ? <p className="flex items-center gap-1 text-xs text-muted-foreground" role="status"><LoaderCircleIcon className="size-3 animate-spin" />正在读取测试…</p>
       : <ResizablePanelGroup id="testing-stored-panels" orientation="horizontal" className="min-h-0 flex-1 gap-3" aria-label="已保存的测试预览与步骤">
         <ResizablePanel id="testing-stored-source" defaultSize="60%" minSize="20%" maxSize="85%">
           <section className="flex h-full min-h-0 min-w-0 flex-col gap-1.5 overflow-hidden rounded-lg border p-3" aria-label="预览">
@@ -794,7 +794,7 @@ function TestingRecorder({ panel, recordable, deviceId }: { panel: TestingPanel;
   if (panelState.selectedTestPath) return <StoredTestPreview key={panelState.selectedTestPath} panel={panel} source={panelState.selectedTestSource}
     path={panelState.selectedTestPath} loading={panelState.loadingTest} />;
   return <div className="flex min-h-0 flex-1 flex-col gap-3">
-    {!recordable && !recording && !panelState.agent?.active && <p className="text-xs text-muted-foreground">Recording needs a booted iOS simulator or Android emulator in the mirror.</p>}
+    {!recordable && !recording && !panelState.agent?.active && <p className="text-xs text-muted-foreground">录制需要镜像中已启动的 iOS 模拟器或 Android 模拟器。</p>}
     {panelState.agent?.active && <p className="text-xs text-muted-foreground">
       The mirror is the agent's while it records, so clicking it does nothing. Press Stop to take it back.
     </p>}
@@ -822,7 +822,7 @@ function TestingRecorder({ panel, recordable, deviceId }: { panel: TestingPanel;
         mirror beside them wherever there is width for a row. */}
     <ResizablePanelGroup id="testing-workspace-panels" orientation="horizontal"
       data-testing-recorder-workspace className="min-h-0 flex-1 gap-3"
-      aria-label="Preview and steps">
+      aria-label="预览与步骤">
       <ResizablePanel id="testing-preview-resizable" defaultSize="60%" minSize="20%" maxSize="85%">
         <section data-testing-preview-pane className="flex h-full min-h-0 min-w-0 flex-col gap-1.5 overflow-hidden rounded-lg border p-3">
           <p className="flex flex-wrap items-center gap-2 text-xs font-medium">
@@ -841,14 +841,14 @@ function TestingRecorder({ panel, recordable, deviceId }: { panel: TestingPanel;
                 timing, which includes spawning the CLI. */}
             {state.run && state.run.state !== "running" && state.run.durationMs !== undefined
               && <span data-testing-run-duration className="font-normal tabular-nums text-muted-foreground"
-                title="How long the runner reported the run taking.">{formatRunDuration(state.run.durationMs)}</span>}
+                title="运行器报告的本次运行耗时。">{formatRunDuration(state.run.durationMs)}</span>}
             {/* A verdict about part of the flow must not read as a verdict about the test: the run
                 was asked to stop at a step, so what it passed is everything up to that line. */}
             {state.run?.untilLine !== undefined && <span data-testing-run-until className="font-normal text-muted-foreground"
               title="This run stops at the step you played to; the steps below it are not run.">· to line {state.run.untilLine}</span>}
             {/* The verdict is still about a run that happened; the lines it marked have moved. */}
             {state.run?.stale && <span data-testing-run-stale className="font-normal text-muted-foreground"
-              title="The steps changed after this run, so the line marks no longer point at the same steps.">· before your edits</span>}
+              title="本次运行后步骤已更改，因此行标记不再指向相同的步骤。">· before your edits</span>}
           </p>
           {state.run?.output && <pre className="max-h-32 overflow-auto rounded-md border bg-muted/40 p-2 font-mono text-[10px] whitespace-pre-wrap">{state.run.output}</pre>}
           {editing ? <PreviewEditor source={testRecorder.source} saving={panelState.saving}
@@ -962,9 +962,9 @@ function ClearStepsButton({ steps }: { steps: number }) {
     <PopoverTrigger asChild>
       <Button type="button" size="icon-xs" variant="ghost" data-testing-clear disabled={steps === 0}
         className="ml-auto text-destructive hover:bg-destructive/10 hover:text-destructive"
-        aria-label="Clear test" title="Clear every step of this test"><Trash2Icon /></Button>
+        aria-label="清除测试" title="清除此测试的所有步骤"><Trash2Icon /></Button>
     </PopoverTrigger>
-    <PopoverContent align="end" className="flex w-60 flex-col gap-2 p-2.5" role="alertdialog" aria-label="Clear test">
+    <PopoverContent align="end" className="flex w-60 flex-col gap-2 p-2.5" role="alertdialog" aria-label="清除测试">
       <p className="text-xs">Clear all {count}? The recording cannot be brought back.</p>
       <div className="flex justify-end gap-2">
         <Button type="button" size="sm" variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>

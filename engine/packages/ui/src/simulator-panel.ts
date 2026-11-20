@@ -95,7 +95,7 @@ export function createSimulatorPanel(
 
   function notice(message = "") {
     if (screenshotAttachmentError) message = screenshotAttachmentError;
-    else if (message.length === 0) message = inputRepairMessage || (inputBlocked ? "Simulator input is blocked. Ask Codex to repair it." : discoveryError);
+    else if (message.length === 0) message = inputRepairMessage || (inputBlocked ? "模拟器输入被阻止。请让 Codex 修复。" : discoveryError);
     element("notice-message").textContent = message;
     element("notice").title = message;
     element("notice").classList?.toggle("text-destructive", inputBlocked);
@@ -182,7 +182,7 @@ export function createSimulatorPanel(
       if (failure.inputBlocked) inputBlocked = true;
       ready = false;
       cancelPointer();
-      notice(failure.streamDisconnected ? "Reconnecting…" : failure.message ?? "Simulator input failed.");
+      notice(failure.streamDisconnected ? "Reconnecting…" : failure.message ?? "模拟器输入失败。");
       controls();
       session.reader?.fail(error);
       session.controller.abort(error);
@@ -366,7 +366,7 @@ export function createSimulatorPanel(
     if (selected === undefined || selected.kind === "physical" || disposed) throw new Error("请先选择模拟器或仿真器。");
     const id = selected.udid;
     const stop = devices.stop;
-    if (stop === undefined) throw new Error("Device controls are not available.");
+    if (stop === undefined) throw new Error("设备控制不可用。");
     await stop(id);
     busy = true;
     controls();
@@ -513,7 +513,7 @@ export function createSimulatorPanel(
     syncRecorder();
     if (selected?.kind === "physical" && selected.platform === "ios") {
       const connection = physicalConnectionLabel(selected.transportType);
-      if (reconnect.active === false) empty(`${selected.name} · ${connection}`, "Opening the physical device screen…");
+      if (reconnect.active === false) empty(`${selected.name} · ${connection}`, "正在打开真机屏幕…");
     } else if (selected?.kind === "physical" && selected.state !== "Booted") {
       const description = selected.state === "unauthorized"
         ? "请解锁设备并允许 USB 调试，或配对以进行无线调试。"
@@ -582,7 +582,7 @@ export function createSimulatorPanel(
     devices.update({
       items: [...physicalOptions, ...androidPhysicalOptions, ...simulatorOptions],
       value: nextDevice?.udid ?? "",
-      placeholder: available.length ? "Select a device" : next.connected ? "No devices" : "Devices unavailable",
+      placeholder: available.length ? "选择设备" : next.connected ? "没有设备" : "设备不可用",
     });
     selectDevice();
     if (!next.connected && physicalDevices.length === 0) {
@@ -669,7 +669,7 @@ export function createSimulatorPanel(
       session.input?.clear();
       session.reader?.clearFrames();
       releasePointer(); ready = false;
-      notice("Recovering iOS video…"); controls();
+      notice("正在恢复 iOS 视频…"); controls();
       await flushInput(session);
       if (signal.aborted || session.epoch !== epoch) return;
       await call("mobile_stream_reset", { sessionId: session.id }, { signal, timeout: 5000 });
@@ -757,7 +757,7 @@ export function createSimulatorPanel(
       session.input?.clear();
       cancelPointer();
       ready = false;
-      notice("Recovering physical device video…");
+      notice("正在恢复真机视频…");
       controls();
       void call("mobile_ios_mirror_reset", { sessionId: session.id }, { timeout: 5000 }).catch(error => {
         console.warn("[mobile-dev] Physical iOS keyframe request failed", error);
@@ -797,7 +797,7 @@ export function createSimulatorPanel(
       if (signal.aborted || session.epoch !== epoch) return;
       session.input?.clear();
       releasePointer(); ready = false;
-      notice("Recovering Android video…"); controls();
+      notice("正在恢复 Android 视频…"); controls();
     });
     const uri = new URL(session.frameUri);
     let after = 0;
@@ -887,7 +887,7 @@ export function createSimulatorPanel(
       return;
     }
     if (selected.state !== "Booted") {
-      empty("Starting simulator…", "设备就绪后将显示屏幕。");
+      empty("正在启动模拟器…", "设备就绪后将显示屏幕。");
       const before = selected;
       const result = await call(platform === "android" ? "mobile_boot_android_emulator" : "mobile_boot_simulator",
         platform === "android" ? { deviceId: before.udid } : { udid: before.udid }, { timeout: 300000 });
@@ -1060,7 +1060,7 @@ export function createSimulatorPanel(
     if (text.length === 0) return;
     const message = inputSchema.safeParse({ type: "type", text });
     if (message.success === false) {
-      notice("Paste supports up to 4,096 printable US-ASCII characters. Line breaks and other characters are not supported.");
+      notice("粘贴最多支持 4,096 个可打印的 US-ASCII 字符。不支持换行符和其他字符。");
       return;
     }
     notice();

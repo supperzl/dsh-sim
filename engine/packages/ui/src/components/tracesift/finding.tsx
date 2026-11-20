@@ -55,6 +55,6 @@ export function FindingView<S extends ChartSlice>({ rank, name, duration, severi
         <SliceSummary slice={active} format={format} meta={meta(active)} action={action(active)} />
         <SliceLegend slices={slices} active={active} format={format} onHover={setActiveKey} onOpen={onOpen} rows={legendRows} />
       </>
-      : <p className="tracesift-empty" role="status">This finding has no measured time to divide.</p>}
+      : <p className="tracesift-empty" role="status">此发现项没有可划分的实测时长。</p>}
   </section>;
 }

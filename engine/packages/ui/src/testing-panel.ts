@@ -608,7 +608,7 @@ export class TestingPanel {
     try {
       await this.call("mobile_testing_delete_file", { projectPath, relativePath }, 15_000);
       countUiEvent("ui.testing.test_delete");
-      // The file the panel last wrote is the one that just went, so the "Saved to …" line under
+      // The file the panel last wrote is the one that just went, so the "保存到 …" line under
       // the editor would be pointing at nothing.
       if (this.snapshot.savedPath.endsWith(relativePath)) this.update({ savedPath: "", savedRevision: -1 });
     } catch (error) {
@@ -801,7 +801,7 @@ export class TestingPanel {
     const projectPath = this.snapshot.projectPath;
     const recorder = testRecorder.getSnapshot();
     if (!projectPath || !this.snapshot.available || this.snapshot.saving) return;
-    if (recorder.steps.length === 0 && !recorder.sourceOverride) { this.update({ error: "Record a step before saving." }); return; }
+    if (recorder.steps.length === 0 && !recorder.sourceOverride) { this.update({ error: "保存前请先录制步骤。" }); return; }
     const relativePath = this.relativePath;
     this.update({ saving: true, error: null });
     try {

@@ -195,7 +195,7 @@ export class LogsPanel {
       options.native = { platform: "android", deviceId: native.slice(8) };
     }
     if (target && this.metroUrl) {
-      if (metroUrl !== this.metroUrl) throw new Error("Find sources again after changing the Metro URL.");
+      if (metroUrl !== this.metroUrl) throw new Error("更改 Metro URL 后重新查找来源。");
       options.metro = { url: this.metroUrl, targetId: target };
     }
     return options.native || options.metro ? options : undefined;

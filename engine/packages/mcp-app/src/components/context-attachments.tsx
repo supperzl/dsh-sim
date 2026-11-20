@@ -20,7 +20,7 @@ export function ContextAttachments({ context }: { context: PanelContext }) {
           <Button variant="ghost" size="sm" disabled={!!busy} aria-label={`Remove note ${note.number} on ${note.simulator.name}`} onClick={async () => {
             setBusy("remove"); setError("");
             try { await context.removeAnnotation(note.id); }
-            catch { setError("Could not remove this note. Try again."); captureUiError(new Error("Could not remove annotation context."), "context.remove"); }
+            catch { setError("无法移除此笔记，请重试。"); captureUiError(new Error("无法移除批注上下文。"), "context.remove"); }
             finally { setBusy(undefined); }
           }}>Remove</Button>
         </li>)}
@@ -29,16 +29,16 @@ export function ContextAttachments({ context }: { context: PanelContext }) {
     {!!notes.length && context.canSendMessage && <Button size="sm" disabled={!!busy} onClick={async () => {
       setBusy("add"); setError(""); setAddedNotes(undefined);
       try { await context.sendAnnotationsToChat(); setAddedNotes(notes); }
-      catch (error) { setError(error instanceof Error ? error.message : "Could not add notes to chat."); }
+      catch (error) { setError(error instanceof Error ? error.message : "无法将笔记添加到聊天。"); }
       finally { setBusy(undefined); }
     }}>{busy === "add" ? "Adding…" : "将备注添加到聊天"}</Button>}
     <Button variant="outline" size="sm" disabled={!!busy} onClick={async () => {
       setBusy("clear"); setError("");
       try { await context.clearAttachments(); setAddedNotes(undefined); }
-      catch (error) { setError("Could not clear attachments. Try again."); captureUiError(error, "context.clear"); }
+      catch (error) { setError("无法清除附件，请重试。"); captureUiError(error, "context.clear"); }
       finally { setBusy(undefined); }
     }}>Clear attachments ({count})</Button>
-    {addedNotes === notes && <span role="status" className="text-sm text-muted-foreground">Added to chat input. Review and send there before clearing these notes.</span>}
+    {addedNotes === notes && <span role="status" className="text-sm text-muted-foreground">已添加到聊天输入框。清除这些笔记前，请先在那里检查并发送。</span>}
     {error && <span role="alert" className="text-sm">{error}</span>}
   </div>;
 }

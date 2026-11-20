@@ -6,8 +6,8 @@ import type { TraceSiftProfileType } from "@mobile-dev/shared/tracesift.ts";
 import { TraceSiftCards } from "./tracesift-cards.tsx";
 
 const options: { value: Extract<TraceSiftProfileType, "cpu" | "react">; title: string; detail: string; accepts: string; drop: string }[] = [
-  { value: "cpu", title: "JavaScript CPU", detail: "查找慢函数与重型执行路径", accepts: ".json", drop: "Choose a Chrome Performance .json" },
-  { value: "react", title: "React 组件", detail: "查找高开销提交、无效重渲染与级联更新", accepts: "React DevTools JSON", drop: "Choose a React DevTools profiling .json" },
+  { value: "cpu", title: "JavaScript CPU", detail: "查找慢函数与重型执行路径", accepts: ".json", drop: "选择 Chrome 性能剖析 .json 文件" },
+  { value: "react", title: "React 组件", detail: "查找高开销提交、无效重渲染与级联更新", accepts: "React DevTools JSON", drop: "选择 React DevTools 性能剖析 .json 文件" },
 ];
 
 // A dropped file arrives without a path and the local service reads from disk, so the pane asks the host for its own dialog.
@@ -62,7 +62,7 @@ function TraceSiftUpload({ controller, available }: { controller: TraceSiftContr
       </div>
     </div>
 
-    {!available && <p className="tracesift-error" role="status">This host cannot call the plugin's TraceSift tools.</p>}
+    {!available && <p className="tracesift-error" role="status">此宿主无法调用插件的 TraceSift 工具。</p>}
 
     <div className="profile-row">
       <div className="workflow-label"><span>1</span><strong>选择分析文件类型</strong></div>
@@ -83,7 +83,7 @@ function TraceSiftUpload({ controller, available }: { controller: TraceSiftContr
     </div>
     <p className="profile-detail">{options.find(option => option.value === profileType)?.detail}</p>
 
-    <div className="workflow-label"><span>2</span><strong>添加你的分析文件</strong><small>Processed locally, never uploaded.</small></div>
+    <div className="workflow-label"><span>2</span><strong>添加你的分析文件</strong><small>本地处理，绝不上传。</small></div>
     {analyzing
       ? <p className="upload-analyzing" role="status">Analyzing {analyzing.name} with TraceSift…</p>
       : <UploadPane controller={controller} profileType={profileType} busy={!available} />}

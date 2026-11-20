@@ -14,7 +14,7 @@ export class AndroidVideo {
   private readonly recovering: () => void;
 
   constructor(output: (frame: VideoFrame) => void, requestKeyframe: () => void, recovering = () => {}) {
-    if (typeof VideoDecoder === "undefined" || typeof EncodedVideoChunk === "undefined") throw new Error("This host does not support Android H.264 video through WebCodecs.");
+    if (typeof VideoDecoder === "undefined" || typeof EncodedVideoChunk === "undefined") throw new Error("此宿主不支持通过 WebCodecs 播放 Android H.264 视频。");
     this.output = output;
     this.requestKeyframe = requestKeyframe;
     this.recovering = recovering;

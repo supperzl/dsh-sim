@@ -34,7 +34,7 @@ export function ReactFinding({ card, rank, kind, onKind, onExplore }: {
     const culprit = slice.culprit;
     if (culprit) return <>{culprit.sourceHint && <><code title={culprit.sourceHint}>{fileName(culprit.sourceHint)}</code> · </>}{renderReason(culprit)}</>;
     if (slice.kind === "tail") return `${slice.tailCount ?? 0} components, each too small to draw`;
-    return "React walking and committing the tree";
+    return "React 遍历并提交树";
   };
   return <FindingView
     rank={rank}

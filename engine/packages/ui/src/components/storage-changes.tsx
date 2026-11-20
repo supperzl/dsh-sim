@@ -52,11 +52,11 @@ export function ChangesView({ panel, query }: { panel: StoragePanel; query: stri
             <span role="cell" className="flex min-w-0 font-mono"><ChangeDiff event={event} /></span>
           </div>;
         })}
-        {visible.length === 0 && <p className="p-4 text-muted-foreground">No changes match.</p>}
+        {visible.length === 0 && <p className="p-4 text-muted-foreground">没有匹配的更改。</p>}
       </div>}
     <footer className="flex h-9 shrink-0 items-center gap-2 border-t px-3 text-xs text-muted-foreground">
       <span role="status">{changes.length} change{changes.length === 1 ? "" : "s"}{state.watchingSince ? ` since ${clockTime.format(state.watchingSince)}` : ""}</span>
-      <label htmlFor="storage-sdk-changes" className="ml-auto flex cursor-pointer items-center gap-2" title="Changes written by analytics, crash reporting, and other SDKs">
+      <label htmlFor="storage-sdk-changes" className="ml-auto flex cursor-pointer items-center gap-2" title="由分析、崩溃报告和其他 SDK 写入的更改">
         SDK changes{hiddenSdk > 0 && <span className="tabular-nums">({hiddenSdk} hidden)</span>}
         <Switch id="storage-sdk-changes" checked={state.showSdkChanges} onCheckedChange={checked => panel.setShowSdkChanges(checked)} />
       </label>

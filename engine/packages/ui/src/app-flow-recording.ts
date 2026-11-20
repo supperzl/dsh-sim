@@ -13,7 +13,7 @@ type Snapshot = {
   /**
    * The interaction currently in flight, so the panel can name it and time it.
    *
-   * Without this the panel showed one unchanging "Sending the command…" for anything from a 300ms
+   * Without this the panel showed one unchanging "正在发送命令…" for anything from a 300ms
    * tap to a 60s timeout, which is indistinguishable from a hang — and when the call failed the
    * line stayed up, because nothing cleared it. Both halves are fixed here: the label says what is
    * being sent, `startedAt` lets the panel count the seconds, and every exit path clears it.

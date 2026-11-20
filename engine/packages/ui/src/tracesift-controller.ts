@@ -277,7 +277,7 @@ export class TraceSiftController {
       this.copiedTimer = setTimeout(() => this.update({ copiedCard: undefined }), 2000);
     } catch (error) {
       countUiEvent("ui.tracesift.copy_failed");
-      this.update({ error: error instanceof Error ? error.message : "That hand-off could not be copied." });
+      this.update({ error: error instanceof Error ? error.message : "无法复制该交接内容。" });
     } finally { this.update({ handoffCard: undefined }); }
   };
 

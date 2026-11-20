@@ -408,36 +408,36 @@ export type CaptureTone = "good" | "warn" | "muted";
  *
  * Its own badge rather than another branch in `captureStatus`, because the two answer different
  * questions and a node has both answers at once: `captureStatus` says how far to trust the
- * *replay* ("Recorded path", "Inferred path"), and those branches sit above the method ones, so a
- * `Deep Link + Fast` sweep could win by deep link and still show "Recorded path" — leaving no way
+ * *replay* ("已录制路径", "推断路径"), and those branches sit above the method ones, so a
+ * `Deep Link + Fast` sweep could win by deep link and still show "已录制路径" — leaving no way
  * to tell which half of that mode did the work. `fromMethod` marks the statuses that already name
  * the method so the node does not print it twice.
  */
 export function routeBadge(node: AppFlowNode): { label: string; detail: string } | null {
   switch (node.capture?.captureMethod) {
     case "deep-link": return { label: "路由：深链接", detail: "通过打开此屏幕的 URL 到达。" };
-    case "rendered": return { label: "路由：运行时导航器", detail: "Reached by dispatching navigation through the app's own navigator — no URL, no model." };
-    case "saved-replay": return { label: "Route: saved replay", detail: "Reached by replaying a previously recorded journey." };
-    case "manual": return { label: "Route: manual recording", detail: "Reached by replaying the journey you recorded by hand." };
-    case "agent-navigation": return { label: "Route: model walk", detail: "Reached by the model exploring the UI." };
-    case "opportunistic": return { label: "Route: opportunistic", detail: "Seen in passing while walking to a different screen, not by a journey to it." };
+    case "rendered": return { label: "路由：运行时导航器", detail: "通过应用自身导航器派发导航到达 — 无 URL，也无模型。" };
+    case "saved-replay": return { label: "路径：已保存的重放", detail: "通过重放先前录制的路径到达。" };
+    case "manual": return { label: "路径：手动录制", detail: "通过重放你手动录制的路径到达。" };
+    case "agent-navigation": return { label: "路径：模型走查", detail: "通过模型探索 UI 到达。" };
+    case "opportunistic": return { label: "路径：顺带捕获", detail: "在走查其他屏幕途中顺带看到，而非通过到达它的路径。" };
     default: return null;
   }
 }
 export function captureStatus(node: AppFlowNode): { label: string; tone: CaptureTone; fromMethod?: boolean } | null {
   if (node.origin === "chrome") return null;
   const capture = node.capture;
-  if (capture?.stale) return { label: "Previous capture", tone: "warn" };
-  if (capture?.status === "unavailable") return { label: "Not in this build", tone: "muted" };
-  if (capture?.replayVerified) return { label: "Verified replay", tone: "good" };
-  if (capture?.pathCommands?.length) return { label: "Recorded path", tone: "good" };
-  if (capture?.pathVerified === false && capture.replayable) return { label: "Inferred path", tone: "warn" };
-  if (capture?.captureMethod === "deep-link") return { label: "Deep-link fallback", tone: "warn", fromMethod: true };
+  if (capture?.stale) return { label: "上一次捕获", tone: "warn" };
+  if (capture?.status === "unavailable") return { label: "此构建中不存在", tone: "muted" };
+  if (capture?.replayVerified) return { label: "经验证的重放", tone: "good" };
+  if (capture?.pathCommands?.length) return { label: "已录制路径", tone: "good" };
+  if (capture?.pathVerified === false && capture.replayable) return { label: "推断路径", tone: "warn" };
+  if (capture?.captureMethod === "deep-link") return { label: "深度链接回退", tone: "warn", fromMethod: true };
   if (capture?.captureMethod === "rendered") return { label: "Rendered", tone: "warn", fromMethod: true };
   if (capture?.captureMethod === "opportunistic") return { label: "Opportunistic", tone: "warn", fromMethod: true };
   if (!capture && node.deepLinkRejection) return { label: `Deep link rejected: ${node.deepLinkRejection.reason}`, tone: "muted" };
   if (capture?.note) return { label: capture.note, tone: "muted" };
-  return { label: "Replay unavailable", tone: "muted" };
+  return { label: "无法重放", tone: "muted" };
 }
 
 /**
@@ -450,7 +450,7 @@ export function captureStatus(node: AppFlowNode): { label: string; tone: Capture
  * "Regenerate" throws away work the user can see on the canvas. The tally is what tells them apart.
  *
  * `unableToCapture` counts toward the tried screens on purpose: a route the sweep reached and could
- * not capture ("Unresolved route parameters") is not waiting for a resume, and leaving it out would
+ * not capture ("未解析的路由参数") is not waiting for a resume, and leaving it out would
  * pin a finished run to "Resume" forever.
  */
 export function isResumable(sweepStatus: AppFlowSweepStatus | undefined, tally: CaptureTally | null): boolean {

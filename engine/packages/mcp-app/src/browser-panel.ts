@@ -6,8 +6,8 @@ import { PLUGIN_VERSION } from "@mobile-dev/shared/version.ts";
 import { PANEL_PAGE_META } from "@mobile-dev/shared/panel-target.ts";
 
 const dark = matchMedia("(prefers-color-scheme: dark)");
-const DISCONNECTED = "Mobile Dev disconnected from its chat session. Ask the agent to open Mobile Dev again.";
-const EXPIRED = "Mobile Dev's browser connection expired. Reload this page to reconnect.";
+const DISCONNECTED = "Mobile Dev 已与其聊天会话断开。请让智能体重新打开 Mobile Dev。";
+const EXPIRED = "Mobile Dev 的浏览器连接已过期。请重新加载此页面以重新连接。";
 
 function notice(text: string) {
   const alert = document.createElement("p");
@@ -21,7 +21,7 @@ async function open() {
   const query = new URLSearchParams(location.search);
   const toolName = query.get("tool") ?? "mobile_open_simulator";
   if (toolName !== "mobile_open_simulator" && toolName !== "mobile_open_workspace" && toolName !== "mobile_open_app_intel") {
-    throw new Error("This link does not open a Mobile Dev panel.");
+    throw new Error("此链接不会打开 Mobile Dev 面板。");
   }
   const target: Record<string, string> = {};
   for (const key of ["platform", "kind", "deviceId", "workspaceTool", "appIntelScreen"]) {
@@ -87,7 +87,7 @@ async function open() {
     if (tool === undefined || uri === undefined) throw new Error(`Mobile Dev has no panel for ${toolName}.`);
     const resource = await client.readResource({ uri });
     const [content] = resource.contents;
-    if (content === undefined || ("text" in content) === false) throw new Error("Mobile Dev's panel could not load.");
+    if (content === undefined || ("text" in content) === false) throw new Error("Mobile Dev 的面板无法加载。");
 
     const frame = document.createElement("iframe");
     frame.title = "Mobile Dev";
@@ -106,7 +106,7 @@ async function open() {
     bridge = new AppBridge(client, { name: host, version: PLUGIN_VERSION }, capabilities, { hostContext });
     bridge.onupdatemodelcontext = async ({ content }) => {
       const sessionId = transport.sessionId;
-      if (sessionId === undefined) throw new Error("Mobile Dev's browser connection is not ready.");
+      if (sessionId === undefined) throw new Error("Mobile Dev 的浏览器连接尚未就绪。");
       const response = await fetch(new URL("context", location.href), {
         method: "PUT", headers: { "content-type": "application/json", "mcp-session-id": sessionId },
         body: JSON.stringify({ content: content ?? [] }),
@@ -118,7 +118,7 @@ async function open() {
     bridge.onopenlink = async ({ url }) => {
       const destination = new URL(url, location.href);
       if (destination.protocol !== "https:" && destination.protocol !== "http:") {
-        throw new Error("Only web links can open from Mobile Dev.");
+        throw new Error("从 Mobile Dev 只能打开网页链接。");
       }
       window.open(destination.href, "_blank", "noopener");
       return {};
@@ -131,7 +131,7 @@ async function open() {
     dark.addEventListener("change", contextChanged);
     const initialized = new Promise<void>((resolve, reject) => {
       startup = setTimeout(() => {
-        const error = new Error("Mobile Dev's panel did not finish opening. Reload this page to try again.");
+        const error = new Error("Mobile Dev 的面板未能完成打开。请重新加载此页面重试。");
         reject(error);
       }, 15_000);
       bridge!.oninitialized = () => { clearTimeout(startup); resolve(); };

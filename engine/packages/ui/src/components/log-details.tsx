@@ -10,7 +10,7 @@ function CopyField({ label, value }: { label: string; value: string }) {
     <h3 className="font-mono text-xs font-semibold tracking-wide text-muted-foreground uppercase">{label}</h3>
     <Button variant="ghost" size="icon-sm" className="text-muted-foreground" title={status || `Copy ${label.toLowerCase()}`} aria-label={status || `Copy ${label.toLowerCase()}`} onClick={async () => {
       try { await navigator.clipboard.writeText(value); setStatus("Copied"); }
-      catch { setStatus("Could not copy"); }
+      catch { setStatus("复制失败"); }
     }}>{status === "Copied" ? <CheckIcon /> : <CopyIcon />}</Button>
     <span className="sr-only" role="status">{status}</span>
   </div>;
@@ -31,7 +31,7 @@ export function LogDetails({ log, onClose, children }: { log: StackedLog; onClos
     <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4">
       <section className="flex flex-col gap-1"><CopyField label="Time" value={time} /><p className="font-mono text-xs tabular-nums select-text">{time}</p></section>
       <section className="flex flex-col gap-1"><CopyField label="Message" value={message} /><pre className="log-detail-message rounded-lg border p-3 font-mono text-xs leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere] select-text">{message}</pre></section>
-      {text.stack && <section className="flex flex-col gap-1"><CopyField label="Stack trace" value={text.stack} /><pre className="log-detail-message rounded-lg border p-3 font-mono text-xs leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere] select-text">{text.stack}</pre></section>}
+      {text.stack && <section className="flex flex-col gap-1"><CopyField label="堆栈跟踪" value={text.stack} /><pre className="log-detail-message rounded-lg border p-3 font-mono text-xs leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere] select-text">{text.stack}</pre></section>}
       <div className="mt-auto pt-1">{children}</div>
     </div>
   </aside>;

@@ -83,12 +83,12 @@ export class DisplayFpsPanel {
     const id = opened.structuredContent?.sessionId;
     const fpsUri = opened.structuredContent?.fpsUri;
     const origin = opened.structuredContent?.timeOrigin;
-    if (typeof id !== "string") throw new Error("The plugin did not return a Display FPS session.");
+    if (typeof id !== "string") throw new Error("插件未返回显示 FPS 会话。");
     const session: Session = { id, abort: new AbortController() };
     this.session = session;
     if (typeof fpsUri !== "string" || typeof origin !== "number") {
       await this.closeSession(session);
-      throw new Error("The plugin did not return a Display FPS resource and clock.");
+      throw new Error("插件未返回显示 FPS 资源和时钟。");
     }
     if (epoch !== this.epoch) { await this.closeSession(session); return; }
     this.update({}, origin);
@@ -101,7 +101,7 @@ export class DisplayFpsPanel {
         const resource = await this.app.readServerResource({ uri: uri.href }, { signal: session.abort.signal, timeout: 10000 });
         if (epoch !== this.epoch || session.abort.signal.aborted) return;
         const content = resource.contents.find(item => item.mimeType === "application/json" && "text" in item);
-        if (content === undefined || ("text" in content) === false) throw new Error("The plugin returned an invalid Display FPS batch.");
+        if (content === undefined || ("text" in content) === false) throw new Error("插件返回了无效的显示 FPS 批次。");
         const batch: DisplayFpsBatch = JSON.parse(content.text);
         after = batch.cursor;
         const updated = new Map<number, DisplayFpsSample>();

@@ -37,7 +37,7 @@ export function startWorkspaceApp(options: WorkspaceOptions = {}) {
   let automaticTool: ToolName | undefined;
   let automaticToolRevision = 0;
   function renderWorkspace(automaticLayout?: DeviceLayout) {
-    const workspace = <ErrorBoundary fallback={<p role="alert">Mobile Dev could not render. Reopen the panel to try again.</p>}>
+    const workspace = <ErrorBoundary fallback={<p role="alert">Mobile Dev 无法渲染。请重新打开面板重试。</p>}>
       <Workspace panels={panels} recordingController={recordingController} banner={extension?.banner} displayModeControl={options.displayModeControl === false ? undefined : <DisplayModeButton app={app} />} contextControl={<ContextAttachments context={panels.context} />} automaticLayout={automaticLayout} automaticTool={automaticTool} automaticToolRevision={automaticToolRevision} onLayout={changeLayout} />
     </ErrorBoundary>;
     reactRoot.render(workspace);

@@ -210,7 +210,7 @@ export class RecordingController {
       const elapsed = performance.now() - startedAt;
       recordUiTiming("ui.recording.message_ack", elapsed);
     } catch (error) {
-      captureUiError(new Error("Recording chat action failed."), `recording.${action}`);
+      captureUiError(new Error("录制聊天操作失败。"), `recording.${action}`);
       const timedOut = sending && typeof error === "object" && error !== null && "code" in error && error.code === -32001;
       const message = timedOut ? "宿主未确认送达。重试前请先查看聊天，以免重复发送该问题。" : error instanceof Error ? error.message : "无法将此录制发送到聊天。";
       this.update({ error: message });

@@ -141,7 +141,7 @@ export class ScreenAnnotationsStore {
   private component(point: ScreenPoint): ScreenComponent | undefined {
     if (!this.state.capture) return;
     const { screen } = this.state.capture;
-    return componentAt(this.components, point, screen) ?? { name: "Screen point", source: "screen", depth: 0, bounds: {
+    return componentAt(this.components, point, screen) ?? { name: "屏幕坐标点", source: "screen", depth: 0, bounds: {
       x: Math.max(0, point.x - 12), y: Math.max(0, point.y - 12),
       width: Math.min(24, screen.width - Math.max(0, point.x - 12)), height: Math.min(24, screen.height - Math.max(0, point.y - 12)),
     } };
@@ -216,7 +216,7 @@ export class ScreenAnnotationsStore {
     if (!this.context || this.state.busy) return;
     const revision = this.revision;
     this.update({ busy: true, error: "" });
-    try { await this.context.removeAnnotation(id); if (revision === this.revision) this.update({ draft: undefined, status: "Annotation removed." }); }
+    try { await this.context.removeAnnotation(id); if (revision === this.revision) this.update({ draft: undefined, status: "批注已移除。" }); }
     catch (error) { if (revision === this.revision) this.update({ error: error instanceof Error ? error.message : String(error) }); }
     finally { if (revision === this.revision) this.update({ busy: false }); }
   }

@@ -44,13 +44,13 @@ function Reading({ analysis, controller, onReset }: { analysis: TraceSiftAnalysi
   return <article className="recording-card tracesift-results" aria-label="TraceSift 发现">
     <header className="recording-header">
       <div className="recording-heading"><h2>{analysis.title}</h2><p>TraceSift · {summary}</p></div>
-      <span className="recording-status">{cpu ? "CPU profile" : "React 性能分析"}</span>
+      <span className="recording-status">{cpu ? "CPU 性能剖析" : "React 性能分析"}</span>
       {onReset && <Button size="sm" variant="outline" onClick={onReset}><UploadIcon />新建性能分析</Button>}
     </header>
     <div className="recording-body">
       <div className="recording-charts tracesift-column">
         {card === undefined
-          ? <p role="status">TraceSift found no carded performance issues.</p>
+          ? <p role="status">TraceSift 未发现可呈现为卡片的性能问题。</p>
           : analysis.profileType === "cpu"
             ? <TaskFinding key={card.id} card={analysis.cards[index]} rank={index + 1} kind={state.chartKind} onKind={controller.setChartKind} onFocus={nodeId => void controller.openExplore(card.id, nodeId)} />
             : <ReactFinding key={card.id} card={analysis.cards[index]} rank={index + 1} kind={state.chartKind} onKind={controller.setChartKind} onExplore={() => void controller.openExplore(card.id)} />}
@@ -94,7 +94,7 @@ function Reading({ analysis, controller, onReset }: { analysis: TraceSiftAnalysi
           <Button variant="outline" disabled={busy} onClick={() => void controller.copyHandoff(card.id)}>
             {copied ? <CheckIcon /> : <CopyIcon />}{state.handoffCard === card.id ? "Copying…" : copied ? "Copied" : "复制交接信息"}
           </Button>
-          {!state.canInvestigate && <p role="status">This host cannot send a message to the chat from here. Ask the agent to investigate a finding by name instead.</p>}
+          {!state.canInvestigate && <p role="status">此宿主无法从这里向聊天发送消息。请改为让智能体按名称调查某个发现项。</p>}
         </div>}
         {state.error && <p className="recording-error" role="alert">{state.error}</p>}
         {state.notice && <p className="recording-footnote" role="status">{state.notice}</p>}
@@ -110,7 +110,7 @@ export function TraceSiftCards({ controller, onReset }: { controller: TraceSiftC
   if (state.explorer) return <TraceSiftExplorer controller={controller} />;
 
   if (!state.analysis) return <article className="recording-card tracesift-results tracesift-pending">
-    <p role="status">Analyzing profile with TraceSift…</p>
+    <p role="status">正在用 TraceSift 分析性能剖析数据…</p>
     {state.error && <p className="recording-error" role="alert">{state.error}</p>}
   </article>;
 

@@ -75,12 +75,12 @@ function ScreenNode({ data }: NodeProps) {
     <div className="flex h-full flex-col overflow-hidden">
       {shownPath ? <Screenshot projectId={graph.projectId} path={shownPath} title={shownTitle} panel={graph.panel} />
         : <div className="flex flex-1 items-center bg-muted/40 px-3 py-2 text-[10px] leading-snug text-muted-foreground">
-          {node.origin === "chrome" ? "Navigator surface — reachable from anywhere it is revealed" : node.origin === "runtime" ? "在设备上发现" : node.file ?? "来源组件未解析"}</div>}
+          {node.origin === "chrome" ? "导航器界面 — 从其显露的任何位置均可到达" : node.origin === "runtime" ? "在设备上发现" : node.file ?? "来源组件未解析"}</div>}
       <div className="shrink-0 space-y-1 px-3 py-2.5">
         {shown && <div className="truncate text-[10px] text-muted-foreground">Showing UI state: {shown.name}</div>}
         <div className="flex items-center gap-1.5 overflow-hidden">
         <div className="shrink-0 truncate text-[12px] font-medium">{title}</div><div className="truncate text-[10px] text-muted-foreground">
-          {node.origin === "chrome" ? "Not a screen — nothing to capture" : node.urlPath ?? "In-app navigation only"}</div></div>
+          {node.origin === "chrome" ? "不是屏幕 — 无可捕获内容" : node.urlPath ?? "仅应用内导航"}</div></div>
         {status && <div className={`flex items-center gap-1.5 text-[10px] ${TONE_TEXT[status.tone]}`} title={node.capture?.note ?? undefined}>
           <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${TONE_DOT[status.tone]}`} /><span className="truncate">{status.label}</span></div>}
         {selected && route && <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground" title={route.detail}>
@@ -128,24 +128,24 @@ function NodeActions({ node }: { node: AppFlowNode }) {
   return <div className="mt-0.5 flex flex-col gap-1"><div className="flex items-center gap-1.5">
     <button type="button" className={`nodrag nopan flex flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1 text-[10px] font-medium disabled:opacity-35 ${active ? "bg-rose-500 text-white" : "bg-muted text-foreground hover:bg-muted/70"}`}
       disabled={otherRunning || replaying !== null} onClick={event => { event.stopPropagation(); void (active ? graph.panel.recording.stop(graph.projectPath!) : graph.panel.recording.start(graph.projectPath!, node.id)); }}>
-      <span className={`h-1.5 w-1.5 rounded-full ${active ? "animate-pulse bg-white" : "bg-rose-400"}`} />{active ? "Stop" : "Record path"}</button>
+      <span className={`h-1.5 w-1.5 rounded-full ${active ? "animate-pulse bg-white" : "bg-rose-400"}`} />{active ? "Stop" : "录制路径"}</button>
     <button type="button" title={captured
       ? `Launch the app and navigate straight to this screen through its own navigator${params.length ? `, using the last observed ${params.map(key => `:${key}`).join(", ")}` : ""}. Needs a running dev server.`
-      : "This screen has not been captured yet — run a sweep that reaches it first."}
+      : "此屏幕尚未捕获 — 请先运行能到达它的遍历。"}
       className="nodrag nopan flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border px-2 py-1 text-[10px] font-medium disabled:opacity-35"
       disabled={busy || !captured} onClick={run("runtime")}>
       <span aria-hidden>▶</span>{replaying === "runtime" ? "Navigating…" : "Replay"}</button>
   </div>
-  {replayable && <button type="button" title={`${inferred ? "Walk this screen’s inferred path" : "Launch the app and walk this screen’s recorded path"}${selectors.length ? `. Depends on visible text: ${selectors.join(", ")}` : ""}`}
+  {replayable && <button type="button" title={`${inferred ? "走查此屏幕的推断路径" : "启动应用，走查此屏幕的录制路径"}${selectors.length ? `. Depends on visible text: ${selectors.join(", ")}` : ""}`}
     className={`nodrag nopan flex items-center justify-center gap-1.5 rounded-md border px-2 py-1 text-[10px] font-medium disabled:opacity-35 ${inferred ? "border-amber-400/40 text-amber-600" : "border-border"}`}
     disabled={busy} onClick={run("manual")}>
-    <span aria-hidden>↺</span>{replaying === "manual" ? "Replaying…" : inferred ? "Try inferred path" : "回放录制"}</button>}
+    <span aria-hidden>↺</span>{replaying === "manual" ? "Replaying…" : inferred ? "尝试推断路径" : "回放录制"}</button>}
   {replayError && <div className="text-[9px] leading-tight text-amber-600">{replayError}</div>}</div>;
 }
 
 const BAND_COPY: Record<Exclude<NodePlacement, "connected">, { title: string; detail: string }> = {
-  "deep-link-only": { title: "Reached by deep link · no in-app route observed", detail: "These screens were captured, but no in-app route to them was observed." },
-  uncaptured: { title: "Never captured", detail: "The sweep could not render these screens, so their connectivity is unknown." },
+  "deep-link-only": { title: "通过深度链接到达 · 未观察到应用内路由", detail: "这些屏幕已被捕获，但未观察到通往它们的应用内路由。" },
+  uncaptured: { title: "从未捕获", detail: "遍历无法渲染这些屏幕，因此其连通性未知。" },
 };
 function BandHeading({ data }: NodeProps) { const value = data as { title: string; detail: string; count: number };
   return <div className="border-t border-dashed border-muted-foreground/40 pt-2"><div className="text-xs font-medium text-muted-foreground">{value.title} <span className="opacity-70">({value.count})</span></div>

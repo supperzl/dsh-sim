@@ -78,7 +78,7 @@ export const CpuTrack: React.FC<CpuTrackProps> = ({
           label="CPU"
           icon={<CpuIcon className="w-4 h-4 text-blue-500" />}
           metrics={metrics}
-          title="CPU usage: 100% equals one fully occupied core. Expand to see individual threads."
+          title="CPU 使用率：100% 表示一个核心被完全占用。展开可查看各线程。"
           isExpanded={isExpanded}
           onToggle={() => setIsExpanded(value => value === false)}
         />
@@ -109,7 +109,7 @@ export const CpuTrack: React.FC<CpuTrackProps> = ({
               if (order === 'activity' || order === 'first-seen') onThreadOrderChange(order);
             }}>
             <NativeSelectOption value="activity">Activity</NativeSelectOption>
-            <NativeSelectOption value="first-seen">First seen</NativeSelectOption>
+            <NativeSelectOption value="first-seen">首次出现</NativeSelectOption>
           </NativeSelect>
         </div>
       </div>}

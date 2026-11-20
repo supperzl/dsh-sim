@@ -130,7 +130,7 @@ export class StoragePanel {
     const platform = device?.platform ?? "ios";
     const deviceId = device?.udid ?? "";
     const running = device !== undefined && (device.state === "Booted" || device.state === "connected");
-    const unsupported = device === undefined ? "Choose a simulator or Android device."
+    const unsupported = device === undefined ? "选择模拟器或 Android 设备。"
       : platform === "ios" && device.kind === "physical" ? "暂不支持在实体 iPhone 上读取应用数据，请使用 iOS 模拟器。"
       : running ? "" : `${device.name} isn't running.`;
     // A device that boots, reconnects, or stops starts over like a newly chosen one, keeping the app picked on it.

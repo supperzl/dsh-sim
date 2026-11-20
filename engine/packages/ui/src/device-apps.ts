@@ -134,7 +134,7 @@ export class DeviceAppsStore {
       this.update({ apps: [], foregroundApp: null, ready: false, error: errorMessage(error) });
       if (getUiTelemetryAttributes() === telemetryContext) countUiEvent("ui.device_apps.discovery_failure");
       if (stage !== "discovery") {
-        const failure = new Error("Selected-device app discovery failed.");
+        const failure = new Error("所选设备的应用发现失败。");
         const category = errorCategory(error);
         setErrorCategory(failure, category);
         const diagnostic = deviceAppsDiagnostic(error, stage, platform, device.kind);

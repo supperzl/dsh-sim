@@ -309,7 +309,7 @@ export class AppFlowPanel {
       const response = await this.call(name, arguments_);
       const data = object(response.structuredContent) ?? {};
       const runId = typeof data.runId === "string" ? data.runId : null;
-      if (!runId) throw new Error("App Flow did not return a run ID.");
+      if (!runId) throw new Error("App Flow 未返回运行 ID。");
       this.update({ runId, state: "running" });
     } catch (error) {
       this.progressStartedAt = undefined;
@@ -368,7 +368,7 @@ export class AppFlowPanel {
     this.update({ agentStartPending: true, error: null });
     try {
       const response = await this.app.sendMessage({ role: "user", content: [{ type: "text", text: prompt }] }, { timeout: 5000, maxTotalTimeout: 5000 });
-      if (response.isError) throw new Error("Codex could not start the App Flow sweep.");
+      if (response.isError) throw new Error("Codex 无法启动 App Flow 遍历。");
       clearTimeout(this.agentStartTimer);
       this.agentStartTimer = setTimeout(() => { this.agentStartTimer = undefined; this.update({ agentStartPending: false }); }, 30000);
     } catch (error) { this.progressStartedAt = undefined; this.update({ agentStartPending: false, error: error instanceof Error ? error.message : String(error) }); }
@@ -422,7 +422,7 @@ export class AppFlowPanel {
       if (resolution !== "stop" && this.snapshot.state === "running" && this.canSendAgentStart) {
         const resume = `Resume the existing App Flow run ${runId}. Service its mobile_appflow_next_decision and mobile_appflow_submit_decision loop until it completes, fails, is cancelled, is suspended, or needs user action. Do not start a new run and do not resolve a human auth/review prompt yourself.`;
         const response = await this.app.sendMessage({ role: "user", content: [{ type: "text", text: resume }] }, { timeout: 5000, maxTotalTimeout: 5000 });
-        if (response.isError) throw new Error("Codex could not resume the App Flow decision loop.");
+        if (response.isError) throw new Error("Codex 无法恢复 App Flow 的决策循环。");
       }
     }
     catch (error) { this.update({ error: error instanceof Error ? error.message : String(error) }); }
@@ -637,10 +637,10 @@ export class AppFlowPanel {
       try { screenshotId = new URL(path).pathname.split("/").filter(Boolean).at(-1) ?? ""; }
       catch { screenshotId = ""; }
     }
-    if (!screenshotId) throw new Error("App Flow returned an invalid screenshot reference.");
+    if (!screenshotId) throw new Error("App Flow 返回了无效的截图引用。");
     const result = await this.call("mobile_appflow_screenshot", { projectId, path: screenshotId });
     const image = result.content.find(item => item.type === "image");
-    if (!image || image.type !== "image") throw new Error("App Flow did not return a screenshot.");
+    if (!image || image.type !== "image") throw new Error("App Flow 未返回截图。");
     // The host sandbox enforces the CSP declared with the UI resource, whose img-src allows `data:`
     // but not `blob:`, so inline the base64 the tool already returned instead of an object URL.
     const url = `data:${image.mimeType};base64,${image.data}`;

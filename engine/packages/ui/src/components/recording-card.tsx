@@ -27,7 +27,7 @@ function milliseconds(value: number | null) { return value === null ? "—" : `$
 
 function RecordingOverview({ duration, range, changes, onClear }: { duration: number; range?: RecordingRange; changes: RecordingRange[]; onClear: () => void }) {
   const position = (time: number) => Math.max(0, Math.min(100, time / duration * 100));
-  return <section className="recording-overview" aria-label="Recording range overview">
+  return <section className="recording-overview" aria-label="录制范围概览">
     <div className="recording-section-heading"><h3>{range ? "所选范围" : "整个录制"}</h3><RecordingInfo label="recording range">Drag across any chart to select a range; click a chart to clear it. Purple marks show the most rapid changes. Missing readings remain gaps.</RecordingInfo>
       {range && <button type="button" className="recording-clear-range" onClick={onClear}>清除</button>}
     </div>
@@ -165,7 +165,7 @@ export function RecordingCard({ controller, detailed = false }: { controller: Re
     recordUiTiming("ui.recording.derive", elapsed);
     return summary;
   }, [recording, derived, range]);
-  if (recording === undefined || derived === undefined || selected === undefined || changes === undefined) return <article className="recording-card"><p role="status">Loading performance recording…</p>{state.error && <p role="alert">{state.error}</p>}</article>;
+  if (recording === undefined || derived === undefined || selected === undefined || changes === undefined) return <article className="recording-card"><p role="status">正在加载性能录制…</p>{state.error && <p role="alert">{state.error}</p>}</article>;
   const status = recording.status === "finished" ? "Finished" : recording.status === "failed" ? "Failed" : recording.status === "connecting" ? "Connecting" : recording.status === "finishing" ? "Finishing" : "Recording";
   const time = new Date(recording.completedAt ?? recording.startedAt);
   const savedAt = time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -177,7 +177,7 @@ export function RecordingCard({ controller, detailed = false }: { controller: Re
   const frameStats = derived.total.frameStats;
   const selectedFrameStats = selected.frameStats;
   const hasDisplayData = hasFps || frameStats !== null;
-  const displayScope = frameStats === null ? "Display FPS measures the whole device, including activity outside this app." : "Display FPS and frame statistics measure the whole device, including activity outside this app.";
+  const displayScope = frameStats === null ? "显示 FPS 测量的是整台设备，包括此应用之外的活动。" : "显示 FPS 和帧统计测量的是整台设备，包括此应用之外的活动。";
   const hasFrames = frameStats !== null && frameStats.frameCount > 0;
   const hasReadings = hasCpu || hasMemory || hasFps || hasFrames;
   return <article className="recording-card" aria-label="已保存的性能录制">
@@ -187,36 +187,36 @@ export function RecordingCard({ controller, detailed = false }: { controller: Re
     </header>
     <div className="recording-body">
       <div className="recording-charts">
-        {hasReadings === false && <p role="status">No performance readings recorded yet.</p>}
+        {hasReadings === false && <p role="status">尚未记录性能读数。</p>}
         {hasCpu && <RecordingChart key={`${recording.id}:cpu`} label="CPU" info="100% CPU is one core. Peak shows the highest CPU reading across the recording." metricLabel="Peak" metric={percent(derived.total.peakCpuPercent)} data={derived.cpu} duration={recording.durationSeconds} range={range} changes={changes.cpu} color="#2583ff" unit="%" onDrag={setDrag} onSelect={controller.select} />}
         {hasMemory && <RecordingChart key={`${recording.id}:memory`} label="Memory (MiB)" info={`${memoryMetric} in mebibytes. Change compares the first and last memory readings across the recording.`} metricLabel="Δ" metric={memoryChange(derived.total.memoryChangeBytes)} data={derived.memory} duration={recording.durationSeconds} range={range} changes={changes.memory} color="#f57b28" unit="MiB" onDrag={setDrag} onSelect={controller.select} />}
-        {hasFps && <RecordingChart key={`${recording.id}:fps`} label="Display FPS" info={displayScope} metricLabel="Average" metric={fpsReading(derived.total.averageFps)} data={derived.fps} duration={recording.durationSeconds} range={range} changes={changes.fps} color="#36a269" unit="fps" onDrag={setDrag} onSelect={controller.select} />}
+        {hasFps && <RecordingChart key={`${recording.id}:fps`} label="显示 FPS" info={displayScope} metricLabel="Average" metric={fpsReading(derived.total.averageFps)} data={derived.fps} duration={recording.durationSeconds} range={range} changes={changes.fps} color="#36a269" unit="fps" onDrag={setDrag} onSelect={controller.select} />}
         {hasDisplayData && <p className="recording-footnote">{displayScope}</p>}
-        {recording.status === "finishing" && <p className="recording-footnote" role="status">Finishing the recording…</p>}
+        {recording.status === "finishing" && <p className="recording-footnote" role="status">正在完成录制…</p>}
         {state.preview === "only" && <p className="recording-footnote">This app shows CPU, memory and FPS without thread or frame detail.{state.canOpen && " Open the recording in Mobile Dev for all of it."}</p>}
       </div>
-      <aside className="recording-sidebar" aria-label="Recording summary and actions">
+      <aside className="recording-sidebar" aria-label="录制摘要与操作">
         <RecordingOverview duration={recording.durationSeconds} range={range} changes={[...changes.cpu, ...changes.memory, ...changes.fps]} onClear={() => { setDrag(undefined); controller.select(undefined); }} />
         {hasCpu && <section className="recording-breakdown" aria-label="线程 CPU 占用">
           <div className="recording-section-heading"><h3>Threads</h3><RecordingInfo label="threads">Busiest recorded threads, ordered by average CPU usage in the {range ? "selected range" : "entire recording"}. 100% CPU is one core.</RecordingInfo></div>
-          {state.preview ? <p>{state.preview === "loading" ? "Loading thread detail…" : "线程详情需要完整录制，但此应用不允许卡片读取。"}</p> : shownThreads.length > 0 ? <dl>{shownThreads.map(thread => <div key={thread.id}><dt title={thread.id}>{thread.name || `Thread ${thread.id}`}</dt><dd>{percent(thread.averageCpuPercent)}</dd></div>)}</dl> : <p>No thread CPU measurements in this range.</p>}
+          {state.preview ? <p>{state.preview === "loading" ? "正在加载线程详情…" : "线程详情需要完整录制，但此应用不允许卡片读取。"}</p> : shownThreads.length > 0 ? <dl>{shownThreads.map(thread => <div key={thread.id}><dt title={thread.id}>{thread.name || `Thread ${thread.id}`}</dt><dd>{percent(thread.averageCpuPercent)}</dd></div>)}</dl> : <p>此范围内没有线程 CPU 测量数据。</p>}
         </section>}
         {(hasFps || selectedFrameStats !== null) && <section className="recording-display-summary" aria-label="显示统计信息">
           <div className="recording-section-heading"><h3>显示</h3><RecordingInfo label="display statistics">{displayScope} Statistics use the {range ? "selected range" : "entire recording"}.</RecordingInfo></div>
-          <dl className="recording-metrics">{hasFps && <><div><dt>Average FPS</dt><dd>{fpsReading(selected.averageFps)}</dd></div><div><dt>Minimum FPS</dt><dd>{fpsReading(selected.minimumFps)}</dd></div></>}{selectedFrameStats !== null && <><div><dt>Jank rate</dt><dd>{percent(selectedFrameStats.jankRatePercent)}</dd></div><div><dt>P95 interval</dt><dd>{milliseconds(selectedFrameStats.p95FrameIntervalMs)}</dd></div><div><dt>Dropped frames</dt><dd>{selectedFrameStats.droppedFrameCount}</dd></div></>}</dl>
+          <dl className="recording-metrics">{hasFps && <><div><dt>平均 FPS</dt><dd>{fpsReading(selected.averageFps)}</dd></div><div><dt>最低 FPS</dt><dd>{fpsReading(selected.minimumFps)}</dd></div></>}{selectedFrameStats !== null && <><div><dt>卡顿率</dt><dd>{percent(selectedFrameStats.jankRatePercent)}</dd></div><div><dt>P95 间隔</dt><dd>{milliseconds(selectedFrameStats.p95FrameIntervalMs)}</dd></div><div><dt>丢帧</dt><dd>{selectedFrameStats.droppedFrameCount}</dd></div></>}</dl>
           {selectedFrameStats !== null && <details className="recording-frame-stats">
-            <summary>Frame details</summary>
+            <summary>帧详情</summary>
             <p>Jank rate: {percent(selectedFrameStats.jankRatePercent)} · Janky presented frames: {selectedFrameStats.jankyPresentedFrameCount}/{selectedFrameStats.classifiedPresentedFrameCount}</p>
             <p>Classification coverage: {percent(selectedFrameStats.classificationCoveragePercent)} · Unclassified presented frames: {selectedFrameStats.unclassifiedPresentedFrameCount}</p>
             <p>Dropped frames: {selectedFrameStats.droppedFrameCount} ({percent(selectedFrameStats.droppedFrameRatePercent)}) · Unknown presentation: {selectedFrameStats.unknownPresentationFrameCount}</p>
             <p>Frame intervals · P50: {milliseconds(selectedFrameStats.p50FrameIntervalMs)} · P95: {milliseconds(selectedFrameStats.p95FrameIntervalMs)} · P99: {milliseconds(selectedFrameStats.p99FrameIntervalMs)}</p>
-            <p>Jank rate uses classified presented display frames. Dropped frames are counted separately.</p>
+            <p>卡顿率基于已分类的已呈现显示帧计算。丢帧单独计数。</p>
           </details>}
         </section>}
         <div className="recording-actions">
-          <Button disabled={state.canMessage === false || state.busy || hasReadings === false} onClick={() => { void controller.send("ask"); }}><MessageCircleIcon />{range ? "Ask about this range" : "询问录制情况"}</Button>
+          <Button disabled={state.canMessage === false || state.busy || hasReadings === false} onClick={() => { void controller.send("ask"); }}><MessageCircleIcon />{range ? "就此范围提问" : "询问录制情况"}</Button>
           {detailed === false && state.canOpen && <Button variant="outline" disabled={state.canMessage === false || state.busy} onClick={() => { void controller.send("open"); }}><ExternalLinkIcon />在 Mobile Dev 中打开</Button>}
-          {state.canMessage === false && <p>This host does not support sending chart selections to chat.</p>}
+          {state.canMessage === false && <p>此宿主不支持将图表选择发送到聊天。</p>}
         </div>
         {state.error && <p role="alert" className="recording-error">{state.error}</p>}
         {detailed && <p className="recording-footnote">{recording.samples.length} CPU/memory samples · {hasFps && `${recording.fps.samples.length} FPS samples · `}Recording {recording.id} · {time.toLocaleDateString()}</p>}

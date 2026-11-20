@@ -11,7 +11,7 @@ export function TraceSiftExplorer({ controller }: { controller: TraceSiftControl
   if (!explorer) return null;
   const card = state.analysis?.cards.find(entry => entry.id === explorer.cardId);
   // A payload whose card is gone is a stale view, not a reader error.
-  if (card === undefined) return <p className="tracesift-error" role="alert">This TraceSift finding is no longer available.</p>;
+  if (card === undefined) return <p className="tracesift-error" role="alert">此 TraceSift 发现项已不可用。</p>;
   const task: ExploreLoad<TaskHandoff> | null = explorer.kind === "task" ? { state: "ready", handoff: explorer.payload as TaskHandoff } : null;
   const react: ExploreLoad<ReactExploreHandoff> | null = explorer.kind === "react" ? { state: "ready", handoff: explorer.payload as ReactExploreHandoff } : null;
   const picks = explorer.kind === "react"
@@ -28,7 +28,7 @@ export function TraceSiftExplorer({ controller }: { controller: TraceSiftControl
       <div className="tracesift-explorer-pick">
         <Button size="sm" variant="outline" className="tracesift-pick-toggle" aria-pressed={Boolean(explorer.picking)}
           title={explorer.picking
-            ? "Stop selecting — this also empties the selection"
+            ? "停止选择 — 这也会清空所选内容"
             : `Pick the ${picks.many} you want asked about, in ${picks.where}`}
           onClick={() => controller.setPicking(!explorer.picking)}>
           <MousePointerClickIcon />Select {picks.many}

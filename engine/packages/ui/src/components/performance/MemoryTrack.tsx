@@ -33,12 +33,12 @@ export function MemoryTrack({ samples, platform, phase, error, zoomState, onZoom
     ? "Main process memory: RSS (resident set size). Shared resident pages are counted in full. 1 MiB = 1,048,576 bytes."
     : "Main process memory: physical footprint, including compressed memory. 1 MiB = 1,048,576 bytes.";
   let message = "在所选设备上打开应用以测量内存。";
-  if (phase === "connecting") message = "Connecting to the app’s memory counters…";
-  else if (phase === "recording") message = "Measuring memory usage…";
+  if (phase === "connecting") message = "正在连接应用的内存计数器…";
+  else if (phase === "recording") message = "正在测量内存使用量…";
   if (error) message = error;
   const showMessage = series.current === null || phase === "failed";
 
-  return <div role="region" aria-label="Memory usage" className="group flex flex-row" style={{ height: TRACK_HEIGHT }}>
+  return <div role="region" aria-label="内存使用量" className="group flex flex-row" style={{ height: TRACK_HEIGHT }}>
     <TrackLabel label="Memory" icon={<DatabaseIcon className="size-4 text-orange-500" />} metrics={metrics} title={title} />
     <div className="min-w-0 flex-1 h-full relative border-b border-border">
       <PerformanceAreaChart data={series.data} zoomState={zoomState}

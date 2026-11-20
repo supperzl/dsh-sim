@@ -75,11 +75,11 @@ export function testSourceSuggestions(source: string, cursor: number): TestSourc
   if (agentOption) {
     const typed = agentOption[2].replace(/[^A-Za-z]/g, "");
     const options: TestSourceSuggestion[] = agentOption[1] === "act"
-      ? [{ label: "params", insert: " { params: {} }", cursorBack: 3, detail: "Pass named values to the agent" }]
+      ? [{ label: "params", insert: " { params: {} }", cursorBack: 3, detail: "把具名值传给智能体" }]
       : [
-      { label: "vision: true", insert: " { vision: true }", detail: "Use the image when needed" },
-      { label: 'vision: "only"', insert: ' { vision: "only" }', detail: "Use only the image" },
-      { label: "vision: false", insert: " { vision: false }", detail: "Use the accessibility tree" },
+      { label: "vision: true", insert: " { vision: true }", detail: "需要时使用图像" },
+      { label: 'vision: "only"', insert: ' { vision: "only" }', detail: "仅使用图像" },
+      { label: "vision: false", insert: " { vision: false }", detail: "使用辅助功能树" },
     ];
     return matching(options, typed, cursor - agentOption[2].length, cursor);
   }
@@ -90,7 +90,7 @@ export function testSourceSuggestions(source: string, cursor: number): TestSourc
     const needsValue = method === "toHaveText" || method === "toContainText" || method === "toHaveValue";
     if (option && (!needsValue && args === option[1] || needsValue && /,\s*\{?\s*[A-Za-z]*$/.test(args))) {
       const typed = option[1].replace(/[^A-Za-z]/g, "");
-      return matching([{ label: "timeout", insert: "{ timeout: 30000 }", detail: "Wait up to 30000 ms" }],
+      return matching([{ label: "timeout", insert: "{ timeout: 30000 }", detail: "最多等待 30000 毫秒" }],
         typed, cursor - option[1].length, cursor);
     }
   }

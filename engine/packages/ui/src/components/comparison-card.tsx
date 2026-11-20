@@ -172,18 +172,18 @@ function SharpChanges({ recordings, changes, duration, range, hiddenIds, selecte
           <span className="comparison-change-copy"><span>{describeChange(change)}</span><small>{seconds(change.start)}–{seconds(change.end)}</small></span>
         </button>
       </li>)}</ul>
-      : <p className="comparison-changes-empty">No sharp changes in any run.</p>}
+      : <p className="comparison-changes-empty">任何运行中都没有明显变化。</p>}
   </section>;
 }
 
 type Measure = { key: string; label: string; digits: number; pick: (summary: RunSummary) => number | null | undefined; format: (value: number) => string };
 const MEASURES: Measure[] = [
-  { key: "cpu-average", label: "Average CPU", digits: 1, pick: summary => summary?.averageCpuPercent, format: value => `${value.toFixed(1)}%` },
-  { key: "cpu-peak", label: "Peak CPU", digits: 1, pick: summary => summary?.peakCpuPercent, format: value => `${value.toFixed(1)}%` },
+  { key: "cpu-average", label: "平均 CPU", digits: 1, pick: summary => summary?.averageCpuPercent, format: value => `${value.toFixed(1)}%` },
+  { key: "cpu-peak", label: "峰值 CPU", digits: 1, pick: summary => summary?.peakCpuPercent, format: value => `${value.toFixed(1)}%` },
   { key: "memory", label: "Memory Δ (MiB)", digits: 0, pick: summary => summary?.memoryChangeBytes == null ? null : summary.memoryChangeBytes / MIB, format: value => signed(value) },
-  { key: "fps", label: "Average FPS", digits: 1, pick: summary => summary?.averageFps, format: value => value.toFixed(1) },
-  { key: "jank", label: "Jank rate", digits: 1, pick: summary => summary?.frameStats?.jankRatePercent, format: value => `${value.toFixed(1)}%` },
-  { key: "p95", label: "P95 frame interval", digits: 2, pick: summary => summary?.frameStats?.p95FrameIntervalMs, format: value => `${value.toFixed(2)} ms` },
+  { key: "fps", label: "平均 FPS", digits: 1, pick: summary => summary?.averageFps, format: value => value.toFixed(1) },
+  { key: "jank", label: "卡顿率", digits: 1, pick: summary => summary?.frameStats?.jankRatePercent, format: value => `${value.toFixed(1)}%` },
+  { key: "p95", label: "P95 帧间隔", digits: 2, pick: summary => summary?.frameStats?.p95FrameIntervalMs, format: value => `${value.toFixed(2)} ms` },
 ];
 
 /** One small bar chart per measure: the runs side by side on a shared scale. */
@@ -282,7 +282,7 @@ export function ComparisonCard({ controller }: { controller: ComparisonControlle
     return shifted;
   }, [derived, memoryScale]);
   if (comparison === undefined || derived === undefined || selected === undefined) {
-    return <article className="recording-card"><p role="status">Loading performance comparison…</p>{state.error && <p role="alert">{state.error}</p>}</article>;
+    return <article className="recording-card"><p role="status">正在加载性能对比…</p>{state.error && <p role="alert">{state.error}</p>}</article>;
   }
   const recordings = comparison.recordings;
   const summaries = selected.map(run => run.summary);
@@ -299,7 +299,7 @@ export function ComparisonCard({ controller }: { controller: ComparisonControlle
       const value = pick(summaries[index]);
       return [{ index, text: value == null ? "—" : format(value) }];
     });
-  const scaleSwitch = <SegmentedControl label="Memory scale" value={memoryScale} options={[{ value: "absolute", label: "Absolute" }, { value: "change", label: "Change" }]}
+  const scaleSwitch = <SegmentedControl label="内存刻度" value={memoryScale} options={[{ value: "absolute", label: "Absolute" }, { value: "change", label: "Change" }]}
     onChange={scale => { setMemoryScale(scale); countUiEvent("ui.comparison.memory_scale_changed"); }} />;
   function chart(metric: ComparisonMetric, data: ComparisonPoint[]) {
     const common = { data, recordings, hiddenIds: state.hiddenIds, duration: derived!.duration, range, onDrag: setDrag, onSelect: controller.select };
@@ -309,7 +309,7 @@ export function ComparisonCard({ controller }: { controller: ComparisonControlle
         format={value => `${value.toFixed(1)}%`} axis={{ domain: [0, max => Math.max(100, Math.ceil(max / 25) * 25)], tick: value => `${value}%` }} />;
     }
     if (metric === "fps") {
-      return <ComparisonChart key={metric} {...common} label="Display FPS" info="Display FPS measures the whole device, including activity outside the app. Average is each run's mean in the selection, or in the whole run."
+      return <ComparisonChart key={metric} {...common} label="显示 FPS" info="Display FPS measures the whole device, including activity outside the app. Average is each run's mean in the selection, or in the whole run."
         metric={<TrackMetric label="Average" values={values("fps", summary => summary?.averageFps, value => value.toFixed(1))} hiddenIds={state.hiddenIds} recordings={recordings} />}
         format={value => `${value.toFixed(1)} fps`} axis={{ domain: [0, "auto"], tick: value => `${value}` }} />;
     }
@@ -339,7 +339,7 @@ export function ComparisonCard({ controller }: { controller: ComparisonControlle
     <div className="recording-body">
       <div className="recording-charts">
         {tracks.map(track => chart(track.metric, track.data))}
-        {tracks.length === 0 && <p role="status">No performance readings in these runs.</p>}
+        {tracks.length === 0 && <p role="status">这些运行中没有性能读数。</p>}
         {measures.length > 0 && <section className="comparison-summary" aria-label="Summary">
           <div className="recording-track-heading"><h3>Summary</h3>
             <InfoPopover label="summary">Each figure covers the selection, or each whole run when nothing is selected. Bars share a scale within each measure; hover a run for its difference from run 1.{differentDurations ? " Runs keep their own lengths, so whole-run figures can cover different durations." : ""}</InfoPopover>
@@ -366,8 +366,8 @@ export function ComparisonCard({ controller }: { controller: ComparisonControlle
           {recordings.map(recording => recording.error && <p key={recording.id} className="recording-error">{recording.title}: {recording.error}</p>)}
         </section>
         <div className="recording-actions comparison-actions">
-          <Button disabled={state.canMessage === false || state.busy} onClick={() => { void controller.ask(); }}><MessageCircleIcon />{range ? "Ask about this range" : "询问对比情况"}</Button>
-          {state.canMessage === false && <p>This host does not support sending chart selections to chat.</p>}
+          <Button disabled={state.canMessage === false || state.busy} onClick={() => { void controller.ask(); }}><MessageCircleIcon />{range ? "就此范围提问" : "询问对比情况"}</Button>
+          {state.canMessage === false && <p>此宿主不支持将图表选择发送到聊天。</p>}
           {state.error && <p role="alert" className="recording-error">{state.error}</p>}
         </div>
       </aside>

@@ -19,7 +19,8 @@
     "README.md",
     "README.zh.md",
     "LICENSE",
-    "vendor"
+    "vendor",
+    "skills"
   ],
   "dependencies": {
     "serve-sim": "^0.1.49",

@@ -26,7 +26,7 @@ function AppPicker({ panel, state }: { panel: StoragePanel; state: StorageState 
     <SelectTrigger id="storage-app" size="sm" aria-label="应用" className="w-64 min-w-28 shrink">
       <SelectValue>{(value: string | null) => {
         const app = apps.find(item => item.bundleId === value);
-        if (!app) return value ? <span className="truncate">{value}</span> : <span className="text-muted-foreground">{state.busy === "apps" ? "Loading apps…" : "选择应用"}</span>;
+        if (!app) return value ? <span className="truncate">{value}</span> : <span className="text-muted-foreground">{state.busy === "apps" ? "正在加载应用…" : "选择应用"}</span>;
         return <><AppAvatar name={app.name} icon={app.icon} size="xs" /><span className="max-w-40 shrink-0 truncate">{app.name}</span>{app.name !== app.bundleId && <span className="min-w-0 truncate text-xs text-muted-foreground">{app.bundleId}</span>}</>;
       }}</SelectValue>
     </SelectTrigger>
@@ -50,12 +50,12 @@ export const StorageView = memo(function StorageView({ panel }: { panel: Storage
   const busy = isWorking(state);
   const search = query.trim().toLowerCase();
   const changeCount = shownChanges(state).length;
-  const copy = (text: string) => { void navigator.clipboard.writeText(text).then(() => setCopied("Copied"), () => setCopied("Could not copy")); };
+  const copy = (text: string) => { void navigator.clipboard.writeText(text).then(() => setCopied("Copied"), () => setCopied("复制失败")); };
 
   let body: ReactNode;
-  if (state.unsupported || !state.available) body = <StorageEmpty title="App storage unavailable" description={state.available ? state.unsupported : "This host cannot call the plugin's tools."} />;
-  else if (!state.bundleId) body = <StorageEmpty title="选择应用" description={state.busy === "apps" ? "Loading installed apps…" : "选择已安装的应用查看它保存的数据。"} />;
-  else if (!snapshot) body = state.error ? null : <StorageEmpty title="Reading app data…" description="MMKV, AsyncStorage, UserDefaults, SharedPreferences, databases, and files." />;
+  if (state.unsupported || !state.available) body = <StorageEmpty title="应用存储不可用" description={state.available ? state.unsupported : "此宿主无法调用插件的工具。"} />;
+  else if (!state.bundleId) body = <StorageEmpty title="选择应用" description={state.busy === "apps" ? "正在加载已安装应用…" : "选择已安装的应用查看它保存的数据。"} />;
+  else if (!snapshot) body = state.error ? null : <StorageEmpty title="正在读取应用数据…" description="MMKV、AsyncStorage、UserDefaults、SharedPreferences、数据库和文件。" />;
   else if (state.tab === "changes") body = <ChangesView panel={panel} query={search} />;
   else body = <BrowseView key={`${snapshot.platform}:${snapshot.bundleId}`} panel={panel} snapshot={snapshot} query={search} copy={copy} />;
 
@@ -74,7 +74,7 @@ export const StorageView = memo(function StorageView({ panel }: { panel: Storage
           <RefreshCwIcon className={state.busy === "read" ? "animate-spin" : undefined} />
         </Button>
         <ConfirmButton variant="outline" size="sm" title="重置应用数据" action="重置应用数据" disabled={!state.bundleId || busy || state.unsupported !== ""}
-          description={state.platform === "android" ? "Stops the app and clears all its data with pm clear, like Settings › Clear storage. The app stays installed." : "停止应用并删除其数据容器中的所有内容（包括 UserDefaults）。应用仍保持安装状态。"}
+          description={state.platform === "android" ? "停止应用并用 pm clear 清除其全部数据，类似“设置 › 清除存储”。应用仍保持安装。" : "停止应用并删除其数据容器中的所有内容（包括 UserDefaults）。应用仍保持安装状态。"}
           onConfirm={() => void panel.clear()}><RotateCcwIcon />Reset</ConfirmButton>
       </ButtonGroup>
     </header>

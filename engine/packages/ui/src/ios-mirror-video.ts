@@ -20,7 +20,7 @@ export class PhysicalIosVideo {
   private readonly requestKey: () => void;
 
   constructor(output: (frame: VideoFrame) => void, requestKey: () => void) {
-    if (typeof VideoDecoder === "undefined" || typeof EncodedVideoChunk === "undefined") throw new StopReconnectError("This host does not support HEVC screen mirroring through WebCodecs.");
+    if (typeof VideoDecoder === "undefined" || typeof EncodedVideoChunk === "undefined") throw new StopReconnectError("此宿主不支持通过 WebCodecs 进行 HEVC 屏幕镜像。");
     this.output = output;
     this.requestKey = requestKey;
   }

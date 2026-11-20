@@ -226,11 +226,11 @@ function SwipeBranch({ swipes, onChoose }: {
 
 /** What `agent.assert`'s judge is shown, as three plain choices over `VisionMode`. */
 const VISION_CHOICES: { value: VisionMode; label: string; hint: string }[] = [
-  { value: false, label: "Off", hint: "Judge from the element tree alone. The runner's default." },
+  { value: false, label: "Off", hint: "仅凭元素树判断。这是运行器的默认方式。" },
   { value: true, label: "On", hint: "Judge from the tree and a masked screenshot." },
   // 'only' is the one that can be refused outright: with no tree to fall back on, a screen the
   // runner cannot prove it redacted is denied with POLICY_DENIED rather than sent.
-  { value: "only", label: "Screenshot only", hint: "Judge from the screenshot alone. Denied when the pixels cannot be proven redacted." },
+  { value: "only", label: "仅截图", hint: "仅凭截图判断。无法证明像素已脱敏时会被拒绝。" },
 ];
 
 const visionLabel = (value: VisionMode) => VISION_CHOICES.find(choice => choice.value === value)!.label;
@@ -274,9 +274,9 @@ function ParamsEditor({ rows, onChange }: { rows: ParamRow[]; onChange: (rows: P
     </div>)}
     <MenuRow icon={<PlusIcon className="size-4 shrink-0 text-muted-foreground" />}
       attributes={{ "data-recorder-param-add": "" }}
-      title="A value the instruction refers to, passed to the agent rather than written into it"
+      title="指令引用的值，会传给智能体而不写入指令本身"
       onClick={() => onChange([...rows, { id: `${prefix}-${rows.length}-${Date.now()}`, key: "", value: "" }])}
-    >Add param</MenuRow>
+    >添加参数</MenuRow>
   </div>;
 }
 
@@ -357,14 +357,14 @@ export function AgenticBranch({ suggestion, onRecord }: {
       >Assert</MenuRow>}
     ><JudgementForm kind="agentAssert" onRecord={onRecord} /></Branch>
     <Branch
-      label="Wait for" width={FORM_WIDTH} align="top" flip
+      label="等待" width={FORM_WIDTH} align="top" flip
       attributes={{ "data-element": "recorder-agentic-waitfor" }}
       renderRow={handlers => <MenuRow
         chevron icon={<OfferIcon kind="agentWaitFor" />}
         attributes={{ "data-recorder-agentic": "agentWaitFor" }}
         title="agent.waitFor(…) — the agent judges on a loop until it holds"
         onOpen={handlers.onOpen} onClick={handlers.onClick}
-      >Wait for</MenuRow>}
+      >等待</MenuRow>}
     ><JudgementForm kind="agentWaitFor" onRecord={onRecord} /></Branch>
   </Branch>;
 }

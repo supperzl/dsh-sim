@@ -33,12 +33,12 @@ export function AppFlowProjectPicker({ panel }: { panel: AppFlowPanel }) {
             </span>
           </span>
         </Button>)}
-        {state.projects.length === 0 && <p className="px-1.5 py-1 text-xs text-muted-foreground">No projects yet. Choose a folder to map.</p>}
+        {state.projects.length === 0 && <p className="px-1.5 py-1 text-xs text-muted-foreground">尚无项目。请选择要映射的文件夹。</p>}
         <Button type="button" variant="ghost" data-project-browse disabled={state.pickingProject} className="h-auto min-h-7 justify-start rounded-md px-1.5 py-1 text-left font-normal" onClick={() => { setOpen(false); void panel.pickProject(); }}>
           <FolderOpenIcon />Choose another folder…
         </Button>
       </PopoverContent>
     </Popover>
-    {state.pickingProject && <span className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground" role="status"><LoaderCircleIcon className="animate-spin" />Choose a folder…</span>}
+    {state.pickingProject && <span className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground" role="status"><LoaderCircleIcon className="animate-spin" />选择文件夹…</span>}
   </div>;
 }

@@ -57,7 +57,7 @@ export const LogsView = memo(function LogsView({ panel }: { panel: LogsPanel }) 
   const copyLog = useCallback(async (log: StackedLog) => {
     const prefix = log.tag || log.process;
     const text = `${prefix ? `${prefix}: ` : ""}${log.message}${log.stack ? `\n${log.stack}` : ""}`;
-    try { await navigator.clipboard.writeText(text); setCopyStatus("Log copied"); }
+    try { await navigator.clipboard.writeText(text); setCopyStatus("日志已复制"); }
     catch { setCopyStatus("无法复制日志"); }
   }, []);
   const renderItem = useCallback(({ item }: LegendListRenderItemProps<StackedLog>) => {
@@ -121,17 +121,17 @@ export const LogsView = memo(function LogsView({ panel }: { panel: LogsPanel }) 
           <Popover>
             <PopoverTrigger asChild><Button variant="ghost" size="icon-sm" className="shrink-0" title="日志筛选帮助" aria-label="日志筛选帮助"><CircleHelpIcon /></Button></PopoverTrigger>
             <PopoverContent align="start" className="w-[min(360px,calc(100vw-24px))] max-h-[var(--radix-popover-content-available-height)] overflow-y-auto p-3 text-xs" aria-label="日志筛选帮助">
-              <p className="mb-2 font-medium">Filter logs</p>
+              <p className="mb-2 font-medium">筛选日志</p>
               <p className="mb-2 text-muted-foreground">Keywords match text and metadata. Use quotes for phrases. Without explicit operators or groups, repeated fields match any value.</p>
               <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-2">
-                <code>level:error level:warn</code><span>Errors or warnings</span>
-                <code>message:"request failed"</code><span>Message phrase</span>
-                <code>app:com.example.app</code><span>App ID, exact match</span>
-                <code>pid:123</code><span>Process ID, exact match</span>
-                <code>age:5m</code><span>Last five minutes</span>
-                <code>-message:noise</code><span>Exclude matches</span>
-                <code>network &amp; (timeout | failed)</code><span>AND, OR, grouping</span>
-                <code>message~:"error.*timeout"</code><span>Regex, case insensitive</span>
+                <code>level:error level:warn</code><span>错误或警告</span>
+                <code>message:"request failed"</code><span>消息短语</span>
+                <code>app:com.example.app</code><span>App ID，精确匹配</span>
+                <code>pid:123</code><span>进程 ID，精确匹配</span>
+                <code>age:5m</code><span>最近五分钟</span>
+                <code>-message:noise</code><span>排除匹配项</span>
+                <code>network &amp; (timeout | failed)</code><span>AND、OR、分组</span>
+                <code>message~:"error.*timeout"</code><span>正则表达式，不区分大小写</span>
               </div>
               <p className="mt-3 text-muted-foreground">Fields: app, pid, level, message, age, source, origin, process, tag, subsystem, category, stack, timestamp. Age units: s, m, h, d. Spaces mean AND.</p>
             </PopoverContent>
@@ -140,7 +140,7 @@ export const LogsView = memo(function LogsView({ panel }: { panel: LogsPanel }) 
           <Toggle size="sm" className="size-7 shrink-0 p-0" pressed={logs.stacked} onPressedChange={value => panel.list.setStacked(value)} title="合并相同日志" aria-label="合并相同日志"><LayersIcon /></Toggle>
           <Toggle size="sm" className="size-7 shrink-0 p-0" pressed={logs.follow} onPressedChange={value => { userScrolling.current = false; panel.list.setFollow(value); }} title="跟随新日志" aria-label="跟随新日志"><ArrowDownToLineIcon /></Toggle>
           <Toggle id="logs-pause" size="sm" className="size-7 shrink-0 p-0" title={state.paused ? "恢复日志" : "暂停日志"} aria-label={state.paused ? "恢复日志" : "暂停日志"} pressed={state.paused} onPressedChange={() => panel.togglePause()}>{state.paused ? <PlayIcon /> : <PauseIcon />}</Toggle>
-          <Button variant="ghost" size="icon-sm" className="shrink-0" title="Clear logs" aria-label="Clear logs" onClick={() => panel.list.clear()}><ListXIcon /></Button>
+          <Button variant="ghost" size="icon-sm" className="shrink-0" title="清除日志" aria-label="清除日志" onClick={() => panel.list.clear()}><ListXIcon /></Button>
           <Popover open={state.settings} onOpenChange={open => { if (open !== state.settings) panel.toggleSettings(); }}>
             <PopoverTrigger asChild><Button variant="ghost" size="icon-sm" className="shrink-0" title="日志设置" aria-label="日志来源"><SlidersHorizontalIcon /></Button></PopoverTrigger>
             <PopoverContent id="logs-settings" align="end" className="w-[min(340px,calc(100vw-24px))] max-h-[min(560px,var(--radix-popover-content-available-height))] overflow-y-auto p-3" aria-label="日志设置">
@@ -155,8 +155,8 @@ export const LogsView = memo(function LogsView({ panel }: { panel: LogsPanel }) 
                     <NativeSelectOption value="ios">{state.selectedLabel}</NativeSelectOption><NativeSelectOption value="none">None</NativeSelectOption>
                     {state.android.map(device => <NativeSelectOption key={device.id} value={`android:${device.id}`}>Android · {device.name}</NativeSelectOption>)}
                   </NativeSelect></Field>
-                  <Field className="gap-1"><div className="flex items-center justify-between gap-2"><FieldLabel htmlFor="logs-follow-app" className="text-xs">跟随前台应用</FieldLabel><Switch id="logs-follow-app" aria-label="跟随前台应用" checked={state.followApp} disabled={state.native !== "ios"} onCheckedChange={followApp => panel.configure({ followApp })} /></div><FieldDescription className="text-[11px]">{state.appDiscoveryError || "Updates the app clause in the search bar. Edit or clear that clause to stop following."}</FieldDescription></Field>
-                  <Field className="gap-1"><div className="flex items-center justify-between gap-2"><FieldLabel htmlFor="logs-hide-system" className="text-xs">隐藏 iOS 系统噪声</FieldLabel><Switch id="logs-hide-system" aria-label="隐藏 iOS 系统噪声" checked={state.hideSystemLogs} disabled={state.native !== "ios" || state.selectedPlatform === "android"} onCheckedChange={hideSystemLogs => panel.configure({ hideSystemLogs })} /></div><FieldDescription className="text-[11px]">Hides routine Apple framework logs. Errors and faults stay visible. Changing this starts a fresh log stream.</FieldDescription></Field>
+                  <Field className="gap-1"><div className="flex items-center justify-between gap-2"><FieldLabel htmlFor="logs-follow-app" className="text-xs">跟随前台应用</FieldLabel><Switch id="logs-follow-app" aria-label="跟随前台应用" checked={state.followApp} disabled={state.native !== "ios"} onCheckedChange={followApp => panel.configure({ followApp })} /></div><FieldDescription className="text-[11px]">{state.appDiscoveryError || "更新搜索栏中的应用子句。编辑或清除该子句即可停止跟随。"}</FieldDescription></Field>
+                  <Field className="gap-1"><div className="flex items-center justify-between gap-2"><FieldLabel htmlFor="logs-hide-system" className="text-xs">隐藏 iOS 系统噪声</FieldLabel><Switch id="logs-hide-system" aria-label="隐藏 iOS 系统噪声" checked={state.hideSystemLogs} disabled={state.native !== "ios" || state.selectedPlatform === "android"} onCheckedChange={hideSystemLogs => panel.configure({ hideSystemLogs })} /></div><FieldDescription className="text-[11px]">隐藏常规 Apple 框架日志。错误和故障仍会显示。更改此项会重新开始日志流。</FieldDescription></Field>
                 </div>
                 <div className="flex min-w-0 flex-col gap-2">
                   <Field className="gap-1"><FieldLabel htmlFor="logs-metro-url" className="text-xs">服务器 URL</FieldLabel><Input id="logs-metro-url" className="h-8 text-xs" type="url" value={state.metroUrl} maxLength={2048} spellCheck={false} onChange={event => panel.configure({ metroUrl: event.target.value })} /></Field>
@@ -164,7 +164,7 @@ export const LogsView = memo(function LogsView({ panel }: { panel: LogsPanel }) 
                     {state.metro.map(target => <NativeSelectOption key={target.id} value={target.id}>{target.appId ?? target.title}{target.deviceName ? ` · ${target.deviceName}` : ""} · {target.id}</NativeSelectOption>)}
                   </NativeSelect></Field>
                 </div>
-                <Button type="submit" size="sm" className="w-full" disabled={!state.available}>Connect sources</Button>
+                <Button type="submit" size="sm" className="w-full" disabled={!state.available}>连接来源</Button>
               </form>
             </PopoverContent>
           </Popover>
@@ -211,7 +211,7 @@ export const LogsView = memo(function LogsView({ panel }: { panel: LogsPanel }) 
             onPointerCancelCapture={endUserScroll}>
             {logs.filtered.length ? <LegendList ref={listRef} tabIndex={0} data={logs.filtered} keyExtractor={rowKey} renderItem={renderItem} extraData={selectedSequence} estimatedItemSize={28} recycleItems
               initialScrollAtEnd={logs.follow} initialScrollOffset={panel.list.scrollOffset}
-              maintainScrollAtEnd={logs.follow} maintainScrollAtEndThreshold={followScrollThreshold} maintainVisibleContentPosition={{ data: !logs.follow, size: true }} style={{ height: "100%" }} /> : <Empty><EmptyHeader><EmptyMedia variant="icon">{logs.query ? <SearchIcon /> : <TerminalIcon />}</EmptyMedia><EmptyTitle>{logs.buffered ? "没有日志匹配这些筛选条件。" : "等待日志"}</EmptyTitle>{!logs.buffered && <EmptyDescription>Start an app or choose a source.</EmptyDescription>}</EmptyHeader></Empty>}
+              maintainScrollAtEnd={logs.follow} maintainScrollAtEndThreshold={followScrollThreshold} maintainVisibleContentPosition={{ data: !logs.follow, size: true }} style={{ height: "100%" }} /> : <Empty><EmptyHeader><EmptyMedia variant="icon">{logs.query ? <SearchIcon /> : <TerminalIcon />}</EmptyMedia><EmptyTitle>{logs.buffered ? "没有日志匹配这些筛选条件。" : "等待日志"}</EmptyTitle>{!logs.buffered && <EmptyDescription>启动应用或选择来源。</EmptyDescription>}</EmptyHeader></Empty>}
           </div>
           </ResizablePanel>
           {logs.selected && <><ResizableHandle aria-label="调整日志列表与详情区域大小" /><ResizablePanel id="log-detail-resizable" defaultSize="42%" minSize="25%" maxSize="70%"><LogDetails key={logs.selected.sequence} log={logs.selected} onClose={() => panel.list.select()}>

@@ -27,7 +27,7 @@ function ProjectPicker({ projectPath, recents, disabled, onSelect, onBrowse }: {
 }) {
   const options = [...new Set([...(projectPath ? [projectPath] : []), ...recents])];
   if (!options.length) return <Button variant="outline" size="sm" data-project-picker disabled={disabled} onClick={onBrowse}><FolderOpenIcon />选择项目</Button>;
-  return <Select items={[...options.map(path => ({ value: path, label: folderName(path) })), { value: BROWSE, label: "Choose another project…" }]}
+  return <Select items={[...options.map(path => ({ value: path, label: folderName(path) })), { value: BROWSE, label: "选择其他项目…" }]}
     value={projectPath || null} disabled={disabled}
     onValueChange={value => { if (value === BROWSE) onBrowse(); else if (value) onSelect(value); }}>
     <SelectTrigger id="app-intel-project" data-project-picker size="sm" aria-label="App Intelligence project" className="w-52 min-w-28 shrink">
@@ -41,7 +41,7 @@ function ProjectPicker({ projectPath, recents, disabled, onSelect, onBrowse }: {
         </span>
       </SelectItem>)}
       <SelectSeparator />
-      <SelectItem value={BROWSE}><FolderOpenIcon />Choose another project…</SelectItem>
+      <SelectItem value={BROWSE}><FolderOpenIcon />选择其他项目…</SelectItem>
     </SelectGroup></SelectContent>
   </Select>;
 }
@@ -377,8 +377,8 @@ function ProjectOverview({ projectName, available, activeBoundary, onSelect }: {
         </button>
       </div>;
     })}
-    {available.length === 0 && <p className="absolute inset-x-0 bottom-8 text-center text-xs text-muted-foreground">No entry points were found in this graph.</p>}
-    {available.length > 0 && <p className="absolute inset-x-0 bottom-1 text-center text-[10.5px] text-muted-foreground">Select an area to browse its entry points</p>}
+    {available.length === 0 && <p className="absolute inset-x-0 bottom-8 text-center text-xs text-muted-foreground">此图中未找到入口。</p>}
+    {available.length > 0 && <p className="absolute inset-x-0 bottom-1 text-center text-[10.5px] text-muted-foreground">选择一个区域以浏览其入口</p>}
   </div>;
 }
 
@@ -429,9 +429,9 @@ export const AppIntelligenceView = memo(function AppIntelligenceView({ panel }: 
     {state.run && <div className="shrink-0 border-b px-3 py-2 text-xs text-muted-foreground" role="status">{state.run.message}</div>}
     {/* A reopened panel starts blank and reloads what it remembered: showing the empty states
         while that load is in flight would flash the wrong screen before the real one lands. */}
-    {state.busy === "loading" && !snapshot ? <div className="grid flex-1 place-items-center p-8 text-center"><p className="text-sm text-muted-foreground">Loading App Intelligence…</p></div>
-      : !state.projectPath ? <div className="grid flex-1 place-items-center p-8 text-center"><div><NetworkIcon className="mx-auto mb-3 size-8 text-muted-foreground" /><h2 className="font-medium">Map a React Native app</h2><p className="mt-1 max-w-md text-sm text-muted-foreground">Choose a project to discover Expo Router and React Navigation entries, then trace their native dependencies.</p></div></div>
-      : !snapshot ? <div className="grid flex-1 place-items-center p-8 text-center"><div><h2 className="font-medium">No App Intelligence yet</h2><p className="mt-1 text-sm text-muted-foreground">Generate a static iOS + Android entry-point and dependency graph.</p></div></div>
+    {state.busy === "loading" && !snapshot ? <div className="grid flex-1 place-items-center p-8 text-center"><p className="text-sm text-muted-foreground">正在加载 App Intelligence…</p></div>
+      : !state.projectPath ? <div className="grid flex-1 place-items-center p-8 text-center"><div><NetworkIcon className="mx-auto mb-3 size-8 text-muted-foreground" /><h2 className="font-medium">映射 React Native 应用</h2><p className="mt-1 max-w-md text-sm text-muted-foreground">选择一个项目以发现 Expo Router 和 React Navigation 入口，然后追踪它们的原生依赖。</p></div></div>
+      : !snapshot ? <div className="grid flex-1 place-items-center p-8 text-center"><div><h2 className="font-medium">尚无 App Intelligence</h2><p className="mt-1 text-sm text-muted-foreground">Generate a static iOS + Android entry-point and dependency graph.</p></div></div>
       : <div className={`grid min-h-0 flex-1 ${asideOpen ? "grid-cols-[minmax(20rem,1fr)_minmax(13rem,15rem)]" : "grid-cols-[1fr]"} max-[720px]:grid-cols-1 max-[720px]:grid-rows-[minmax(0,1.6fr)_minmax(0,1fr)]`}>
         <main className="flex min-h-0 min-w-0 flex-col border-r max-[720px]:border-b max-[720px]:border-r-0">
           <div className="flex shrink-0 items-center gap-2 border-b px-3 py-1.5 text-xs">
@@ -473,12 +473,12 @@ export const AppIntelligenceView = memo(function AppIntelligenceView({ panel }: 
               onToggle={toggleBoundary} onLight={boundary => panel.litBoundaryTo(`*:${boundary}`)} onAll={checked => panel.setBoundaries(checked ? null : [])} />
           </div>
           {railOpen && <div id="app-intel-entries" className="min-h-0 flex-1 overflow-auto">
-            {screens.length === 0 ? <p className="px-3 py-3 text-[11px] text-muted-foreground">No entry point matches the filter.</p>
+            {screens.length === 0 ? <p className="px-3 py-3 text-[11px] text-muted-foreground">没有符合筛选条件的入口。</p>
               : screens.map(({ id, screen, boundary }) => <button key={id} type="button" data-entry={id} data-entry-boundary={boundary} aria-current={selected === id} className={`block w-full border-b px-3 py-2 text-left hover:bg-muted/50 ${selected === id ? "bg-muted shadow-[inset_2px_0_0_var(--primary)]" : ""}`}
                 onClick={() => panel.selectScreen(id)}>
                 <span className="flex items-center gap-1.5"><span className="size-1.5 shrink-0 rounded-full" style={{ background: boundaryColor(boundary) }} /><span className="truncate text-xs font-medium">{screen.title}</span></span>
                 <span className="block truncate font-mono text-[10.5px] text-muted-foreground">{screen.route ?? id}</span>
-                <span className="block truncate font-mono text-[10px] text-muted-foreground">{screen.source ?? "Source unresolved"}</span>
+                <span className="block truncate font-mono text-[10px] text-muted-foreground">{screen.source ?? "来源未解析"}</span>
               </button>)}
           </div>}
         </aside>}

@@ -19,9 +19,9 @@ type Props = { nodes: AppFlowNode[]; projectPath?: string; projectId: string; pa
   view: GraphView; viewOptions: GraphViewOption[]; onViewChange: (view: GraphView) => void };
 const FIT_VIEW_OPTIONS = { padding: 0.12, minZoom: 0.3, maxZoom: 1 };
 const OPENED_BY: Record<NonNullable<AppFlowUiState["openedBy"]>, string> = {
-  state: "Opened by the screen’s own state setter",
-  control: "Opened by the screen’s own controller",
-  mount: "Projected from source, in isolation",
+  state: "由该屏幕自身的状态设置器打开",
+  control: "由该屏幕自身的控制器打开",
+  mount: "仅从源码推断",
 };
 
 function ScreenParentNode({ data }: NodeProps) {
@@ -51,7 +51,7 @@ function UiStateNode({ data }: NodeProps) {
         // A variant the pass found in source and could not open keeps its card, with the reason on
         // it: dropping it would make a partly failed pass look like a smaller app.
         : <div className="flex flex-1 flex-col items-center justify-center gap-1 bg-muted/40 px-3 text-center text-[10px] leading-snug text-amber-600">
-          <span aria-hidden className="text-sm">!</span><span>{state.error ?? "Not captured"}</span></div>}
+          <span aria-hidden className="text-sm">!</span><span>{state.error ?? "未捕获"}</span></div>}
       <div className="shrink-0 space-y-0.5 px-2.5 py-2">
         <div className="truncate text-[11px] font-medium" title={state.name}>{state.name}</div>
         <div className="truncate text-[9px] text-muted-foreground" title={`${state.file}:${state.line}`}>{state.file}:{state.line}</div>
@@ -90,7 +90,7 @@ export function AppFlowUiStatesGraph({ nodes, projectPath, projectId, panel, vie
           there would be no way back to the flow graph. */}
       <div className="absolute top-3 right-3 w-44"><GraphViewSelect view={view} viewOptions={viewOptions} onViewChange={onViewChange} /></div>
       <h3 className="text-base font-medium">未捕获任何 UI 状态</h3>
-      <p className="max-w-md text-sm text-muted-foreground">Turn on “Capture UI states” before a sweep and this map fills with each screen’s sheets, modals and dialogs.</p></div>;
+      <p className="max-w-md text-sm text-muted-foreground">在遍历前开启“捕获 UI 状态”，此映射就会填入每个屏幕的底部弹层、模态框和对话框。</p></div>;
   }
   return <GraphContext.Provider value={{ panel, projectPath: projectPath ?? null, projectId }}><div className="relative h-full min-h-80 w-full">
     <ReactFlow nodes={flowNodes} edges={flowEdges} nodeTypes={nodeTypes} onNodeClick={(_, node) => setSelectedId(current => current === node.id ? null : node.id)}

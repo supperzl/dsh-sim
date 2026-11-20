@@ -35,7 +35,7 @@ function tokenize(query: string): Token[] {
       }
       index++;
     }
-    if (quote) throw new Error("Close the quoted value.");
+    if (quote) throw new Error("补上引号以闭合该值。");
     let field: string | undefined;
     let regex = false;
     let value = word;
@@ -46,7 +46,7 @@ function tokenize(query: string): Token[] {
       field = field.toLowerCase();
       if (field === "") throw new Error("Enter a field before the colon.");
       value = word.slice(colon + 1);
-      if (!value) throw new Error("Enter a value after the colon.");
+      if (!value) throw new Error("请在冒号后输入值。");
     }
     const negated = tokens.at(-1)?.type === "not";
     if (negated) tokens.pop();
@@ -114,7 +114,7 @@ function createTerm(term: Term): Match {
     let pattern: RegExp | undefined;
     if (term.regex) {
       try { pattern = new RegExp(term.value, "i"); }
-      catch { throw new Error("Enter a valid regular expression."); }
+      catch { throw new Error("请输入有效的正则表达式。"); }
     }
     const expected = field === "level" ? levelAliases[value] ?? value : value;
     const fields = field ? [field] : textFields;
@@ -147,7 +147,7 @@ export function compileLogQuery(query: string): LogQuery {
     let index = 0;
     const primary = (): Match => {
       const token = tokens[index++];
-      if (!token) throw new Error("Enter a term after the operator.");
+      if (!token) throw new Error("请在运算符后输入词项。");
       if (token.type === "term") return createTerm(token);
       if (token.type === "not") {
         const match = primary();
@@ -155,11 +155,11 @@ export function compileLogQuery(query: string): LogQuery {
       }
       if (token.type === "open") {
         const match = expression();
-        if (tokens[index]?.type !== "close") throw new Error("Close the group with a parenthesis.");
+        if (tokens[index]?.type !== "close") throw new Error("用右括号闭合分组。");
         index++;
         return match;
       }
-      throw new Error("Expected a keyword, field filter, or group.");
+      throw new Error("应为关键词、字段过滤器或分组。");
     };
     const conjunction = (): Match => {
       let left = primary();
@@ -188,11 +188,11 @@ export function compileLogQuery(query: string): LogQuery {
       return left;
     };
     const match = expression();
-    if (index !== tokens.length) throw new Error("Remove the unexpected closing parenthesis.");
+    if (index !== tokens.length) throw new Error("删除多余的右括号。");
     const usesAge = raw.some(token => token.type === "term" && token.field === "age");
     return { match, error: "", usesAge };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Invalid filter query.";
+    const message = error instanceof Error ? error.message : "筛选查询无效。";
     return { match: () => false, error: message, usesAge: false };
   }
 }

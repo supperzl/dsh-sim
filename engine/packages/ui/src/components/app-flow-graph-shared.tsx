@@ -29,7 +29,7 @@ export function Screenshot({ projectId, path, title, panel, className = "min-h-0
   useEffect(() => { setSrc(""); let active = true; void panel.screenshot(projectId, path).then(url => { if (active) setSrc(url); }, () => {}); return () => { active = false; }; }, [panel, projectId, path]);
   return src ? <img src={src} alt={title} className={className} />
     : fallback !== undefined ? <div className={`${className} flex items-center justify-center bg-muted/40 text-[8px] text-muted-foreground`}>{fallback}</div>
-      : <div className="flex flex-1 items-center justify-center bg-muted/40 text-[10px] text-muted-foreground">Loading capture…</div>;
+      : <div className="flex flex-1 items-center justify-center bg-muted/40 text-[10px] text-muted-foreground">正在加载捕获…</div>;
 }
 
 /** How tightly a jump frames its target. Looser than the mount fit, which frames the whole graph. */
@@ -84,7 +84,7 @@ export type GraphViewOption = { value: GraphView; label: string };
 
 /** The canvas picker. Standalone so the UI-states graph can offer a way back out of its empty state. */
 export function GraphViewSelect({ view, viewOptions, onViewChange }: { view: GraphView; viewOptions: GraphViewOption[]; onViewChange: (view: GraphView) => void }) {
-  return <ToolbarSelect label="App Flow view" value={view} items={viewOptions} className="w-full" onChange={onViewChange} />;
+  return <ToolbarSelect label="App Flow 视图" value={view} items={viewOptions} className="w-full" onChange={onViewChange} />;
 }
 
 /**
@@ -133,7 +133,7 @@ export function JumpPicker({ label, placeholder, items, value, emptyLabel, onPic
     </PopoverTrigger>
     <PopoverContent align="end" aria-label={label} className="w-64 max-w-[calc(100vw-16px)] p-1.5"
       onOpenAutoFocus={event => { event.preventDefault(); input.current?.focus(); }}>
-      <Input ref={input} className="h-8 text-xs" aria-label={`${label} search`} placeholder="Search routes…" value={query}
+      <Input ref={input} className="h-8 text-xs" aria-label={`${label} search`} placeholder="搜索路径…" value={query}
         onChange={event => setQuery(event.target.value)}
         onKeyDown={event => {
           // Enter is "take the obvious one": with a filter applied there is usually exactly one
@@ -186,8 +186,8 @@ export function GraphFocusPanel({ view, viewOptions, onViewChange, screens, uiSt
   const hasList = view === "flow" ? screens.length > 0 : uiStates.length > 0;
   return <Panel position="top-right" className="flex w-44 flex-col items-stretch gap-1.5 rounded-lg border bg-background/90 p-1.5 text-xs shadow-sm backdrop-blur">
     <GraphViewSelect view={view} viewOptions={viewOptions} onViewChange={onViewChange} />
-    {view === "flow" && screens.length > 0 && <JumpPicker label="跳转到屏幕" placeholder="Jump to…" value={screenId}
-      items={screenItems} emptyLabel={capturedOnly ? "No captured screens match" : "没有匹配的屏幕"}
+    {view === "flow" && screens.length > 0 && <JumpPicker label="跳转到屏幕" placeholder="跳转到…" value={screenId}
+      items={screenItems} emptyLabel={capturedOnly ? "没有匹配的已捕获屏幕" : "没有匹配的屏幕"}
       onPick={id => {
         setScreenId(id); setUiStateId("");
         if (!jump(id)) return;
@@ -195,8 +195,8 @@ export function GraphFocusPanel({ view, viewOptions, onViewChange, screens, uiSt
         countUiEvent("ui.app_flow.focus_screen");
         onPick?.({ kind: "screen", id });
       }} />}
-    {view === "ui-states" && uiStates.length > 0 && <JumpPicker label="Jump to UI state" placeholder="Jump to…" value={uiStateId}
-      items={uiStateItems} emptyLabel={capturedOnly ? "No captured UI states match" : "没有匹配的 UI 状态"}
+    {view === "ui-states" && uiStates.length > 0 && <JumpPicker label="跳转到 UI 状态" placeholder="跳转到…" value={uiStateId}
+      items={uiStateItems} emptyLabel={capturedOnly ? "没有匹配的已捕获 UI 状态" : "没有匹配的 UI 状态"}
       onPick={id => {
         setUiStateId(id); setScreenId("");
         const option = uiStates.find(entry => entry.id === id);

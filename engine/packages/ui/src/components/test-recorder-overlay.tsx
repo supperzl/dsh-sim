@@ -57,7 +57,7 @@ function ElementMenu({ label, offers, commands, matches, element, width, anchor 
     onContextMenu={event => event.preventDefault()}
   >
     <div className="min-w-0 px-2.5 py-1.5">
-      <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Selected element</p>
+      <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">已选元素</p>
       <p className="truncate text-sm font-medium" title={target}>{target}</p>
       {matches > 1 && <p className="mt-1 text-[11px] leading-4 text-amber-600 dark:text-amber-500">
         {matches} matches · using this one by position. Add a testID for stability.

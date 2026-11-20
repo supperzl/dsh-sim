@@ -33,7 +33,7 @@ function DetailHeader({ icon, title, child, subtitle, path, back, loading, child
 }
 
 const plural = (count: number, noun: string) => `${count} ${noun}${count === 1 ? "" : "s"}`;
-const formatLabels: Record<StorageFilePreview["format"], string> = { json: "JSON", plist: "Property list", archive: "NSKeyedArchiver archive", text: "Text", binary: "Binary", "too-large": "过大，无法预览" };
+const formatLabels: Record<StorageFilePreview["format"], string> = { json: "JSON", plist: "属性列表", archive: "NSKeyedArchiver 归档", text: "Text", binary: "Binary", "too-large": "过大，无法预览" };
 const parseJsonText = (text: string): unknown => { try { return JSON.parse(text); } catch { return undefined; } };
 
 // A file's contents: structured formats as a JSON tree and text as is. Values the server redacted read [REDACTED].
@@ -42,7 +42,7 @@ function FilePreview({ file }: { file: StorageFileView }) {
   let body: ReactNode = null;
   let note = "";
   if (data?.format === "binary") {
-    note = "Binary data isn't shown, because it could hold credentials.";
+    note = "不显示二进制数据，因为它可能包含凭据。";
   } else if (data && data.format !== "too-large") {
     // Structured formats arrive as JSON text; a cut-short one no longer parses and shows as text.
     const parsed = data.format === "text" ? undefined : parseJsonText(data.content);
@@ -113,7 +113,7 @@ function SearchResults({ groups, query, title, expansion }: { groups: { store: S
       </div>
       {entries.map(entry => <EntryRow key={entry.key} entry={entry} store={store} query={query} open={expansion.expanded === entryId(store, entry.key)} onToggle={() => expansion.toggle(store, entry.key)} copy={expansion.copy} />)}
     </section>)}
-    {groups.length === 0 && <p className="p-4 font-sans text-muted-foreground">No keys or values match.</p>}
+    {groups.length === 0 && <p className="p-4 font-sans text-muted-foreground">没有匹配的键或值。</p>}
   </div>;
 }
 
@@ -142,7 +142,7 @@ function TableGrid({ table }: { table: StorageTableView }) {
           })}
         </tr>)}</tbody>
       </table>}
-      {data && data.rows.length === 0 && <p className="p-4 font-sans text-xs text-muted-foreground">This table has no rows.</p>}
+      {data && data.rows.length === 0 && <p className="p-4 font-sans text-xs text-muted-foreground">此表格没有行。</p>}
     </div>
   </div>;
 }
@@ -207,7 +207,7 @@ export function BrowseView({ panel, snapshot, query, copy }: { panel: StoragePan
       : query ? matches.get(item.id)?.length ?? 0 : item.entryCount} />;
   const sidebar = <nav aria-label="Stores" className="h-full w-60 shrink-0 overflow-auto border-r p-1.5 text-[13px] @max-[640px]:hidden">
     {own.filter(visible).map(storeRow)}
-    {own.length === 0 && <p className="px-2 py-1 text-muted-foreground">No storage written by the app yet.</p>}
+    {own.length === 0 && <p className="px-2 py-1 text-muted-foreground">应用尚未写入任何存储。</p>}
     {sdks.length > 0 && <>
       <button type="button" aria-expanded={showSdks || Boolean(query)} onClick={() => setShowSdks(!showSdks)} className="mt-1 mb-0.5 flex w-full items-center gap-2 rounded-md px-2 py-1 text-left text-muted-foreground hover:bg-muted">
         {showSdks || query ? <ChevronDownIcon className="size-4" /> : <ChevronRightIcon className="size-4" />}<PuzzleIcon className="size-4" /><span className="flex-1">SDK 与系统</span><span className="tabular-nums">{sdks.length}</span>

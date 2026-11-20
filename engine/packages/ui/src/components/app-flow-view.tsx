@@ -49,12 +49,12 @@ function duration(milliseconds: number) { if (milliseconds < 1000) return `${Mat
  */
 function AppFlowHelp() {
   return <Popover onOpenChange={open => { if (open) countUiEvent("ui.app_flow.help_open"); }}>
-    <PopoverTrigger asChild><Button variant="ghost" size="icon-xs" className="shrink-0 text-muted-foreground" title="How App Flow works" aria-label="How App Flow works"><CircleHelpIcon /></Button></PopoverTrigger>
-    <PopoverContent align="start" aria-label="How App Flow works" className="w-[min(340px,calc(100vw-24px))] max-h-[var(--radix-popover-content-available-height)] space-y-3 overflow-y-auto p-4 text-xs">
-      <p className="text-sm font-medium">How App Flow works</p>
+    <PopoverTrigger asChild><Button variant="ghost" size="icon-xs" className="shrink-0 text-muted-foreground" title="App Flow 的工作原理" aria-label="App Flow 的工作原理"><CircleHelpIcon /></Button></PopoverTrigger>
+    <PopoverContent align="start" aria-label="App Flow 的工作原理" className="w-[min(340px,calc(100vw-24px))] max-h-[var(--radix-popover-content-available-height)] space-y-3 overflow-y-auto p-4 text-xs">
+      <p className="text-sm font-medium">App Flow 的工作原理</p>
       <p className="text-muted-foreground">It maps your app&rsquo;s screens and the navigation between them.</p>
 
-      <div className="space-y-1"><p className="font-medium">Map creation</p>
+      <div className="space-y-1"><p className="font-medium">创建映射</p>
         <ul className="list-disc space-y-1 pl-4 text-muted-foreground">
           <li><span className="text-foreground">仅结构</span> reads the navigation out of your source. It takes seconds and needs no device, but has no screenshots.</li>
           <li><span className="text-foreground">屏幕界面 + 结构</span> also walks the app on an iOS simulator and photographs every screen it reaches. If the app requires sign-in, sign in to it first.</li>
@@ -63,21 +63,21 @@ function AppFlowHelp() {
       <div className="space-y-1"><p className="font-medium">Launching (the walk only)</p>
         <ul className="list-disc space-y-1 pl-4 text-muted-foreground">
           <li>Runs the project&rsquo;s <code>ios</code> script, then Metro. No such script, no walk.</li>
-          <li>An install is reused while the native sources are unchanged.</li>
+          <li>原生源码未变时，会复用已有的安装。</li>
           <li>Runtime reads need a debug build; a release build has no DevTools hook.</li>
         </ul></div>
 
-      <div className="space-y-1"><p className="font-medium">Reaching a screen</p>
+      <div className="space-y-1"><p className="font-medium">到达屏幕</p>
         <ul className="list-disc space-y-1 pl-4 text-muted-foreground">
           <li>In-app navigation, a deep link (needs a URL scheme), or a path you recorded.</li>
-          <li>Record a path by hand for a screen the walk cannot reach.</li>
+          <li>为走查无法到达的屏幕手动录制路径。</li>
         </ul></div>
 
       <div className="space-y-1"><p className="font-medium">Buttons</p>
         <ul className="list-disc space-y-1 pl-4 text-muted-foreground">
           <li><span className="text-foreground">启动应用</span> starts the app without walking it.</li>
           <li><span className="text-foreground">用 AI 探索</span> lists the screens left unreached and retries the ones you pick.</li>
-          <li><span className="text-foreground">Clear app flow</span> deletes the map, its captures and its recorded paths.</li>
+          <li><span className="text-foreground">清除应用流程</span> deletes the map, its captures and its recorded paths.</li>
         </ul></div>
     </PopoverContent>
   </Popover>;
@@ -86,7 +86,7 @@ function AppFlowHelp() {
 /**
  * The AI continuation's screen picker. The deterministic pass leaves a set of screens it could not
  * render, and a model walk is expensive per screen — so this asks which ones are worth one rather
- * than spending the budget on all of them, which is what the old one-click "Explore N with AI"
+ * than spending the budget on all of them, which is what the old one-click "用 AI 探索 N 项"
  * button did.
  *
  * Preview focuses a row's screen on the flow canvas without closing the list: deciding whether a
@@ -134,7 +134,7 @@ function ExploreWithAiPicker({ screens, disabled, pending, onPreview, onExplore 
           onClick={() => setSelected(screens.map(screen => screen.id))}>全选</Button>
         <Button size="sm" disabled={chosen.length === 0 || pending}
           onClick={() => { setOpen(false); onExplore(chosen); }}>
-          {pending ? "Asking Codex…" : `Explore ${chosen.length} with AI`}</Button>
+          {pending ? "正在询问 Codex…" : `Explore ${chosen.length} with AI`}</Button>
       </div>
     </PopoverContent>
   </Popover>;
@@ -165,8 +165,8 @@ export function AppFlowView({ panel }: { panel: AppFlowPanel }) {
   const sweepStatus = state.result?.manifest.sweepStatus;
   const isPaused = state.state === "suspended" || sweepStatus === "paused";
   /* The headline counts screenshots, not sweep attempts: the sweep summary's `completed` is the
-     queue index, so a route that ended as "Unresolved route parameters" with no screenshot still
-     advanced it. The summary keeps driving the live chip and the "Last step:" line below. */
+     queue index, so a route that ended as "未解析的路由参数" with no screenshot still
+     advanced it. The summary keeps driving the live chip and the "最后一步：" line below. */
   const tally = useMemo(() => { const nodes = state.result?.nodes ?? []; const counts = captureTally(nodes);
     return counts.total ? counts : null; }, [state.result]);
   const unresolved = useMemo(() => unresolvedSummary(state.result?.nodes ?? []), [state.result]);
@@ -221,7 +221,7 @@ export function AppFlowView({ panel }: { panel: AppFlowPanel }) {
         </div>
       </div>
       <div className="flex flex-wrap items-center justify-end gap-2">
-        <ToolbarSelect label="App Flow capture mode" value={mode} items={CAPTURE_MODE_OPTIONS} disabled={isRunning} onChange={changeMode} />
+        <ToolbarSelect label="App Flow 捕获模式" value={mode} items={CAPTURE_MODE_OPTIONS} disabled={isRunning} onChange={changeMode} />
         {mode === "screen-ui-and-structure" && <Popover>
           <PopoverTrigger asChild><Button variant="secondary" size="sm" className="min-w-0 max-w-56 justify-start" title="捕获选项">
             <Settings2 aria-hidden /><span className="truncate">捕获选项</span></Button></PopoverTrigger>
@@ -230,7 +230,7 @@ export function AppFlowView({ panel }: { panel: AppFlowPanel }) {
             <div className="space-y-1.5"><label className="flex items-center justify-between gap-3">Capture UI states
               <Switch aria-label="捕获 UI 状态" aria-describedby="app-flow-capture-ui-states-help" checked={captureUiStates} disabled={isRunning}
                 onCheckedChange={value => { setCaptureUiStates(value); if (state.projectPath) write(`${CAPTURE_UI_STATES_KEY}:${state.projectPath}`, value ? "on" : "off"); }} /></label>
-              <p id="app-flow-capture-ui-states-help" className="text-xs text-muted-foreground">Also open each screen’s sheets, modals and dialogs during deterministic capture.</p></div>
+              <p id="app-flow-capture-ui-states-help" className="text-xs text-muted-foreground">在确定性捕获期间，也要打开每个屏幕的底部弹层、模态框和对话框。</p></div>
           </PopoverContent>
         </Popover>}
         {/* Clearing deletes the whole stored flow — every capture, every recorded path — and the
@@ -238,16 +238,16 @@ export function AppFlowView({ panel }: { panel: AppFlowPanel }) {
             asks first; the confirm button is the destructive one, and dismissing is the default. */}
         {state.result && <Popover open={confirmClear} onOpenChange={setConfirmClear}>
           <PopoverTrigger asChild>
-            <Button variant="destructive" size="sm" disabled={isRunning}>Clear app flow</Button>
+            <Button variant="destructive" size="sm" disabled={isRunning}>清除应用流程</Button>
           </PopoverTrigger>
           <PopoverContent align="end" aria-label="确认清空 App Flow" className="w-[300px] max-w-[calc(100vw-16px)] space-y-3 p-4 text-sm">
-            <div><div className="font-medium">Clear this app flow?</div>
+            <div><div className="font-medium">清除此应用流程？</div>
               <p className="mt-1 text-xs text-muted-foreground">{tally
                 ? `${tally.captured} captured screen${tally.captured === 1 ? "" : "s"} and every recorded path are deleted.`
-                : "The stored flow and every recorded path are deleted."}</p></div>
+                : "已存储的流程和所有已录制路径都将被删除。"}</p></div>
             <div className="flex justify-end gap-2">
               <Button variant="secondary" size="sm" onClick={() => setConfirmClear(false)}>Cancel</Button>
-              <Button variant="destructive" size="sm" onClick={() => { setConfirmClear(false); void panel.clear(); }}>Clear app flow</Button></div>
+              <Button variant="destructive" size="sm" onClick={() => { setConfirmClear(false); void panel.clear(); }}>清除应用流程</Button></div>
           </PopoverContent>
         </Popover>}
         {isRunning ? <><Button variant="secondary" size="sm" onClick={() => void panel.pause()} disabled={!state.runId}><Pause />Pause</Button>
@@ -255,13 +255,13 @@ export function AppFlowView({ panel }: { panel: AppFlowPanel }) {
           : <><Button variant="secondary" size="sm" onClick={() => void panel.launchApp()} disabled={!state.projectPath || state.launching}>
             {state.launching && <Loader2 className="animate-spin" />}{state.launching ? "Launching…" : "启动应用"}</Button>
             <Button size="sm" onClick={start} disabled={!state.projectPath || state.launching || state.agentStartPending}>
-              {state.agentStartPending ? "Asking Codex…" : isPaused || resumable ? "Resume" : state.result ? "Regenerate" : "开始"}</Button></>}
+              {state.agentStartPending ? "正在询问 Codex…" : isPaused || resumable ? "Resume" : state.result ? "Regenerate" : "开始"}</Button></>}
       </div>
       {/* Structure-only never launches the app, so sign-in guidance there implies a prerequisite
           that does not exist. The model-free screen sweep does skip its sign-in check, though: if
           this app has an auth wall, clearing it before capture prevents every route from recording
           that same wall. */}
-      {!isRunning && mode === "screen-ui-and-structure" && <AppFlowWarning title="Sign in to this app, if required">Before capturing screens, launch the app under test and complete its sign-in flow. If the app does not require sign-in, you can continue normally.</AppFlowWarning>}
+      {!isRunning && mode === "screen-ui-and-structure" && <AppFlowWarning title="如有需要，请登录此应用">Before capturing screens, launch the app under test and complete its sign-in flow. If the app does not require sign-in, you can continue normally.</AppFlowWarning>}
     </header>
     {isRunning && state.progress && <div className="flex items-center gap-3 border-b bg-muted/40 px-4 py-2"><Loader2 className="size-4 animate-spin" />
       <div className="min-w-0 flex-1"><div className="text-sm capitalize">{state.progress.phase}</div><div className="truncate text-xs text-muted-foreground">{state.progress.message}</div></div>
@@ -288,9 +288,9 @@ export function AppFlowView({ panel }: { panel: AppFlowPanel }) {
       <Button size="sm" onClick={() => void panel.resolvePrompt("continue")}>Continue</Button></div>}
     {state.error && <div role="alert" className="border-b border-destructive/30 bg-destructive/10 px-4 py-2 text-sm text-destructive">{state.error}</div>}
     <div className="min-h-0 flex-1 overflow-hidden">{!state.projectPath ? <Empty title="选择项目" detail="选择 React Native 项目目录以构建或查看流程。"
-      action={<Button onClick={() => void panel.pickProject()} disabled={state.pickingProject}>{state.pickingProject ? <Loader2 className="animate-spin" /> : null}{state.pickingProject ? "Waiting for the folder…" : "选择项目目录"}</Button>} />
+      action={<Button onClick={() => void panel.pickProject()} disabled={state.pickingProject}>{state.pickingProject ? <Loader2 className="animate-spin" /> : null}{state.pickingProject ? "正在等待文件夹…" : "选择项目目录"}</Button>} />
       : empty ? <Empty title="暂无 App Flow" detail="为此应用中的每个屏幕和导航边构建可视化图谱。" action={<Button onClick={start}
-          disabled={!state.available || state.agentStartPending}>Start Building App Flow</Button>} />
+          disabled={!state.available || state.agentStartPending}>开始构建 App Flow</Button>} />
       : state.result && view === "ui-states" ? <AppFlowUiStatesGraph panel={panel} projectId={state.projectId} nodes={state.result.nodes} projectPath={isRunning ? undefined : state.projectPath}
           view={view} viewOptions={viewOptions} onViewChange={setView} />
       : state.result ? <AppFlowGraph panel={panel} projectId={state.projectId} nodes={state.result.nodes} edges={state.result.edges}
