@@ -183,7 +183,7 @@ export function DeviceSettings({ platform }: { platform: "ios" | "android" }) {
       if (store.getSnapshot().settings) { setOpen(true); void store.load(); }
       else void store.load().then(() => { if (store.getSnapshot().deviceId === deviceId && !store.getSnapshot().disabled) setOpen(true); });
     }}>
-      <PopoverTrigger asChild><Button variant="ghost" size="icon" disabled={state.disabled} aria-label={`${platform === "ios" ? "iOS" : "Android"} device settings`} title="设备设置"><Settings2Icon /></Button></PopoverTrigger>
+      <PopoverTrigger asChild><Button variant="ghost" size="icon" disabled={state.disabled} aria-label={`${platform === "ios" ? "iOS" : "Android"} 设备设置`} title="设备设置"><Settings2Icon /></Button></PopoverTrigger>
       <PopoverContent side="top" align="end" className="max-h-(--radix-popover-content-available-height) w-[360px] max-w-[calc(100vw-16px)] space-y-4 overflow-y-auto p-4 text-sm" aria-label="设备设置" onInteractOutside={event => { if (event.target instanceof Element && event.target.closest('[data-slot="select-content"]')) event.preventDefault(); }}>
         <Tabs value={activeTab} onValueChange={value => { setTab(value as "app" | "device"); if (value === "app") void appTools.load(); }} className="gap-4">
           <TabsList className="grid w-full grid-cols-2"><TabsTrigger value="app" disabled={appState.disabled}><AppWindowIcon />应用</TabsTrigger><TabsTrigger value="device"><SmartphoneIcon />设备</TabsTrigger></TabsList>

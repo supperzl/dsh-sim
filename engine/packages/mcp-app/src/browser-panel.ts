@@ -90,7 +90,7 @@ async function open() {
     if (content === undefined || ("text" in content) === false) throw new Error("Mobile Dev 的面板无法加载。");
 
     const frame = document.createElement("iframe");
-    frame.title = "Mobile Dev";
+    frame.title = "模拟器";
     frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-downloads");
     frame.allow = "clipboard-write";
     document.body.replaceChildren(frame);

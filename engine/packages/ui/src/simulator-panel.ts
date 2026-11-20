@@ -138,7 +138,7 @@ export function createSimulatorPanel(
       const label = button.dataset.button === "home" ? "主页" : "应用切换";
       button.disabled = !active;
       button.dataset.unsupported = unsupported ? "true" : "false";
-      button.title = unsupported ? `${label} is unavailable on physical iOS devices` : label;
+      button.title = unsupported ? `${label} 在 iPhone 真机上不可用` : label;
     });
   }
 
@@ -553,7 +553,7 @@ export function createSimulatorPanel(
     const physicalOptions: DeviceOption[] = physicalDevices.map(device => {
       const connection = physicalConnectionLabel(device.transportType);
       const kind = /ipad/i.test(device.model) ? "tablet" : "phone";
-      return { value: device.udid, label: `${device.name} · ${connection}`, group: "已连接设备", kind, running: true, statusLabel: "Connected", canStop: false };
+      return { value: device.udid, label: `${device.name} · ${connection}`, group: "已连接设备", kind, running: true, statusLabel: "已连接", canStop: false };
     });
     const virtualDevices = next.devices.filter(device => device.kind !== "physical");
     const androidPhysicalOptions: DeviceOption[] = next.devices.flatMap(device => {
@@ -567,7 +567,7 @@ export function createSimulatorPanel(
         value: device.udid, label: bookingName ?? deviceLabel,
         ...(bookingName !== undefined ? { detail: deviceLabel } : {}),
         group: "已连接设备", kind: /tablet|pixel.*tab/i.test(device.name) ? "tablet" : "phone",
-        running, statusLabel: "Connected", canStop: false,
+        running, statusLabel: "已连接", canStop: false,
       }];
     });
     const simulatorOptions: DeviceOption[] = virtualDevices.map(device => {
@@ -597,7 +597,7 @@ export function createSimulatorPanel(
     if (connected === false) return;
     await disconnect();
     if (document.visibilityState === "hidden" || disposed) return;
-    if (frame.hidden) empty("Connecting…", "正在打开设备屏幕。");
+    if (frame.hidden) empty("正在连接…", "正在打开设备屏幕。");
     const sessionEpoch = epoch;
     const udid = selected.udid;
     const showStreamError = (error: unknown) => {

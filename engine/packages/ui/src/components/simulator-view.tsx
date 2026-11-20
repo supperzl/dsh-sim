@@ -19,21 +19,21 @@ export const SimulatorView = memo(function SimulatorView({ platform, visible }: 
   const label = platform === "ios" ? "iOS" : "Android";
   const sidebar = document.documentElement.dataset.view !== "workspace";
   const id = (name: string) => `${platform}-${name}`;
-  return <section hidden={!visible} id={`${platform}-panel`} className="simulator-panel group/simulator @container relative flex h-full min-w-0 flex-1 flex-col" data-platform={platform} aria-label={`${label} simulator`}>
+  return <section hidden={!visible} id={`${platform}-panel`} className="simulator-panel group/simulator @container relative flex h-full min-w-0 flex-1 flex-col" data-platform={platform} aria-label={`${label} 模拟器`}>
     <header className="panel-toolbar flex h-[49px] shrink-0 items-center border-b px-2">
-      <div className="flex w-full min-w-0 items-center gap-1" role="toolbar" aria-label={`${label} controls`}>
-        <DevicePicker id={id("devices")} label={`${label} device`} />
+      <div className="flex w-full min-w-0 items-center gap-1" role="toolbar" aria-label={`${label} 控制栏`}>
+        <DevicePicker id={id("devices")} label={`${label} 设备`} />
         {deviceButtons.map(({ action, icon: Icon, label }) => <Button key={action} variant="ghost" size="icon" className="shrink-0 data-[unsupported=true]:text-muted-foreground data-[unsupported=true]:cursor-not-allowed data-[unsupported=true]:disabled:pointer-events-auto data-[unsupported=true]:hover:bg-transparent data-[unsupported=true]:hover:text-muted-foreground" data-button={action} title={label} aria-label={label} disabled><Icon /></Button>)}
         <Button variant="ghost" size="icon" className="shrink-0" data-element="screenshot" title="截图发送到聊天并复制到剪贴板" aria-label="截图发送到聊天并复制到剪贴板" disabled><CameraIcon /></Button>
         <ScreenSelectButton store={annotations} />
       </div>
     </header>
     <section ref={element => { if (element) bindScreenAnnotations(element, annotations); }} data-element="stage" className="group/stage relative grid min-h-0 flex-1 place-items-center overflow-hidden p-6 @max-[280px]:p-3" aria-label="实时模拟器画面">
-      <Empty className="absolute inset-0 group-has-[[data-element=empty][hidden]]/stage:hidden"><EmptyHeader><EmptyMedia variant="icon"><SmartphoneIcon /></EmptyMedia><EmptyTitle data-element="empty" role="status">正在加载设备…</EmptyTitle><EmptyDescription data-element="empty-description">Finding available {platform === "ios" ? "iOS devices" : "Android 设备"}.</EmptyDescription></EmptyHeader></Empty>
+      <Empty className="absolute inset-0 group-has-[[data-element=empty][hidden]]/stage:hidden"><EmptyHeader><EmptyMedia variant="icon"><SmartphoneIcon /></EmptyMedia><EmptyTitle data-element="empty" role="status">正在加载设备…</EmptyTitle><EmptyDescription data-element="empty-description">正在查找可用的 {platform === "ios" ? "iOS 设备" : "Android 设备"}。</EmptyDescription></EmptyHeader></Empty>
       <div data-element="device-frame" hidden>
         <img data-element="device-bezel" className="pointer-events-none absolute inset-0 z-1 size-full select-none" alt="" draggable={false} hidden />
         <div data-element="device-nine-patch" className="pointer-events-none absolute inset-0 z-3" hidden />
-        <canvas data-element="screen" className="block size-full touch-none bg-black outline-none" tabIndex={0} aria-label={`${label} screen. Click or drag to interact. Focus to type.`} />
+        <canvas data-element="screen" className="block size-full touch-none bg-black outline-none" tabIndex={0} aria-label={`${label} 画面。点击或拖动即可操作，聚焦后可输入。`} />
       </div>
       <div data-element="stopped" className="absolute inset-0 z-10 bg-background/70" hidden><Empty><EmptyHeader><EmptyMedia variant="icon"><PowerIcon /></EmptyMedia><EmptyTitle>设备已停止</EmptyTitle></EmptyHeader><EmptyContent><Button data-element="start-device" size="sm">启动设备</Button></EmptyContent></Empty></div>
       <ScreenAnnotationOverlay store={annotations} />
