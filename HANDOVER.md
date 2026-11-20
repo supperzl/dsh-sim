@@ -110,7 +110,20 @@ pgrep -fl 'core-device display serve-web'
   用户安装：DSH 插件页装 `dsh-sim@0.2.0`，或 profile `dependencies` + `dsh.profile.bundles` 加 `dsh-sim`。
   详见 `docs/INSTALL.md`。
 
-## 六、还没做的事
+## 六、面板中文化与多窗口（2026-11-20 17:40）
+
+- 面板改为**从 `engine/` 源码重建**（`node engine/tooling/build-panel-only.mjs`，或 `npm run build:panel`），
+  把 `vendor/runtime/dist/app.html`、`browser-panel.html` 替换成中文版；新增的界面文案在
+  `engine/packages/ui/src/{simulator-panel.ts,components/simulator-view.tsx,components/device-settings.tsx}`
+  和 `engine/packages/mcp-app/src/browser-panel.ts`（frame.title 由 Mobile Dev 改成 模拟器）。
+  **注意**：引擎在第一次打开面板时会把 `browser-panel.html` 读进内存缓存，替换文件后必须重启引擎
+  （`pkill -f 'dsh-sim/vendor/runtime/dist/server.mjs'` 后重新请求 `/mobile-dsh/dsh-sim/mobile-panel`，
+  或重载插件）；只换文件不重启会继续看到英文。
+- 侧栏 tab：以前注册三个固定 kind（simulator/-2/-3），侧栏按 id 去重所以每个只能开一次；现在只注册
+  一个 kind，用 `createTab` 每次生成唯一 id、`dedupeKey` 永远不去重 → 点一次「模拟器」就是一个新窗口；
+  旧的两个 kind 仍注册但 `hidden`，保证升级前已打开的窗口还能渲染。
+
+## 七、还没做的事
 
 - 中文面板：当前 `vendor/runtime/dist` 仍是 0.1.189 **英文原版**面板；中文化脚本
   （`scripts/localize-runtime.mjs` 只覆盖补丁）和 `engine/packages` 里的中文源码还没有
