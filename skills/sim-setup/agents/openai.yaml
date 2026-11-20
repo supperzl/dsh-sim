@@ -1,0 +1,10 @@
+interface:
+  display_name: "Set up dsh-sim"
+  short_description: "Check the bundled simulator backend"
+  default_prompt: "Set up dsh-sim and open my iOS simulator."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "dsh-sim"
+      description: "Bundled 内置引擎 simulator tools and native panel"

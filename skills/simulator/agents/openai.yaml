@@ -1,0 +1,10 @@
+interface:
+  display_name: "dsh-sim"
+  short_description: "Stream and control iOS simulators"
+  default_prompt: "Open my iOS simulator and inspect the current screen."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "dsh-sim"
+      description: "Bundled 内置引擎 simulator tools and native panel"

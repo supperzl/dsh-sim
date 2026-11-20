@@ -1,0 +1,10 @@
+interface:
+  display_name: "Record an e2e test"
+  short_description: "Record an e2e test from the simulator"
+  default_prompt: "Use dsh-sim and record the test for the important areas on this screen."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "dsh-sim"
+      description: "Bundled 内置引擎 simulator tools and native panel"
