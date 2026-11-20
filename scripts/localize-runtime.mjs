@@ -44,9 +44,17 @@ for (const name of ['app.html', 'browser-panel.html']) {
   console.log(`${name}: ${replaced} strings translated`)
 }
 
+const GUARD_FROM = 'const session = this.session(id3);\n    if (session.generation !== generation) throw new ExpectedOperationError("device_unavailable", "Wait for a fresh physical iOS screen before sending input.");'
+const GUARD_TO = 'const session = this.session(id3);\n    if (session.generation !== generation) {\n      const deadline = Date.now() + 2000;\n      while (session.generation === generation && Date.now() < deadline) await new Promise((resolve) => setTimeout(resolve, 50));\n    }'
+
 const server = join(dist, 'server.mjs')
 if (existsSync(server)) {
-  const text = readFileSync(server, 'utf8')
+  let text = readFileSync(server, 'utf8')
+  if (text.includes(GUARD_FROM)) {
+    text = text.replace(GUARD_FROM, GUARD_TO)
+    writeFileSync(server, text)
+    console.log('server.mjs: physical iOS input waits for a fresh frame')
+  }
   if (text.includes("frame-ancestors 'none'")) {
     writeFileSync(server, text.replace("\"content-security-policy\": \"frame-ancestors 'none'; base-uri 'none'\"", "\"content-security-policy\": \"base-uri 'none'\""))
     console.log('server.mjs: panel framing allowed')
