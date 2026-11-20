@@ -1,0 +1,167 @@
+---
+import Faq from '../site/Faq.astro';
+import Marquee from '../site/Marquee.astro';
+import PixelIcon from '../site/PixelIcon.astro';
+import FeaturePreview from '../site/FeaturePreview.astro';
+import { docs, environments, features } from '../../site/content';
+
+const steps = [
+  { title: 'Add Mobile Dev', body: 'Install the package for your environment, then start a new agent conversation.', href: docs.start, link: 'Choose your environment' },
+  { title: 'Open your project', body: 'Keep your existing app, build tools, and development server. Pick an iOS or Android device.', href: docs.devices, link: 'Connect a device' },
+  { title: 'Work with the app', body: 'Ask for a change, review it on the device, and bring the relevant logs or data into the conversation.', href: docs.intro, link: 'Explore the workflow' },
+];
+---
+
+<Marquee />
+
+<section id="tools" aria-labelledby="tools-title">
+  <p class="section-head label"><b>[01]</b> A mobile IDE in your ADE</p>
+  <div class="intro">
+    <h2 class="h2" id="tools-title">From the first run. <em>Through the next fix.</em></h2>
+    <p class="lede">Work with the running app, then inspect the evidence behind what you see.</p>
+  </div>
+  <div class="cells cells--4 feature-grid">
+    {features.map(feature => (
+      <a class="cell cell--link" href={feature.href}>
+        <span class="cell-top"><PixelIcon name={feature.icon} size={27} class="accent" /></span>
+        <h3 class="h3">{feature.title}</h3>
+        <p class="body">{feature.body}</p>
+        <span class="label more">Read the guide <span aria-hidden="true">→</span></span>
+      </a>
+    ))}
+  </div>
+</section>
+
+<section id="workflow" aria-labelledby="workflow-title">
+  <p class="section-head label"><b>[02]</b> Your environment</p>
+  <div class="intro">
+    <h2 class="h2" id="workflow-title">Your project. <em>Your existing workflow.</em></h2>
+    <p class="lede">Add the mobile tools to the ADE you already use. Your agent keeps working with your app’s own build tools.</p>
+  </div>
+  <ol class="cells cells--3">
+    {steps.map((step, stepIndex) => (
+      <li class="cell setup-step">
+        <span class="label cell-num">0{stepIndex + 1}</span>
+        <h3 class="h3">{step.title}</h3>
+        <p class="body">{step.body}</p>
+        <a class="label more" href={step.href}>{step.link} <span aria-hidden="true">→</span></a>
+      </li>
+    ))}
+  </ol>
+  <div class="cells cells--4 environment-grid">
+    {environments.map(environment => (
+      <a class="cell cell--link" href={environment.href}>
+        <span class="label environment-status">{environment.name === 'Claude' || environment.name === 'Cursor' ? 'Preview · manual install' : environment.status}</span>
+        <h3 class="h3">{environment.name}</h3>
+        <p class="body">{environment.detail}</p>
+        <span class="label more">Set up <span aria-hidden="true">→</span></span>
+      </a>
+    ))}
+  </div>
+</section>
+
+<section id="performance" aria-labelledby="performance-title">
+  <p class="section-head label"><b>[03]</b> Performance</p>
+  <div class="feature-demo">
+    <div class="demo-copy">
+      <h2 class="h2" id="performance-title">Performance profiling <em>Using the right tools</em></h2>
+      <div class="demo-description">
+        <p class="lede">Ask your agent to run an interaction and record CPU, memory, and device-wide Display FPS on supported devices. Review the results together.</p>
+        <p class="body">For CPU and React profiles, TraceSift adds a call tree, timeline, and flame graph you can explore together.</p>
+        <a class="label more" href={docs.performance}>Performance guide <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+    <FeaturePreview
+      kind="performance"
+      label="Performance recording: CPU and memory charts, selecting a time range, and asking the agent about it."
+    />
+  </div>
+</section>
+
+<section id="storage" aria-labelledby="storage-title">
+  <p class="section-head label"><b>[04]</b> App storage</p>
+  <div class="feature-demo">
+    <div class="demo-copy">
+      <h2 class="h2" id="storage-title">See what the app saved. <em>Watch what changes.</em></h2>
+      <div class="demo-description">
+        <p class="lede">Browse key-value stores, files, and SQLite tables without adding code to your app. Follow changed values while you use it.</p>
+        <p class="body">Inspect the selected store with your agent, or open a table and narrow the rows and columns you need.</p>
+        <a class="label more" href={docs.storage}>Storage guide <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+    <FeaturePreview
+      kind="storage"
+      label="App storage: liking a profile, refreshing stored values, and reviewing the change history beside the running app."
+    />
+  </div>
+</section>
+
+<Faq num="05" />
+
+<style>
+  .setup-step .more {
+    white-space: normal;
+    line-height: 1.5;
+  }
+
+  .environment-grid {
+    border-top: 0;
+  }
+
+  .environment-status {
+    color: var(--faint);
+    line-height: 1.5;
+  }
+
+  .feature-grid .cell-top {
+    margin-bottom: 0.75rem;
+  }
+
+  .feature-demo {
+    padding: var(--rhythm) var(--pad);
+  }
+
+  .demo-copy {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    align-items: start;
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+
+  .demo-copy .h2 {
+    max-width: 18ch;
+  }
+
+  #performance-title {
+    max-width: none;
+  }
+
+  #performance-title em {
+    display: block;
+  }
+
+  .demo-description {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+
+  .demo-copy .more {
+    min-height: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  @media (max-width: 64rem) {
+    .demo-copy {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1.5rem;
+    }
+
+    .demo-copy .h2 {
+      max-width: 24ch;
+    }
+  }
+</style>

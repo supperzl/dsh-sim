@@ -1,0 +1,89 @@
+# Using devices
+
+[Back to README](../README.md) · [Contributing](../CONTRIBUTING.md)
+
+## Platform setup
+
+The plugin uses Codex's bundled Node runtime. iOS needs an Apple Silicon Mac with Xcode 26 or later and an installed simulator runtime. Baguette uses Apple's simulator frameworks. agent-device builds its bundled XCTest runner with Xcode on its first interaction and caches it under `~/.agent-device/apple-runner`. The plugin carries all three runtimes, their npm dependencies, and the Apple runner source. It does not download code at runtime.
+
+Physical iOS discovery requires Xcode 27 or later. It reads device metadata and pairing state from `xcrun devicectl` and checks current USB and Wi-Fi connections through macOS's `usbmuxd`. A connected phone is listed before opening a developer tunnel. Pair the phone with Xcode and enable wireless connectivity there to discover it over Wi-Fi.
+
+Discovery preserves remembered disconnected and unavailable devices. Their `transportType` is omitted when Xcode reports no transport; this does not prevent listing other devices. Malformed responses identify the failing JSON field. The Xcode version requirement is shown only when the JSON version is too old.
+
+The native panel targets Codex desktop, iOS simulators, and Android emulators or attached devices. The active Mobile Dev MCP server also works through stdio in a local MCP client. Use the selected UDID for iOS tools and the selected running serial for Android tools. This plugin does not build the user's app. Codex's permission and confirmation rules still apply to tool calls.
+
+Android logs need `adb` from an installed Android SDK. The reader checks `ANDROID_HOME`, `ANDROID_SDK_ROOT`, `~/Library/Android/sdk`, then PATH. Metro logs need an existing local Metro server and an app with an inspector target. The log tools connect to that server without starting it.
+
+## Device panel
+
+Open a new chat after installing. Open Mobile Dev in the sidebar or call `mobile_open_workspace` for the fullscreen view. Call `mobile_open_simulator` for the panel beside a chat. Both opening tools accept optional `platform`, `kind`, and discovered `deviceId` arguments. For example, `{ platform: "android", kind: "emulator" }` opens Android and selects an emulator before connecting; `kind: "physical"` selects a connected phone. An unavailable requested target stays unselected, with a message and the device picker available. Opening never boots a device. Without targeting, iOS opens when both platforms have running devices; Android opens when it has the only running device. Later manual platform or device selections replace the opening choice.
+
+Enable both platforms from the platform menu to show the panels side by side. Each panel has a device dropdown, Home, App Switcher, and Screenshot. Pick a device in each panel. In the sidebar panel, the bar under the simulators holds the tools menu on the left and the platform menu on the right; fullscreen shows them above the tools. Use the platform menu to show either, both, or neither simulator. Selecting a device boots it if needed, then connects its screen. A selected running device connects automatically. The panel uses Apple’s device bezel and screen mask from the installed DeviceKit assets, with a simple frame as a fallback when assets are unavailable. Use the settings button at the bottom right for appearance, text size, location, and the device frame. iOS also offers contrast; Android offers rotation. The menu shows only settings supported by the bundled backend. Click the screen to type or drag. Closing the panel closes its stream.
+
+Click an iOS simulator or Android screen to focus it, then press **Command-V** to paste text into the device. Paste accepts up to 4,096 printable US-ASCII characters. Empty or non-text clipboard content sends nothing; line breaks, other characters, and oversized text show a notice without sending partial text. Paste is disabled during Select, while input is blocked, and until the stream is ready. Physical iOS keyboard input remains unavailable.
+
+Use Select in the simulator toolbar to pause the screen. Hover to outline a component, then click to add a note. React Native development apps can supply runtime elements when accessibility omits a view. Drag to mark a region when neither source exposes it. Saved notes leave numbered blue bubbles. Notes attach text and available element details to your next chat message. The captured screen stays local for editing; annotations never attach screenshots. Click a bubble to edit or remove a note, or use Send to chat to send all notes for that device. If chat is unavailable, the panel keeps the notes and retries when you return. A sent or cleared batch starts again at 1.
+
+The iOS dropdown shows **Connected devices** first, with USB or Wi-Fi labels, then **Simulators**. It refreshes every three seconds while the iOS panel is visible, and when opening the dropdown. Selecting a physical device opens interactive screen mirroring through its paired developer connection. The phone sends HEVC video; a bundled native Node-API addon assembles compressed frames and transfers them into Node without copying the frame payload, then the panel decodes them through WebCodecs. MCP serializes the compressed bytes as base64, so the full path is not zero copy. The capture queue is limited to eight frames or 4 MiB and requests a keyframe after overflow. Physical iOS supports pointer taps, long presses, and drags through CoreDevice UniversalHID on the same developer tunnel. Input starts after a fresh video frame, uses normalized touchscreen coordinates, and releases held touches when the stream closes or resets. Screenshot captures the displayed mirrored frame as a PNG, attaches it to chat, and copies the same image to the macOS clipboard. Select annotates screen regions using the mirrored frame's pixel coordinates; native accessibility component names are unavailable. Both controls require a connected device and a ready video frame. Keyboard and hardware-button controls remain disabled. CPU and memory monitoring can attach to an already running development app on a paired iOS 17.4+ device. Mirroring requires Developer Mode and a host with HEVC WebCodecs support. `mobile_list_ios_devices` also returns remembered disconnected devices with their connection state; the picker shows connected devices only. Discovery errors remain visible while available simulators continue to work.
+
+Panels in multiple chats share one physical iOS capture through a local, per-user service. Each panel has an independent queue limited to eight frames or 4 MiB. Opening another panel requests a fresh keyframe without resetting the hardware stream or other panels’ decoders. A slow panel drops its own backlog and requests recovery when it resumes reading; other panels continue receiving frames. Closing a panel removes only its subscription. The final subscription closes the native capture, and the service exits after 30 idle seconds. Concurrent gestures are serialized, and a held touch belongs to the panel that started it. Device Hub runs its own hardware capture and cannot subscribe to this service; close its mirroring window while using Mobile Dev.
+
+Physical iOS mirroring uses the same Apple DeviceKit bezel and framebuffer mask as the matching simulator model. Discovery preserves the hardware product type, which selects the installed Xcode device profile. The bundled Baguette CLI renders its bezel without starting a simulator, and macOS rasterizes its mask. These assets are cached per model outside the video path. A device type stands for its own model identifier plus any regional or cellular variants its profile lists. Older Xcode profiles list none. If Xcode has no matching device type or the render fails, the screen mirrors without a frame, and the plugin looks for that model's frame again after five minutes.
+
+Ask the agent to inspect or control the app on the selected device. The panel shares both visible device IDs and platforms with the chat. Click a device panel to make it the active device for logs. Hiding a simulator keeps the current log source and buffered logs. Use Mobile Dev's screenshot, accessibility and input tools for the selected platform. Baguette streams iOS and serve-emu streams Android in the panel.
+
+For mobile app development, the bundled skill tells the agent to open the panel beside the chat before the first device launch, or reuse an open panel. It covers iOS, Android, Expo, React Native, and SwiftUI work. The agent follows your device choice, reuses a suitable running device, or chooses and boots an installed simulator or AVD. It asks only when the choice changes what the task needs. The app project's own tools build, install, and launch the app on that device; the agent reuses an existing app dev server.
+
+You can request fullscreen or a tool-only workflow. Planning, docs, code review, and compilation-only requests do not need a panel. Skill matching depends on the prompt and project context; [the workflow cases](agent-workflow.md) cover the expected behavior in fresh chats.
+
+## Android
+
+Install Android SDK platform-tools and emulator. Create an AVD in Android Studio or connect an Android device and authorize adb access. The Android panel lists devices without booting one. Selecting an AVD boots it if needed, then starts the bundled Node.js serve-emu CLI on a private loopback port. Home, Back, Recents, Lock, pointer gestures, and typing use scrcpy's control socket. Closing the panel leaves the emulator running. AVDs start without a separate emulator window. A failed emulator process reports its exit right away instead of waiting for the boot timeout.
+
+The Android dropdown shows **Connected devices** first, with USB or Wi-Fi labels, then **Emulators**. It refreshes every three seconds while the Android panel is visible, and when opening the dropdown. Physical devices use ADB discovery: enable USB debugging and authorize the computer, or pair the device for wireless debugging. Offline and unauthorized devices remain visible with their state. Emulators keep their AVD name while unauthorized. An emulator restored from a quick-boot snapshot can stay unauthorized because adb does not repeat the key exchange; the panel reconnects adb at most every 5 seconds while an AVD boots, and for up to 15 seconds after you select an already running emulator. Selecting an authorized phone connects its screen and shares its serial and transport with the chat. Bundled scrcpy mirrors and controls the phone without installing a companion app. Physical Android devices support the existing screen, input, screenshot, native log, and performance tools; emulator boot and stop controls do not apply to them.
+
+Android H.264 packets travel through MCP resource reads. The panel decodes them with WebCodecs, so the host must support H.264 `VideoDecoder`. Each device gets its own backend and each panel gets its own stream session. Decoder errors and video backlog request a fresh keyframe on the same connection. The panel drops delta frames until it can decode that keyframe. Requests have a cooldown, and stale decoder callbacks cannot repaint a closed stream. The plugin reuses a matching serve-emu server at port 3300. Set `SERVE_EMU_URL` to reuse another loopback HTTP server; it must already stream the selected serial. Closing MCP stops only backends the plugin started.
+
+For tool use, call `mobile_list_android_devices`. It returns serials for connected devices and `avd:<name>` IDs for stopped AVDs. Boot a selected AVD with `mobile_boot_android_emulator` and use its returned running serial for later calls. `mobile_shutdown_android_emulator` stops an emulator. The agent reads and controls a running device with the `device_*` tools, passing `platform: "android"` and the running serial as `serial`. Use the selected running serial with the Mobile Dev Android tools.
+
+`vendor:serve-emu` installs the source fork’s pinned Node.js dependencies with package scripts disabled and checks the bundled scrcpy 4.0 server's SHA-256. `build` compiles the checked-in CLI for Node.js, copies the runtime, and records package integrity, lockfile hash, CLI hash, and scrcpy hash in `dist/serve-emu/release.json`. Starting Android requires no npm install or runtime download.
+
+Click the camera button in either simulator toolbar to add a PNG to the chat input and copy it to the macOS clipboard. Each click adds another screenshot and keeps any attached log. Remove screenshots from the chat input to clear them. The button works while the selected simulator runs, including when the stream is paused. Physical iOS captures the displayed mirrored frame and requires a ready stream. It does not send a message.
+
+## Resource saving
+
+The leaf button beside device settings controls **Save resources** for the selected
+iOS simulator or Android emulator. It is enabled by default and is available while
+the device is stopped, so a device can opt out before its first optimized start.
+Preferences are stored on this Mac by simulator UDID or AVD name, across plugin
+updates and Android serial changes. Physical devices have no resource-saving control.
+
+Changing the switch saves the preference without interrupting running apps. A
+running device shows **Restart to apply** when the saved mode has not been applied
+by this server. Clicking it stops the selected virtual device and starts it with
+the saved mode. Existing virtual devices and their app data are retained.
+
+The plugin bundles pinned simslim 0.14.0 and avdslim 1.0.16 binaries for its macOS
+arm64 host. iOS starts apply and verify a simslim profile that preserves StoreKit,
+push, web/universal-link services, personal-information and photo pickers,
+connectivity, and diagnostics. Android starts retain hardware GPU acceleration,
+use 1536 MiB of guest RAM and low-RAM mode, then apply avdslim's package pruning.
+Android animations, process-limit settings, sync, location, Bluetooth, and setup
+state are retained; camera, photo, contact, map, accessibility, speech, and tracing
+packages are kept. Android cold boots bypass snapshots in both modes so an old
+snapshot cannot override the saved mode. Turning saving off restores the recorded
+guest changes and uses the AVD's normal configured RAM on its next start.
+
+These profiles reduce background capabilities, including Siri/Intelligence,
+indexing and widgets on iOS, and selected consumer and assistant packages on
+Android. Disable saving on devices used to test those capabilities. A failed
+optimizer or profile verification fails the start operation visibly.
+
+Build preparation uses `npm run vendor:resource-saving`; the normal build checks
+both executable hashes before packaging them with their licenses. There is no
+Homebrew requirement for plugin users. avdslim's own preferences are isolated;
+the existing Android SDK, ADB configuration and device authorizations are retained.
+
+`tooling/benchmark-resource-saving.ts` measures the same adapters and profiles on
+explicitly selected devices. It saves per-process host physical-footprint and
+interval CPU-time readings, rather than Android guest free RAM or app-only CPU.
