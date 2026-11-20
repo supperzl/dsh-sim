@@ -33,7 +33,7 @@ const locationPresets = [
 ];
 type Location = { latitude: number; longitude: number };
 const presetFor = (location: Location) => locationPresets.find(entry => entry.latitude === location.latitude && entry.longitude === location.longitude);
-const networkLabels: Record<NetworkCondition, string> = { normal: "Normal", lte: "LTE", "3g": "3G", edge: "Edge", offline: "Offline" };
+const networkLabels: Record<NetworkCondition, string> = { normal: "正常", lte: "LTE", "3g": "3G", edge: "Edge", offline: "Offline" };
 const rotationOptions = [{ value: "auto", label: "Auto" }, { value: "portrait", label: "Portrait" }, { value: "landscape", label: "Landscape" }];
 // One right-hand column, so every control lines up.
 const control = "w-38";
@@ -94,7 +94,7 @@ const speed = (kbps: number) => kbps >= 1000 ? `${kbps / 1000} Mbps` : `${kbps} 
 
 function describeNetwork(network: NetworkCondition | "custom", platform: "ios" | "android") {
   if (network === "custom") return platform === "ios" ? { name: "Custom throttle", detail: "Pick a condition to replace it." } : { name: "Your own proxy", detail: "Remove it to simulate a slower network." };
-  const name = network === "normal" ? "Full speed" : network === "offline" ? "未连接" : `${speed(networkPresets[network].bandwidthKbps)} · ${networkPresets[network].latencyMs} ms`;
+  const name = network === "normal" ? "全速" : network === "offline" ? "未连接" : `${speed(networkPresets[network].bandwidthKbps)} · ${networkPresets[network].latencyMs} ms`;
   // Baguette injects conditioning into apps as they launch; Android applies it right away.
   if (platform === "ios") return { name, detail: "Applies to new app launches." };
   return { name, detail: network === "normal" ? "Applies right away." : network === "offline" ? "Wi-Fi 和移动数据均已关闭。" : "本地开发服务器保持全速。" };
@@ -105,7 +105,7 @@ const networkOptions = networkConditions.map(condition => ({ value: condition, l
 function NetworkGroup({ platform, network, store, appTools }: { platform: "ios" | "android"; network: NetworkCondition | "custom"; store: DeviceSettingsStore; appTools: AppToolsStore }) {
   const appState = useSyncExternalStore(appTools.subscribe, appTools.getSnapshot);
   const status = describeNetwork(network, platform);
-  return <Group label="Network">
+  return <Group label="网络">
     <div className="space-y-3 pt-1">
       <Pills label="网络状况" value={network === "custom" ? "" : network} options={networkOptions} onSelect={value => {
         const condition = networkConditions.find(entry => entry === value);
@@ -120,7 +120,7 @@ function NetworkGroup({ platform, network, store, appTools }: { platform: "ios" 
 }
 
 function describeLocation(location: Location | null | undefined, platform: "ios" | "android") {
-  if (location === undefined) return { name: "Not set from this panel", detail: platform === "ios" ? "The simulator doesn't report its location." : "选择一个要模拟的地点。" };
+  if (location === undefined) return { name: "未从此面板设置", detail: platform === "ios" ? "The simulator doesn't report its location." : "选择一个要模拟的地点。" };
   if (location === null) return { name: "未模拟位置", detail: "选择一个要模拟的地点。" };
   return { name: presetFor(location)?.label ?? "自定义位置", detail: `${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}` };
 }
@@ -139,10 +139,10 @@ function LocationGroup({ platform, location, store }: { platform: "ios" | "andro
   }, [location?.latitude, location?.longitude]);
   const place = describeLocation(location, platform);
   const preset = customOpen ? "custom" : location ? presetFor(location)?.value ?? "custom" : "";
-  return <Group label="Location">
+  return <Group label="位置">
     <StatusCard icon={<MapPinIcon aria-hidden className="size-4 shrink-0 text-muted-foreground" />} name={place.name} detail={place.detail}>
       {/* Only the iOS simulator can drop a simulated location. */}
-      {platform === "ios" && location !== null && <Button type="button" variant="ghost" size="xs" className="text-muted-foreground" onClick={() => { setCustomOpen(false); void store.change({ setting: "location", value: null }); }}>Clear</Button>}
+      {platform === "ios" && location !== null && <Button type="button" variant="ghost" size="xs" className="text-muted-foreground" onClick={() => { setCustomOpen(false); void store.change({ setting: "location", value: null }); }}>清除</Button>}
     </StatusCard>
     <div className="pt-1">
       <Pills label="Simulated place" value={preset} options={placeOptions} onSelect={value => {
@@ -186,13 +186,13 @@ export function DeviceSettings({ platform }: { platform: "ios" | "android" }) {
       <PopoverTrigger asChild><Button variant="ghost" size="icon" disabled={state.disabled} aria-label={`${platform === "ios" ? "iOS" : "Android"} device settings`} title="设备设置"><Settings2Icon /></Button></PopoverTrigger>
       <PopoverContent side="top" align="end" className="max-h-(--radix-popover-content-available-height) w-[360px] max-w-[calc(100vw-16px)] space-y-4 overflow-y-auto p-4 text-sm" aria-label="设备设置" onInteractOutside={event => { if (event.target instanceof Element && event.target.closest('[data-slot="select-content"]')) event.preventDefault(); }}>
         <Tabs value={activeTab} onValueChange={value => { setTab(value as "app" | "device"); if (value === "app") void appTools.load(); }} className="gap-4">
-          <TabsList className="grid w-full grid-cols-2"><TabsTrigger value="app" disabled={appState.disabled}><AppWindowIcon />App</TabsTrigger><TabsTrigger value="device"><SmartphoneIcon />Device</TabsTrigger></TabsList>
+          <TabsList className="grid w-full grid-cols-2"><TabsTrigger value="app" disabled={appState.disabled}><AppWindowIcon />应用</TabsTrigger><TabsTrigger value="device"><SmartphoneIcon />设备</TabsTrigger></TabsList>
           <AnimatedHeight>
           <TabsContent value="app"><AppTools store={appTools} /></TabsContent>
           <TabsContent value="device" className="space-y-3">
         {settings && <fieldset disabled={disabled} className="space-y-3">
-          <Group label="Display">
-            {settings.appearance !== undefined && <Row label="Appearance" id={`${id}-appearance`}><Tabs value={settings.appearance} onValueChange={value => { if (value) void store.change({ setting: "appearance", value: value as "light" | "dark" | "auto" }); }}>
+          <Group label="显示">
+            {settings.appearance !== undefined && <Row label="外观" id={`${id}-appearance`}><Tabs value={settings.appearance} onValueChange={value => { if (value) void store.change({ setting: "appearance", value: value as "light" | "dark" | "auto" }); }}>
               {/* Android's third option leaves no room for icons. */}
               <TabsList aria-labelledby={`${id}-appearance`} className={control}>
                 <TabsTrigger value="light" disabled={disabled}>{platform === "ios" && <SunIcon />}Light</TabsTrigger>
@@ -200,17 +200,17 @@ export function DeviceSettings({ platform }: { platform: "ios" | "android" }) {
                 {platform === "android" && <TabsTrigger value="auto" disabled={disabled}>Auto</TabsTrigger>}
               </TabsList>
             </Tabs></Row>}
-            {settings.contentSize !== undefined && <Row label="Text size" htmlFor={`${id}-text-size`}><Stepper id={`${id}-text-size`} value={settings.contentSize} items={contentSizeOptions} disabled={disabled} onChange={value => void store.change({ setting: "contentSize", value: value as typeof contentSizes[number] })} /></Row>}
-            {settings.fontScale !== undefined && <Row label="Text size" htmlFor={`${id}-text-size`}><Stepper id={`${id}-text-size`} value={String(settings.fontScale)} items={fontScaleOptions(settings.fontScale)} disabled={disabled} onChange={value => void store.change({ setting: "fontScale", value: Number(value) })} /></Row>}
-            {settings.increaseContrast !== undefined && <Row label="Increase contrast" htmlFor={`${id}-contrast`}><Switch id={`${id}-contrast`} checked={settings.increaseContrast} onCheckedChange={value => void store.change({ setting: "increaseContrast", value })} /></Row>}
+            {settings.contentSize !== undefined && <Row label="文字大小" htmlFor={`${id}-text-size`}><Stepper id={`${id}-text-size`} value={settings.contentSize} items={contentSizeOptions} disabled={disabled} onChange={value => void store.change({ setting: "contentSize", value: value as typeof contentSizes[number] })} /></Row>}
+            {settings.fontScale !== undefined && <Row label="文字大小" htmlFor={`${id}-text-size`}><Stepper id={`${id}-text-size`} value={String(settings.fontScale)} items={fontScaleOptions(settings.fontScale)} disabled={disabled} onChange={value => void store.change({ setting: "fontScale", value: Number(value) })} /></Row>}
+            {settings.increaseContrast !== undefined && <Row label="增强对比度" htmlFor={`${id}-contrast`}><Switch id={`${id}-contrast`} checked={settings.increaseContrast} onCheckedChange={value => void store.change({ setting: "increaseContrast", value })} /></Row>}
             {settings.orientation !== undefined && <Row label="Rotation" htmlFor={`${id}-rotation`}><SettingsSelect id={`${id}-rotation`} value={settings.orientation} items={rotationOptions} disabled={disabled} onChange={value => void store.change({ setting: "orientation", value: value as "auto" | "portrait" | "landscape" })} /></Row>}
-            {settings.statusBar !== undefined && <Row label="Clean status bar" htmlFor={`${id}-status-bar`}><Switch id={`${id}-status-bar`} checked={settings.statusBar === "clean"} onCheckedChange={value => void store.change({ setting: "statusBar", value: value ? "clean" : "live" })} /></Row>}
+            {settings.statusBar !== undefined && <Row label="简化状态栏" htmlFor={`${id}-status-bar`}><Switch id={`${id}-status-bar`} checked={settings.statusBar === "clean"} onCheckedChange={value => void store.change({ setting: "statusBar", value: value ? "clean" : "live" })} /></Row>}
           </Group>
           {settings.network !== undefined && <NetworkGroup platform={platform} network={settings.network} store={store} appTools={appTools} />}
           {settings.locationSupported && <LocationGroup key={state.deviceId} platform={platform} location={settings.location} store={store} />}
         </fieldset>}
-        <Group label="Panel">
-          <Row label="Show device frame" htmlFor={`${id}-frame`}><Switch id={`${id}-frame`} checked={state.frame} onCheckedChange={value => store.toggleFrame(value)} /></Row>
+        <Group label="面板">
+          <Row label="显示设备边框" htmlFor={`${id}-frame`}><Switch id={`${id}-frame`} checked={state.frame} onCheckedChange={value => store.toggleFrame(value)} /></Row>
         </Group>
         {state.error && <p className="whitespace-pre-wrap text-xs text-destructive" role="alert">{state.error}</p>}
           </TabsContent>

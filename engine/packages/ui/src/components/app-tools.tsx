@@ -16,7 +16,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collap
 type SectionProps = { store: AppToolsStore; state: AppToolsState; app: AppEntry; blocked: boolean };
 
 const permissionRows: Record<AppPermission, { label: string; icon: LucideIcon }> = {
-  location: { label: "Location", icon: MapPinIcon }, photos: { label: "Photos", icon: ImageIcon }, camera: { label: "Camera", icon: CameraIcon },
+  location: { label: "位置", icon: MapPinIcon }, photos: { label: "Photos", icon: ImageIcon }, camera: { label: "Camera", icon: CameraIcon },
   microphone: { label: "Microphone", icon: MicIcon }, notifications: { label: "Notifications", icon: BellIcon }, contacts: { label: "Contacts", icon: ContactIcon },
   calendar: { label: "Calendar", icon: CalendarIcon }, reminders: { label: "Reminders", icon: ListChecksIcon }, motion: { label: "运动与健身", icon: ActivityIcon },
 };
@@ -52,7 +52,7 @@ function AppPicker({ store, state, app, blocked }: SectionProps) {
   const action = "h-auto w-9 shrink-0 rounded-none border-l border-l-border text-muted-foreground hover:text-foreground focus-visible:z-10";
   return <div className="flex rounded-lg border">
     <Select items={state.apps.map(entry => ({ value: entry.bundleId, label: entry.name }))} value={app.bundleId} disabled={blocked} onValueChange={value => { if (value !== null) void store.open(value); }}>
-      <SelectTrigger aria-label="App" title="Choose an app to launch" className="min-w-0 flex-1 gap-2.5 rounded-r-none border-0 py-2 pl-2 pr-2 data-[size=default]:h-auto hover:bg-muted/50 focus-visible:z-10 [&>svg]:text-muted-foreground">
+      <SelectTrigger aria-label="应用" title="Choose an app to launch" className="min-w-0 flex-1 gap-2.5 rounded-r-none border-0 py-2 pl-2 pr-2 data-[size=default]:h-auto hover:bg-muted/50 focus-visible:z-10 [&>svg]:text-muted-foreground">
         <span className="flex min-w-0 flex-1 items-center gap-2.5 text-left">
           <AppAvatar name={app.name} icon={app.icon} />
           <span className="min-w-0 flex-1">

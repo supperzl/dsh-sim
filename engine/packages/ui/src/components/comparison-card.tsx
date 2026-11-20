@@ -150,7 +150,7 @@ function SharpChanges({ recordings, changes, duration, range, hiddenIds, selecte
   return <section className="recording-overview comparison-changes" aria-label="剧烈变化">
     <div className="recording-section-heading"><h3>剧烈变化</h3>
       <InfoPopover label="sharp changes">Each lane is one run on the shared timeline. Marks show where CPU moved 10 points, memory 50 MiB or display FPS 15 between readings a second apart. A steady run stays empty. Click a change to select it, or drag across any chart to select a range in every run.</InfoPopover>
-      {selected && <button type="button" className="recording-clear-range" onClick={onClear}>Clear</button>}
+      {selected && <button type="button" className="recording-clear-range" onClick={onClear}>清除</button>}
     </div>
     <div className="comparison-lanes">
       <div className="comparison-lane-markers">{recordings.map((recording, index) => <span key={recording.id} data-hidden={hiddenIds.has(recording.id) || undefined}><RunMarker index={index} /></span>)}</div>

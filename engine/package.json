@@ -6,12 +6,7 @@
     "packages/shared",
     "packages/core",
     "packages/ui",
-    "packages/mcp-app",
-    "packages/test-support",
-    "apps/codex-plugin",
-    "apps/claude",
-    "apps/cursor",
-    "apps/mac"
+    "packages/mcp-app"
   ],
   "type": "module",
   "engines": {

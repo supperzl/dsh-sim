@@ -553,7 +553,7 @@ export function createSimulatorPanel(
     const physicalOptions: DeviceOption[] = physicalDevices.map(device => {
       const connection = physicalConnectionLabel(device.transportType);
       const kind = /ipad/i.test(device.model) ? "tablet" : "phone";
-      return { value: device.udid, label: `${device.name} · ${connection}`, group: "Connected devices", kind, running: true, statusLabel: "Connected", canStop: false };
+      return { value: device.udid, label: `${device.name} · ${connection}`, group: "已连接设备", kind, running: true, statusLabel: "Connected", canStop: false };
     });
     const virtualDevices = next.devices.filter(device => device.kind !== "physical");
     const androidPhysicalOptions: DeviceOption[] = next.devices.flatMap(device => {
@@ -566,7 +566,7 @@ export function createSimulatorPanel(
       return [{
         value: device.udid, label: bookingName ?? deviceLabel,
         ...(bookingName !== undefined ? { detail: deviceLabel } : {}),
-        group: "Connected devices", kind: /tablet|pixel.*tab/i.test(device.name) ? "tablet" : "phone",
+        group: "已连接设备", kind: /tablet|pixel.*tab/i.test(device.name) ? "tablet" : "phone",
         running, statusLabel: "Connected", canStop: false,
       }];
     });

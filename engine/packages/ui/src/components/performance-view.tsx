@@ -29,11 +29,11 @@ export function PerformanceView({ panel }: { panel: PerformancePanel }) {
   else if (state.fpsPhase === "connecting" && state.monitoring === false) phase = "connecting";
   else if (state.fpsPhase === "failed" && state.monitoring === false) phase = "failed";
 
-  return <section id="performance-drawer" className="flex h-full min-h-0 min-w-0 flex-col" role="tabpanel" aria-label="Performance">
+  return <section id="performance-drawer" className="flex h-full min-h-0 min-w-0 flex-col" role="tabpanel" aria-label="性能">
     <header className="panel-toolbar flex h-[49px] shrink-0 items-center gap-2 border-b px-2">
       <ActivityIcon className="size-4 text-blue-500" />
       <div className="mr-auto min-w-0 text-xs">
-        <div className="truncate" title={state.bundleId}>{state.bundleId || "Performance"}</div>
+        <div className="truncate" title={state.bundleId}>{state.bundleId || "性能"}</div>
         <div className="truncate text-[10px] text-muted-foreground">{state.selectedLabel}</div>
       </div>
       <span id="performance-status" role="status" className="shrink-0 text-[11px] text-muted-foreground capitalize">{phase === "recording" ? "Live" : phase}</span>
@@ -45,7 +45,7 @@ export function PerformanceView({ panel }: { panel: PerformancePanel }) {
           <Field className="gap-2">
             <div className="flex items-center justify-between gap-2"><FieldLabel htmlFor="performance-app" className="text-xs">{state.selectedLabel}</FieldLabel><Button variant="ghost" size="sm" className="h-6 px-1.5 text-xs" aria-label="刷新运行中的应用" disabled={state.available === false || state.discovering} onClick={() => void panel.refreshApps()}><RefreshCwIcon />Refresh</Button></div>
             <NativeSelect id="performance-app" className="w-full" value={state.bundleId} onChange={event => panel.selectApp(event.target.value)}>
-              <NativeSelectOption value="">Choose an app</NativeSelectOption>
+              <NativeSelectOption value="">选择应用</NativeSelectOption>
               {state.bundleId && selectedRunning === false && <NativeSelectOption value={state.bundleId}>{state.bundleId} · Waiting for app</NativeSelectOption>}
               {state.apps.map(app => <NativeSelectOption key={app.bundleId} value={app.bundleId}>{app.bundleId} · {app.pid}</NativeSelectOption>)}
             </NativeSelect>
@@ -66,7 +66,7 @@ export function PerformanceView({ panel }: { panel: PerformancePanel }) {
           <TimelineChartWidth.Provider value={chartWidth}>
             <div className="flex border-b" style={{ height: TIMELINE_HEIGHT }}>
               <div className="sticky left-0 z-[60] flex shrink-0 items-center gap-2 border-r bg-background px-2 text-[10px] text-muted-foreground" style={{ width: SIDEBAR_WIDTH }}>
-                <span>Live performance</span>
+                <span>实时性能</span>
                 {state.phase === "failed" && <button type="button" className="text-blue-500" onClick={() => panel.retry()}>Retry</button>}
                 {following === false && <button type="button" className="text-blue-500" onClick={reset}>跟随实时画面</button>}
               </div>

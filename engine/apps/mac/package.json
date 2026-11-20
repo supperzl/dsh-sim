@@ -1,7 +1,0 @@
-{
-  "name": "@mobile-dev/mac",
-  "version": "0.0.0",
-  "private": true,
-  "type": "module",
-  "description": "Mac app: SwiftUI shell, the web content it hosts, and its server runtime packaging."
-}

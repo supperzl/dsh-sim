@@ -421,8 +421,8 @@ export const AppIntelligenceView = memo(function AppIntelligenceView({ panel }: 
           <Button size="sm" disabled={!state.available || !state.projectPath || state.busy !== null} onClick={() => void panel.generate()}><RefreshCwIcon />{snapshot ? "Regenerate" : "Generate"}</Button>
           {snapshot && <ConfirmButton id="app-intel-clear" variant="outline" size="sm" title="Clear the graph"
             description={`Deletes the saved graph for ${state.projectPath.split("/").at(-1)}. The project stays selected, so it can be analyzed again.`}
-            action="Clear" disabled={state.busy !== null} onConfirm={() => void panel.clear()}
-            className="text-destructive hover:bg-destructive/10 hover:text-destructive"><EraserIcon />Clear</ConfirmButton>}
+            action="清除" disabled={state.busy !== null} onConfirm={() => void panel.clear()}
+            className="text-destructive hover:bg-destructive/10 hover:text-destructive"><EraserIcon />清除</ConfirmButton>}
         </>}
     </header>
     {state.error && <Alert variant="destructive" className="shrink-0 rounded-none border-x-0 border-t-0"><AlertDescription className="text-xs">{state.error}</AlertDescription></Alert>}

@@ -29,7 +29,7 @@ function TestingProjectPicker({ panel }: { panel: TestingPanel }) {
   const selected = state.projects.find(project => project.path === state.projectPath);
   const label = state.projectPath
     ? selected?.name ?? state.projectPath.split("/").filter(Boolean).at(-1) ?? state.projectPath
-    : "Choose a project";
+    : "选择项目";
   const choose = (projectPath: string) => { setOpen(false); void panel.chooseProject(projectPath); };
   return <div className="flex min-w-0 items-center gap-1">
     <Popover open={open} onOpenChange={value => { setOpen(value); if (value) void panel.refreshProjects(); }}>
@@ -267,7 +267,7 @@ export function TestingView({ panel, deviceApps }: { panel: TestingPanel; device
           : !booted ? "启动 iOS 模拟器或 Android 模拟器以对其进行录制。"
             : !isRecordableDevice(device) ? "Recording works on an iOS simulator or an Android emulator, not a physical device."
               : mismatch;
-  return <section className="flex h-full min-h-0 flex-col gap-4 overflow-y-auto p-4 [&_button:not(:disabled)]:cursor-pointer" aria-label="Testing">
+  return <section className="flex h-full min-h-0 flex-col gap-4 overflow-y-auto p-4 [&_button:not(:disabled)]:cursor-pointer" aria-label="测试">
     <header className="flex flex-wrap items-center gap-2 border-b pb-3">
       <TestingProjectPicker panel={panel} />
       {state.targets.length > 1 && <Select items={state.targets.map(entry => ({ value: entry.name, label: entry.name }))} value={state.targetName} onValueChange={value => { if (value) panel.selectTarget(value); }}>
@@ -284,7 +284,7 @@ export function TestingView({ panel, deviceApps }: { panel: TestingPanel; device
     </header>
 
     {state.error && <Alert variant="destructive">
-      <AlertTitle>Testing</AlertTitle>
+      <AlertTitle>测试</AlertTitle>
       <AlertDescription>
         <span className="min-w-0 break-words">{state.error}</span>
         <Button type="button" variant="ghost" size="sm" className="self-start" onClick={() => panel.dismissError()}>Dismiss</Button>
@@ -355,7 +355,7 @@ function TestingControls({ panel, recordable, deviceId, platform }: { panel: Tes
   return <div data-testing-controls className="flex min-w-0 flex-wrap items-center gap-2 ml-auto">
     <Button type="button" size="sm" data-testing-launch disabled={!panel.canLaunch || agentRecording} onClick={() => void panel.launchApp()}>
       {panelState.launching ? <LoaderCircleIcon className="animate-spin" /> : <PlayIcon />}
-      {panelState.appLaunched ? "重新启动应用" : "Launch app"}
+      {panelState.appLaunched ? "重新启动应用" : "启动应用"}
     </Button>
     {panelState.selectedTestPath ? <Button type="button" size="sm" variant="outline" data-testing-new-from-preview
       onClick={() => void panel.newRecording()}><FilePlus2Icon />新建录制</Button> : agentRecording
@@ -370,7 +370,7 @@ function TestingControls({ panel, recordable, deviceId, platform }: { panel: Tes
         : state.steps.length > 0
           ? <RecordMenu deviceId={deviceId} platform={platform} recordable={recordable} steps={state.steps.length} />
           : <Button type="button" size="sm" variant="outline" data-testing-record disabled={!recordable}
-            onClick={() => testRecorder.start(deviceId, platform)}><CircleIcon />Record</Button>}
+            onClick={() => testRecorder.start(deviceId, platform)}><CircleIcon />录制</Button>}
     <Button type="button" size="sm" variant="outline" data-testing-run disabled={panelState.selectedTestPath ? !panel.canRunStored : !panel.canRun}
       title="Save the test, then run it against this device. Recording stops: the runner needs the device to itself."
       onClick={() => void (panelState.selectedTestPath ? panel.runStoredTest() : panel.runTest())}>
@@ -397,10 +397,10 @@ function RecordMenu({ deviceId, platform, recordable, steps }: { deviceId: strin
   const count = `${steps} step${steps === 1 ? "" : "s"}`;
   return <Popover open={open} onOpenChange={setOpen}>
     <PopoverTrigger asChild>
-      <Button type="button" size="sm" variant="outline" data-testing-record disabled={!recordable}><CircleIcon />Record</Button>
+      <Button type="button" size="sm" variant="outline" data-testing-record disabled={!recordable}><CircleIcon />录制</Button>
     </PopoverTrigger>
     <PopoverContent align="start" className="flex w-64 flex-col gap-1 p-1.5 [&_button:not(:disabled)]:cursor-pointer"
-      role="menu" aria-label="Record">
+      role="menu" aria-label="录制">
       <p className="px-2.5 pb-0.5 pt-1.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
         This flow has {count}
       </p>
@@ -703,10 +703,10 @@ function StoredTestPreview({ panel, source, path, loading }: { panel: TestingPan
     {loading ? <p className="flex items-center gap-1 text-xs text-muted-foreground" role="status"><LoaderCircleIcon className="size-3 animate-spin" />Reading test…</p>
       : <ResizablePanelGroup id="testing-stored-panels" orientation="horizontal" className="min-h-0 flex-1 gap-3" aria-label="已保存的测试预览与步骤">
         <ResizablePanel id="testing-stored-source" defaultSize="60%" minSize="20%" maxSize="85%">
-          <section className="flex h-full min-h-0 min-w-0 flex-col gap-1.5 overflow-hidden rounded-lg border p-3" aria-label="Preview">
+          <section className="flex h-full min-h-0 min-w-0 flex-col gap-1.5 overflow-hidden rounded-lg border p-3" aria-label="预览">
             <p className="flex items-center gap-2 text-xs font-medium">Preview
               <Button type="button" size="sm" variant="ghost" className={editing ? "bg-accent text-accent-foreground" : undefined} data-testing-source-edit aria-pressed={editing}
-                disabled={editing || panelState.running || panelState.saving} onClick={() => setEditing(true)}>Edit</Button>
+                disabled={editing || panelState.running || panelState.saving} onClick={() => setEditing(true)}>编辑</Button>
               {recorder.run?.state === "running" && <span role="status" className="text-muted-foreground">Running…</span>}
               {recorder.run?.state === "passed" && <span role="status" className="text-emerald-600">Passed</span>}
               {recorder.run?.state === "failed" && <span role="status" className="text-red-600">{recorder.run.error ?? "Failed"}</span>}
@@ -720,7 +720,7 @@ function StoredTestPreview({ panel, source, path, loading }: { panel: TestingPan
         </ResizablePanel>
         <ResizableHandle withHandle aria-label="调整预览与步骤区域大小" />
         <ResizablePanel id="testing-stored-steps" defaultSize="40%" minSize="15%" maxSize="80%">
-          <section className="flex h-full min-h-0 min-w-0 flex-col gap-2 overflow-hidden rounded-lg border p-3" aria-label="Steps">
+          <section className="flex h-full min-h-0 min-w-0 flex-col gap-2 overflow-hidden rounded-lg border p-3" aria-label="步骤">
             <p className="flex items-center gap-2 text-xs font-medium">Steps <span className="font-normal text-muted-foreground">{steps.length}</span></p>
             <div className="min-h-0 flex-1 overflow-y-auto pr-1"><SourceStepList source={source} mode="stored"
               onEdit={value => panel.editStoredTest(value)} onHoverLine={setHighlightedLine} /></div>
@@ -826,9 +826,9 @@ function TestingRecorder({ panel, recordable, deviceId }: { panel: TestingPanel;
       <ResizablePanel id="testing-preview-resizable" defaultSize="60%" minSize="20%" maxSize="85%">
         <section data-testing-preview-pane className="flex h-full min-h-0 min-w-0 flex-col gap-1.5 overflow-hidden rounded-lg border p-3">
           <p className="flex flex-wrap items-center gap-2 text-xs font-medium">
-            <span>Preview</span>
+            <span>预览</span>
             {!panelState.agent?.active && <Button type="button" size="sm" variant="ghost" className={editing ? "bg-accent text-accent-foreground" : undefined} data-testing-source-edit aria-pressed={editing}
-              disabled={editing || panelState.running || panelState.saving} onClick={() => setEditing(true)}>Edit</Button>}
+              disabled={editing || panelState.running || panelState.saving} onClick={() => setEditing(true)}>编辑</Button>}
             {state.run?.state === "running" && <span className="flex items-center gap-1 font-normal text-muted-foreground" role="status">
               <LoaderCircleIcon className="size-3 animate-spin" />Running
             </span>}
@@ -866,7 +866,7 @@ function TestingRecorder({ panel, recordable, deviceId }: { panel: TestingPanel;
 
           <div className="flex min-h-0 flex-1 flex-col gap-2 border-t pt-3">
             <div className="flex items-center gap-2">
-              <h2 className="text-xs font-medium">Steps</h2>
+              <h2 className="text-xs font-medium">步骤</h2>
               {(sourceSteps ?? state.steps).length > 0 && <span className="text-xs text-muted-foreground">{(sourceSteps ?? state.steps).length}</span>}
               <ClearStepsButton steps={(sourceSteps ?? state.steps).length} />
             </div>
@@ -908,12 +908,12 @@ function TestDescription({ panel, saveable }: { panel: TestingPanel; saveable: b
   const state = useSyncExternalStore(testRecorder.subscribe, testRecorder.getSnapshot);
   const panelState = useSyncExternalStore(panel.subscribe, panel.getSnapshot);
   const [open, setOpen] = useState(false);
-  return <section className="flex min-w-0 flex-col" aria-label="Test Description">
+  return <section className="flex min-w-0 flex-col" aria-label="测试描述">
     <button type="button" data-testing-description-toggle aria-expanded={open}
       className="flex min-w-0 items-center gap-1.5 rounded-md px-1 py-1 text-left text-xs font-medium hover:bg-accent hover:text-accent-foreground"
       onClick={() => setOpen(value => !value)}>
       {open ? <ChevronDownIcon className="size-3.5 shrink-0 text-muted-foreground" /> : <ChevronRightIcon className="size-3.5 shrink-0 text-muted-foreground" />}
-      <span className="shrink-0">Test Description</span>
+      <span className="shrink-0">测试描述</span>
       {/* Closed, the row is the readout: the name the flow will be saved under, clipped at a width
           of its own so it degrades the same way wherever the pane ends. The file name is *not*
           here — at the width this pane actually gets, a name and a path side by side were two
@@ -951,7 +951,7 @@ function TestDescription({ panel, saveable }: { panel: TestingPanel; saveable: b
  * Clear, as an icon that asks first.
  *
  * It throws away every step of the flow on screen, and there is no undo: the steps are the whole
- * of what was recorded. It used to be one unguarded click of a button labelled "Clear", sitting at
+ * of what was recorded. It used to be one unguarded click of a button labelled "清除", sitting at
  * the end of the same row as the step count. Now it is the icon alone, tinted like the destructive
  * thing it is, and the question names how much is about to go.
  */
@@ -969,7 +969,7 @@ function ClearStepsButton({ steps }: { steps: number }) {
       <div className="flex justify-end gap-2">
         <Button type="button" size="sm" variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
         <Button type="button" size="sm" variant="destructive" data-testing-clear-confirm
-          onClick={() => { setOpen(false); testRecorder.clearSteps(); }}>Clear</Button>
+          onClick={() => { setOpen(false); testRecorder.clearSteps(); }}>清除</Button>
       </div>
     </PopoverContent>
   </Popover>;

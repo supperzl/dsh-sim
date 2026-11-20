@@ -169,8 +169,8 @@ function StoreDetail({ panel, store, title, table, busy, expansion }: { panel: S
       back={table && { label: "返回表格", onBack: () => panel.closeDetail() }} loading={table?.loading}>
         {table && <TablePager panel={panel} store={store} table={table} />}
         {store.status === "ok" && store.kind !== "sqlite" && <Button variant="outline" size="xs" onClick={() => expansion.copy(storeJson(store))}><CopyIcon />复制为 JSON</Button>}
-        <ConfirmButton title={`Clear ${title}`} action="Clear" disabled={busy} description={`Stops the app and deletes ${store.path}. The app is not relaunched.`} onConfirm={() => void panel.clear(store.id)}
-          variant="outline" className="text-destructive hover:bg-destructive/10 hover:text-destructive">Clear</ConfirmButton>
+        <ConfirmButton title={`Clear ${title}`} action="清除" disabled={busy} description={`Stops the app and deletes ${store.path}. The app is not relaunched.`} onConfirm={() => void panel.clear(store.id)}
+          variant="outline" className="text-destructive hover:bg-destructive/10 hover:text-destructive">清除</ConfirmButton>
     </DetailHeader>
     {store.note && <p className="flex items-center gap-1.5 border-b px-4 py-1.5 text-[11px] text-muted-foreground">{store.status === "encrypted" ? <LockIcon className="size-3" /> : store.status === "unreadable" ? <TriangleAlertIcon className="size-3" /> : null}{store.note}</p>}
     {table ? <TableGrid table={table} /> : <div className="min-h-0 flex-1 overflow-auto font-mono text-xs" role="table" aria-label={`${title} entries`}>

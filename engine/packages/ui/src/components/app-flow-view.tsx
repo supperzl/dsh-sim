@@ -32,7 +32,7 @@ export function progressTally(summary: AppFlowSweepSummary): string {
 }
 const VIEW_OPTIONS: GraphViewOption[] = [{ value: "flow", label: "流程图" }, { value: "ui-states", label: "UI 状态" }];
 const CAPTURE_MODE_OPTIONS: { value: AppFlowBuildMode; label: string }[] = [
-  { value: "structure-only", label: "Structure only" }, { value: "screen-ui-and-structure", label: "屏幕界面 + 结构" },
+  { value: "structure-only", label: "仅结构" }, { value: "screen-ui-and-structure", label: "屏幕界面 + 结构" },
 ];
 
 
@@ -56,7 +56,7 @@ function AppFlowHelp() {
 
       <div className="space-y-1"><p className="font-medium">Map creation</p>
         <ul className="list-disc space-y-1 pl-4 text-muted-foreground">
-          <li><span className="text-foreground">Structure only</span> reads the navigation out of your source. It takes seconds and needs no device, but has no screenshots.</li>
+          <li><span className="text-foreground">仅结构</span> reads the navigation out of your source. It takes seconds and needs no device, but has no screenshots.</li>
           <li><span className="text-foreground">屏幕界面 + 结构</span> also walks the app on an iOS simulator and photographs every screen it reaches. If the app requires sign-in, sign in to it first.</li>
         </ul></div>
 
@@ -75,7 +75,7 @@ function AppFlowHelp() {
 
       <div className="space-y-1"><p className="font-medium">Buttons</p>
         <ul className="list-disc space-y-1 pl-4 text-muted-foreground">
-          <li><span className="text-foreground">Launch App</span> starts the app without walking it.</li>
+          <li><span className="text-foreground">启动应用</span> starts the app without walking it.</li>
           <li><span className="text-foreground">用 AI 探索</span> lists the screens left unreached and retries the ones you pick.</li>
           <li><span className="text-foreground">Clear app flow</span> deletes the map, its captures and its recorded paths.</li>
         </ul></div>
@@ -182,7 +182,7 @@ export function AppFlowView({ panel }: { panel: AppFlowPanel }) {
    * Persisted on change, not on Start — the same discipline the "捕获 UI 状态" switch next
    * to it already follows. The view is mounted conditionally by the workspace, and the effect
    * above restores `mode` from this key on every mount, so a selection that only lived in React
-   * state until Start was silently reverted to "Structure only" by any unmount in between
+   * state until Start was silently reverted to "仅结构" by any unmount in between
    * (hiding the panel, switching tools). A sweep then ran as a structure parse, which looks from
    * the outside like Start doing nothing.
    */
@@ -212,9 +212,9 @@ export function AppFlowView({ panel }: { panel: AppFlowPanel }) {
      not screens, so a preview taken while it is on screen has nothing to move to. */
   const previewScreen = (id: string) => { setView("flow"); setFocusRequest({ id, nonce: Date.now() }); };
   const empty = !state.result && !isRunning;
-  return <section className="flex h-full min-h-0 flex-col" aria-label="App Flow">
+  return <section className="flex h-full min-h-0 flex-col" aria-label="应用流程">
     <header className="flex flex-wrap items-start gap-3 border-b p-3">
-      <div className="min-w-52 flex-1"><div className="flex items-center gap-1"><h2 className="text-base font-medium">App Flow</h2><AppFlowHelp /></div>
+      <div className="min-w-52 flex-1"><div className="flex items-center gap-1"><h2 className="text-base font-medium">应用流程</h2><AppFlowHelp /></div>
         <div className="mt-1 flex items-center gap-2">
           <AppFlowProjectPicker panel={panel} />
           {state.result?.manifest.durationMs !== undefined && <span className="flex items-center gap-1 text-xs text-muted-foreground" title={state.result.manifest.cumulativeDurationMs !== undefined && state.result.manifest.cumulativeDurationMs > state.result.manifest.durationMs ? "各次续接运行的总计" : undefined}><Clock className="size-3" />{duration(state.result.manifest.cumulativeDurationMs ?? state.result.manifest.durationMs)}</span>}
@@ -253,9 +253,9 @@ export function AppFlowView({ panel }: { panel: AppFlowPanel }) {
         {isRunning ? <><Button variant="secondary" size="sm" onClick={() => void panel.pause()} disabled={!state.runId}><Pause />Pause</Button>
           <Button variant="secondary" size="sm" onClick={() => void panel.cancel()} disabled={!state.runId}>Cancel</Button></>
           : <><Button variant="secondary" size="sm" onClick={() => void panel.launchApp()} disabled={!state.projectPath || state.launching}>
-            {state.launching && <Loader2 className="animate-spin" />}{state.launching ? "Launching…" : "Launch App"}</Button>
+            {state.launching && <Loader2 className="animate-spin" />}{state.launching ? "Launching…" : "启动应用"}</Button>
             <Button size="sm" onClick={start} disabled={!state.projectPath || state.launching || state.agentStartPending}>
-              {state.agentStartPending ? "Asking Codex…" : isPaused || resumable ? "Resume" : state.result ? "Regenerate" : "Start"}</Button></>}
+              {state.agentStartPending ? "Asking Codex…" : isPaused || resumable ? "Resume" : state.result ? "Regenerate" : "开始"}</Button></>}
       </div>
       {/* Structure-only never launches the app, so sign-in guidance there implies a prerequisite
           that does not exist. The model-free screen sweep does skip its sign-in check, though: if
@@ -287,7 +287,7 @@ export function AppFlowView({ panel }: { panel: AppFlowPanel }) {
       {state.prompt.kind === "review" && <Button variant="secondary" size="sm" onClick={() => void panel.resolvePrompt("override")}>仍然继续</Button>}
       <Button size="sm" onClick={() => void panel.resolvePrompt("continue")}>Continue</Button></div>}
     {state.error && <div role="alert" className="border-b border-destructive/30 bg-destructive/10 px-4 py-2 text-sm text-destructive">{state.error}</div>}
-    <div className="min-h-0 flex-1 overflow-hidden">{!state.projectPath ? <Empty title="Choose a project" detail="Pick the React Native project folder to build or view its flow."
+    <div className="min-h-0 flex-1 overflow-hidden">{!state.projectPath ? <Empty title="选择项目" detail="Pick the React Native project folder to build or view its flow."
       action={<Button onClick={() => void panel.pickProject()} disabled={state.pickingProject}>{state.pickingProject ? <Loader2 className="animate-spin" /> : null}{state.pickingProject ? "Waiting for the folder…" : "Choose project folder"}</Button>} />
       : empty ? <Empty title="暂无 App Flow" detail="为此应用中的每个屏幕和导航边构建可视化图谱。" action={<Button onClick={start}
           disabled={!state.available || state.agentStartPending}>Start Building App Flow</Button>} />

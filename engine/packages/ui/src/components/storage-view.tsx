@@ -23,10 +23,10 @@ function AppPicker({ panel, state }: { panel: StoragePanel; state: StorageState 
   useSyncExternalStore(appIcons.subscribe, appIcons.getSnapshot);
   const apps = state.apps.map(app => ({ ...app, ...appIcons.get(state.platform, state.deviceId, app.bundleId) }));
   return <Select items={apps.map(app => ({ value: app.bundleId, label: app.name }))} value={state.bundleId || null} disabled={!state.available || state.unsupported !== ""} onValueChange={value => { if (value) panel.selectApp(value); }}>
-    <SelectTrigger id="storage-app" size="sm" aria-label="App" className="w-64 min-w-28 shrink">
+    <SelectTrigger id="storage-app" size="sm" aria-label="应用" className="w-64 min-w-28 shrink">
       <SelectValue>{(value: string | null) => {
         const app = apps.find(item => item.bundleId === value);
-        if (!app) return value ? <span className="truncate">{value}</span> : <span className="text-muted-foreground">{state.busy === "apps" ? "Loading apps…" : "Choose an app"}</span>;
+        if (!app) return value ? <span className="truncate">{value}</span> : <span className="text-muted-foreground">{state.busy === "apps" ? "Loading apps…" : "选择应用"}</span>;
         return <><AppAvatar name={app.name} icon={app.icon} size="xs" /><span className="max-w-40 shrink-0 truncate">{app.name}</span>{app.name !== app.bundleId && <span className="min-w-0 truncate text-xs text-muted-foreground">{app.bundleId}</span>}</>;
       }}</SelectValue>
     </SelectTrigger>
@@ -54,12 +54,12 @@ export const StorageView = memo(function StorageView({ panel }: { panel: Storage
 
   let body: ReactNode;
   if (state.unsupported || !state.available) body = <StorageEmpty title="App storage unavailable" description={state.available ? state.unsupported : "This host cannot call the plugin's tools."} />;
-  else if (!state.bundleId) body = <StorageEmpty title="Choose an app" description={state.busy === "apps" ? "Loading installed apps…" : "Pick an installed app to see what it has saved."} />;
+  else if (!state.bundleId) body = <StorageEmpty title="选择应用" description={state.busy === "apps" ? "Loading installed apps…" : "Pick an installed app to see what it has saved."} />;
   else if (!snapshot) body = state.error ? null : <StorageEmpty title="Reading app data…" description="MMKV, AsyncStorage, UserDefaults, SharedPreferences, databases, and files." />;
   else if (state.tab === "changes") body = <ChangesView panel={panel} query={search} />;
   else body = <BrowseView key={`${snapshot.platform}:${snapshot.bundleId}`} panel={panel} snapshot={snapshot} query={search} copy={copy} />;
 
-  return <section id="storage-drawer" className="@container flex h-full min-h-0 min-w-0 flex-col" role="tabpanel" aria-label="Storage">
+  return <section id="storage-drawer" className="@container flex h-full min-h-0 min-w-0 flex-col" role="tabpanel" aria-label="存储">
     <header className="panel-toolbar flex h-[49px] shrink-0 items-center gap-2 border-b px-2">
       <AppPicker panel={panel} state={state} />
       <Tabs value={state.tab} onValueChange={value => panel.setTab(value as StorageTab)} className="shrink-0">
@@ -82,7 +82,7 @@ export const StorageView = memo(function StorageView({ panel }: { panel: Storage
     {state.error && <Alert variant="destructive" className="shrink-0 rounded-none border-x-0 border-t-0"><AlertDescription className="text-xs">{state.error}</AlertDescription></Alert>}
     {state.status && <div className="flex shrink-0 items-center gap-2 border-b px-3 py-1.5 text-xs" role="status">
       <span className="min-w-0 flex-1 truncate">{state.status}</span>
-      <Button variant="outline" size="xs" disabled={busy} onClick={() => void panel.launch()}><PlayIcon />Launch app</Button>
+      <Button variant="outline" size="xs" disabled={busy} onClick={() => void panel.launch()}><PlayIcon />启动应用</Button>
     </div>}
     {body}
   </section>;

@@ -60,7 +60,7 @@ export function ChangesView({ panel, query }: { panel: StoragePanel; query: stri
         SDK changes{hiddenSdk > 0 && <span className="tabular-nums">({hiddenSdk} hidden)</span>}
         <Switch id="storage-sdk-changes" checked={state.showSdkChanges} onCheckedChange={checked => panel.setShowSdkChanges(checked)} />
       </label>
-      <Button variant="ghost" size="xs" disabled={state.changes.length === 0} onClick={() => panel.clearChanges()}>Clear</Button>
+      <Button variant="ghost" size="xs" disabled={state.changes.length === 0} onClick={() => panel.clearChanges()}>清除</Button>
     </footer>
   </div>;
 }

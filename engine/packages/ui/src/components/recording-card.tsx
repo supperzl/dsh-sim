@@ -29,7 +29,7 @@ function RecordingOverview({ duration, range, changes, onClear }: { duration: nu
   const position = (time: number) => Math.max(0, Math.min(100, time / duration * 100));
   return <section className="recording-overview" aria-label="Recording range overview">
     <div className="recording-section-heading"><h3>{range ? "所选范围" : "整个录制"}</h3><RecordingInfo label="recording range">Drag across any chart to select a range; click a chart to clear it. Purple marks show the most rapid changes. Missing readings remain gaps.</RecordingInfo>
-      {range && <button type="button" className="recording-clear-range" onClick={onClear}>Clear</button>}
+      {range && <button type="button" className="recording-clear-range" onClick={onClear}>清除</button>}
     </div>
     <div className="recording-overview-bar" role="img" aria-label={range ? `Selected range: ${seconds(range.start)}–${seconds(range.end)}` : `Entire recording: 0.0s–${seconds(duration)}`}>
       {changes.map((change, index) => <span key={index} className="recording-overview-change" style={{ left: `${position(change.start)}%`, width: `${position(change.end) - position(change.start)}%` }} />)}
@@ -202,7 +202,7 @@ export function RecordingCard({ controller, detailed = false }: { controller: Re
           {state.preview ? <p>{state.preview === "loading" ? "Loading thread detail…" : "线程详情需要完整录制，但此应用不允许卡片读取。"}</p> : shownThreads.length > 0 ? <dl>{shownThreads.map(thread => <div key={thread.id}><dt title={thread.id}>{thread.name || `Thread ${thread.id}`}</dt><dd>{percent(thread.averageCpuPercent)}</dd></div>)}</dl> : <p>No thread CPU measurements in this range.</p>}
         </section>}
         {(hasFps || selectedFrameStats !== null) && <section className="recording-display-summary" aria-label="显示统计信息">
-          <div className="recording-section-heading"><h3>Display</h3><RecordingInfo label="display statistics">{displayScope} Statistics use the {range ? "selected range" : "entire recording"}.</RecordingInfo></div>
+          <div className="recording-section-heading"><h3>显示</h3><RecordingInfo label="display statistics">{displayScope} Statistics use the {range ? "selected range" : "entire recording"}.</RecordingInfo></div>
           <dl className="recording-metrics">{hasFps && <><div><dt>Average FPS</dt><dd>{fpsReading(selected.averageFps)}</dd></div><div><dt>Minimum FPS</dt><dd>{fpsReading(selected.minimumFps)}</dd></div></>}{selectedFrameStats !== null && <><div><dt>Jank rate</dt><dd>{percent(selectedFrameStats.jankRatePercent)}</dd></div><div><dt>P95 interval</dt><dd>{milliseconds(selectedFrameStats.p95FrameIntervalMs)}</dd></div><div><dt>Dropped frames</dt><dd>{selectedFrameStats.droppedFrameCount}</dd></div></>}</dl>
           {selectedFrameStats !== null && <details className="recording-frame-stats">
             <summary>Frame details</summary>

@@ -26,12 +26,12 @@ export type { DeviceLayout } from "@mobile-dev/ui/device-layout.ts";
 // Menu item IDs stay literal so tests and the package smoke check can find them in the bundle.
 const tools = {
   logs: { id: "tool-logs", label: "日志", icon: TerminalIcon },
-  performance: { id: "tool-performance", label: "Performance", icon: ActivityIcon },
-  storage: { id: "tool-storage", label: "Storage", icon: DatabaseIcon },
-  "app-intel": { id: "tool-app-intel", label: "App Intel", icon: NetworkIcon },
+  performance: { id: "tool-performance", label: "性能", icon: ActivityIcon },
+  storage: { id: "tool-storage", label: "存储", icon: DatabaseIcon },
+  "app-intel": { id: "tool-app-intel", label: "应用分析", icon: NetworkIcon },
   tracesift: { id: "tool-tracesift", label: "TraceSift", icon: ChartNoAxesCombinedIcon },
-  "app-flow": { id: "tool-app-flow", label: "App Flow", icon: GitForkIcon },
-  testing: { id: "tool-testing", label: "Testing", icon: FlaskConicalIcon },
+  "app-flow": { id: "tool-app-flow", label: "应用流程", icon: GitForkIcon },
+  testing: { id: "tool-testing", label: "测试", icon: FlaskConicalIcon },
 };
 type Tool = keyof typeof tools;
 const isTool = (value: string): value is Tool => value in tools;
@@ -172,7 +172,7 @@ export function Workspace({ panels, recordingController, banner, displayModeCont
     if (!previous) return;
     if (size.inPixels <= collapsedToolSize + 1 && isOpen()) closeTools();
     else if (size.inPixels > 80 && isOpen() === false) showTool(tool);
-  }}>{tool === "logs" && <LogsView panel={logs} />}{tool === "storage" && <StorageView panel={storage} />}{tool === "app-intel" && <AppIntelligenceView panel={appIntel} />}{tool === "tracesift" && <TraceSiftView panel={tracesift} />}{tool === "app-flow" && open && <AppFlowView panel={appFlow} />}{tool === "testing" && open && <TestingView panel={testing} deviceApps={panels.deviceApps} />}{tool === "performance" && open && (savedVisible ? <div className="recording-workspace"><Button variant="outline" size="sm" onClick={() => { setSavedVisible(false); performance.show(); }}>Live performance</Button><RecordingCard controller={recordingController} detailed /></div> : <PerformanceView panel={performance} />)}</ResizablePanel>;
+  }}>{tool === "logs" && <LogsView panel={logs} />}{tool === "storage" && <StorageView panel={storage} />}{tool === "app-intel" && <AppIntelligenceView panel={appIntel} />}{tool === "tracesift" && <TraceSiftView panel={tracesift} />}{tool === "app-flow" && open && <AppFlowView panel={appFlow} />}{tool === "testing" && open && <TestingView panel={testing} deviceApps={panels.deviceApps} />}{tool === "performance" && open && (savedVisible ? <div className="recording-workspace"><Button variant="outline" size="sm" onClick={() => { setSavedVisible(false); performance.show(); }}>实时性能</Button><RecordingCard controller={recordingController} detailed /></div> : <PerformanceView panel={performance} />)}</ResizablePanel>;
   // The sidebar keeps these controls under its simulators. Fullscreen, or no visible
   // platform, moves them above the tools.
   const bottomToolbar = !fullscreen && layout !== "none";
@@ -191,7 +191,7 @@ export function Workspace({ panels, recordingController, banner, displayModeCont
     }}>
       <SelectTrigger id="tool-select" size="sm" className="shrink-0" aria-label="开发者工具"><SelectValue>{open ? <ToolIcon /> : <PanelsTopLeftIcon />}<span className="@max-[600px]:sr-only">{open ? tools[tool].label : "工具"}</span></SelectValue></SelectTrigger>
       <SelectContent side={menuSide} align="start" alignItemWithTrigger={false}><SelectGroup>
-        <SelectItem id="tool-none" value="none">Hide tools</SelectItem>
+        <SelectItem id="tool-none" value="none">隐藏工具</SelectItem>
         {Object.entries(tools).map(([value, { id, label, icon: Icon }]) => <SelectItem key={value} id={id} value={value}><Icon />{label}</SelectItem>)}
       </SelectGroup></SelectContent>
     </Select>

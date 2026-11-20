@@ -151,7 +151,7 @@ export const LogsView = memo(function LogsView({ panel }: { panel: LogsPanel }) 
                   </ToggleGroup>
                 </div>
                 <div className="flex min-w-0 flex-col gap-2">
-                  <Field className="gap-1"><FieldLabel htmlFor="logs-native" className="text-xs">Device</FieldLabel><NativeSelect id="logs-native" className="w-full" value={state.native} onChange={event => panel.configure({ native: event.target.value })}>
+                  <Field className="gap-1"><FieldLabel htmlFor="logs-native" className="text-xs">设备</FieldLabel><NativeSelect id="logs-native" className="w-full" value={state.native} onChange={event => panel.configure({ native: event.target.value })}>
                     <NativeSelectOption value="ios">{state.selectedLabel}</NativeSelectOption><NativeSelectOption value="none">None</NativeSelectOption>
                     {state.android.map(device => <NativeSelectOption key={device.id} value={`android:${device.id}`}>Android · {device.name}</NativeSelectOption>)}
                   </NativeSelect></Field>
@@ -160,7 +160,7 @@ export const LogsView = memo(function LogsView({ panel }: { panel: LogsPanel }) 
                 </div>
                 <div className="flex min-w-0 flex-col gap-2">
                   <Field className="gap-1"><FieldLabel htmlFor="logs-metro-url" className="text-xs">服务器 URL</FieldLabel><Input id="logs-metro-url" className="h-8 text-xs" type="url" value={state.metroUrl} maxLength={2048} spellCheck={false} onChange={event => panel.configure({ metroUrl: event.target.value })} /></Field>
-                  <Field className="gap-1"><div className="flex items-center justify-between"><FieldLabel htmlFor="logs-metro-target" className="text-xs">App</FieldLabel><Button variant="ghost" size="sm" className="h-6 px-1.5 text-xs" type="button" disabled={!state.available || state.discovering} onClick={() => void panel.discover()}><RefreshCwIcon />{state.discovering ? "正在查找…" : "Refresh"}</Button></div><NativeSelect id="logs-metro-target" className="w-full" value={state.target} onChange={event => panel.configure({ target: event.target.value })}><NativeSelectOption value="">None</NativeSelectOption>
+                  <Field className="gap-1"><div className="flex items-center justify-between"><FieldLabel htmlFor="logs-metro-target" className="text-xs">应用</FieldLabel><Button variant="ghost" size="sm" className="h-6 px-1.5 text-xs" type="button" disabled={!state.available || state.discovering} onClick={() => void panel.discover()}><RefreshCwIcon />{state.discovering ? "正在查找…" : "Refresh"}</Button></div><NativeSelect id="logs-metro-target" className="w-full" value={state.target} onChange={event => panel.configure({ target: event.target.value })}><NativeSelectOption value="">None</NativeSelectOption>
                     {state.metro.map(target => <NativeSelectOption key={target.id} value={target.id}>{target.appId ?? target.title}{target.deviceName ? ` · ${target.deviceName}` : ""} · {target.id}</NativeSelectOption>)}
                   </NativeSelect></Field>
                 </div>

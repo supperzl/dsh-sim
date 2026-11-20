@@ -12,7 +12,7 @@ export function AppFlowProjectPicker({ panel }: { panel: AppFlowPanel }) {
   const state = useSyncExternalStore(panel.subscribe, panel.getSnapshot);
   const [open, setOpen] = useState(false);
   const selected = state.projects.find(project => project.path === state.projectPath);
-  const label = state.projectPath ? selected?.name ?? state.projectPath.split("/").filter(Boolean).at(-1) ?? state.projectPath : "Choose a project";
+  const label = state.projectPath ? selected?.name ?? state.projectPath.split("/").filter(Boolean).at(-1) ?? state.projectPath : "选择项目";
   const choose = (projectPath: string) => { setOpen(false); void panel.chooseProject(projectPath); };
   return <div className="flex min-w-0 items-center gap-1">
     <Popover open={open} onOpenChange={value => { setOpen(value); if (value) void panel.refreshProjects(); }}>

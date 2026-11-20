@@ -7,7 +7,7 @@ import { TraceSiftCards } from "./tracesift-cards.tsx";
 
 const options: { value: Extract<TraceSiftProfileType, "cpu" | "react">; title: string; detail: string; accepts: string; drop: string }[] = [
   { value: "cpu", title: "JavaScript CPU", detail: "查找慢函数与重型执行路径", accepts: ".json", drop: "Choose a Chrome Performance .json" },
-  { value: "react", title: "React components", detail: "查找高开销提交、无效重渲染与级联更新", accepts: "React DevTools JSON", drop: "Choose a React DevTools profiling .json" },
+  { value: "react", title: "React 组件", detail: "查找高开销提交、无效重渲染与级联更新", accepts: "React DevTools JSON", drop: "Choose a React DevTools profiling .json" },
 ];
 
 // A dropped file arrives without a path and the local service reads from disk, so the pane asks the host for its own dialog.
@@ -42,7 +42,7 @@ function UploadPane({ controller, profileType, busy }: { controller: TraceSiftCo
       <span className="upload-icon"><UploadIcon /></span>
       <span className="upload-title">{option.title} profile</span>
       <span className="upload-detail">{option.drop}</span>
-      <span className="browse-button">Browse files</span>
+      <span className="browse-button">浏览文件</span>
     </button>
     {dropNotice && <p className="tracesift-notice" role="status">{dropNotice}</p>}
   </>;
@@ -65,7 +65,7 @@ function TraceSiftUpload({ controller, available }: { controller: TraceSiftContr
     {!available && <p className="tracesift-error" role="status">This host cannot call the plugin's TraceSift tools.</p>}
 
     <div className="profile-row">
-      <div className="workflow-label"><span>1</span><strong>Choose a profile type</strong></div>
+      <div className="workflow-label"><span>1</span><strong>选择分析文件类型</strong></div>
       <div className="profile-options" role="radiogroup" aria-label="性能分析类型">
         {options.map(option => <button
           key={option.value}
@@ -83,7 +83,7 @@ function TraceSiftUpload({ controller, available }: { controller: TraceSiftContr
     </div>
     <p className="profile-detail">{options.find(option => option.value === profileType)?.detail}</p>
 
-    <div className="workflow-label"><span>2</span><strong>Add your profile</strong><small>Processed locally, never uploaded.</small></div>
+    <div className="workflow-label"><span>2</span><strong>添加你的分析文件</strong><small>Processed locally, never uploaded.</small></div>
     {analyzing
       ? <p className="upload-analyzing" role="status">Analyzing {analyzing.name} with TraceSift…</p>
       : <UploadPane controller={controller} profileType={profileType} busy={!available} />}

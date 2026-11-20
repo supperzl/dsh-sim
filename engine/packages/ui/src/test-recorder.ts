@@ -142,7 +142,7 @@ export type TestRecorderSnapshot = {
    *
    * Pressing Record arms the recorder immediately, but nothing on the mirror can be selected until
    * the runner's element tree has been read — attaching to the app and projecting the tree takes a
-   * second or two — and until this existed the panel said "Record" and then ignored the first few
+   * second or two — and until this existed the panel said "录制" and then ignored the first few
    * seconds of pointing, with nothing on screen to say why. `start` now warms the tree itself and
    * holds this until that read lands, which is the moment selection actually works.
    */
