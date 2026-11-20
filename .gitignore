@@ -3,7 +3,7 @@ node_modules/
 *.log
 dist/
 vendor/
-panel-src/node_modules/
-panel-src/.git/
-panel-src/dist/
-panel-src/.sentry/
+engine/node_modules/
+engine/.git/
+engine/dist/
+engine/.sentry/
