@@ -36,5 +36,5 @@ directory as a source link.
 
 ## Tools
 
-19 `sim_*` tools: devices, start/stop/status, screenshot, tap/swipe/text/key,
+25 `sim_*` tools: devices, start/stop/status, screenshot, tap/swipe/text/key,
 rotate, install/uninstall/launch/open_url/permission/ui/logcat/shell/shutdown.
