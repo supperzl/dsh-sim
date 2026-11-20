@@ -21,7 +21,8 @@
 
 ## 会话模型
 
-每个会话（`sessionId`）最多一路流：
+每个会话（`sessionId`）可以有多路流，按 `(sessionId, streamId)` 存储；面板每个模拟器 tab 用
+自己的 tab id 作为 `streamId`，agent 工具不传 `streamId` 时作用于该会话最近使用的一路：
 
 ```ts
 interface SimSession {

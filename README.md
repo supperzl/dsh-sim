@@ -113,6 +113,8 @@ caches the client bundle for one load.
 
 1. Right sidebar → **+** → **Start** page → click the **Simulator** card. A new tab reconnects
    the **last device you used** and starts it automatically (booting a simulator if needed).
+   Click the card again to open a **second simulator** in the same conversation — every tab
+   owns its own device and stream.
 2. Click the device button to switch, search or pick another device. Selecting it starts the stream:
    booted iOS simulators attach instantly, shutdown ones are booted first, Android AVDs are
    launched on demand.
@@ -336,7 +338,8 @@ framing, scrcpy packet layout, socket timing, security fences).
 ## Limitations
 
 - iOS streaming is macOS + full Xcode only; Android needs an `adb`-visible device.
-- One stream per conversation and one viewer panel per stream.
+- A conversation can own several simulator tabs, each with its own device and stream; the
+  agent tools act on the most recently used stream.
 - The tools cover device control; build/run, OCR and UI-tree helpers are not included yet.
 - Decoding requires WebCodecs H.264 (supported by the DSH desktop build).
 - scrcpy requires a one-time download on first Android use.
